@@ -1,0 +1,105 @@
+http://www.boost.org/doc/libs/1_40_0/more/getting_started/windows.html
+
+
+- VC++ 9.0
+
+
+
+	- 1.40
+	   
+	  cd C:\Program Files\boost\boost_1_40_0
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete stage
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=minimal stage
+	
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-serialization stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-system stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-date_time stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-regex stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-thread stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-filesystem stage
+
+
+
+- VC++ 10.0
+
+
+
+	- 1.40
+	   
+	  cd C:\Program Files\boost\boost_1_40_0
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete stage
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=minimal stage
+	
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete --with-serialization stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete --with-system stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete --with-date_time stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete --with-regex stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete --with-thread stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc --build-type=complete --with-filesystem stage
+
+
+	- 1.39
+	   
+	  cd C:\Program Files\boost\boost_1_39_0
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete stage
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=minimal stage
+	
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete --with-serialization stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete --with-system stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete --with-date_time stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete --with-regex stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete --with-thread stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=msvc --build-type=complete --with-filesystem stage
+
+
+
+
+
+- MinGW (gcc)
+
+	- 1.39
+	   
+	  cd C:\Program Files\boost\boost_1_39_0
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete stage
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=minimal stage
+		
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete --with-serialization stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete --with-system stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete --with-date_time stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete --with-regex stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete --with-thread stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_39_0" --toolset=gcc --build-type=complete --with-filesystem stage
+
+
+	- 1.38
+	   
+	  cd C:\Program Files\boost\boost_1_38_0
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete stage
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=minimal stage
+		
+		bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete --with-serialization stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete --with-system stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete --with-date_time stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete --with-regex stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete --with-thread stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_38_0" --toolset=gcc --build-type=complete --with-filesystem stage
+
+
+	
+Libraries:	
+    - date_time
+    - filesystem
+    - function_types
+    - graph
+    - iostreams
+    - math
+    - mpi
+    - program_options
+    - python
+    - regex
+    - signals
+    - system
+    - test
+    - thread
+    - wave
+    - serialization
