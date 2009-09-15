@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Boost\boost_1_40_0&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -58,8 +58,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="libboost_regex-vc90-mt-gd-1_40.lib"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Boost\boost_1_40_0\stage\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\stage\lib&quot;"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -174,6 +173,10 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
+			<File
+				RelativePath=".\AbstractParser.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
