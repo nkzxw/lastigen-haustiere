@@ -10,6 +10,7 @@
 #include <boost/scoped_ptr.hpp>
 
 #include "AbstractRouterManager.hpp"
+#include "Router.hpp"
 
 
 
@@ -73,7 +74,11 @@ int main()
 	boost::scoped_ptr<AbstractRouterManager> manager(factories["factory"].create());		//TODO: investigar scoped_ptr
 	//manager->connectTo(url);
 	manager->parse("<html></html>"); // No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
-	manager->getList();
+	
+	std::vector<Router> routers = manager->getRouterList();
+
+	std::copy (routers.begin(), routers.end(), std::ostream_iterator<Router>(std::cout, " "));
+
 
 	std::cin.sync();
 	std::cin.get();

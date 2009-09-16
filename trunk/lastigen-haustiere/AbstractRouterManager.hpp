@@ -3,6 +3,11 @@
 #ifndef ABSTRACTROUTERMANAGER_HPP_
 #define ABSTRACTROUTERMANAGER_HPP_
 
+#include <vector>
+
+#include "Router.hpp"
+
+
 class AbstractRouterManager 
 {
 public:
@@ -16,7 +21,7 @@ public:
 	}
 
 	virtual void parse(const std::string& html) = 0;
-	virtual void getList() = 0;
+	virtual std::vector<Router> getRouterList() = 0;
 
 	//virtual std::string get_name() 
 	//{

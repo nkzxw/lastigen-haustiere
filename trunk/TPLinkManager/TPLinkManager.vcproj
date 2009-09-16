@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;D:\Development\CPP\lastigen-haustiere\lastigen-haustiere&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;..\lastigen-haustiere&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
