@@ -4,6 +4,11 @@
 class Router
 {
 public:
+
+	Router()
+	{
+	}
+
 	Router(const std::string& bssid, const std::string& ssid, int signal, int channel, bool security)
 		: bssid_(bssid), ssid_(ssid), signal_(signal), channel_(channel), security_(security)
 	{
@@ -26,7 +31,7 @@ public: //protected:	//TODO:
 std::ostream &operator<<(std::ostream &stream, Router router)
 {
 	
-	stream << router.bssid_ << " - " << router.ssid_ << std::endl;
+	stream << router.bssid_ << " - " << router.ssid_ << " - " << router.signal_ << " dB" << std::endl;
 	return stream;
 }
 
