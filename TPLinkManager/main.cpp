@@ -75,7 +75,7 @@ public:
 		while(it != end)
 		{
 			std::string strItem = *it++;
-			std::cout << strItem << std::endl;
+			//std::cout << strItem << std::endl;
 
 			parseItem(strItem);
 		}
@@ -112,7 +112,7 @@ protected:
 		while(it != end)
 		{
 			std::string strItem = *it++;
-			std::cout << strItem << std::endl;
+			//std::cout << strItem << std::endl;
 
 			switch (state)
 			{
@@ -133,7 +133,7 @@ protected:
 					}
 					catch(boost::bad_lexical_cast &)
 					{
-						std::cout << "temp";
+						//std::cout << "temp";
 						//args.push_back(0);
 					}
 					state = ExtractChannel;
@@ -146,7 +146,7 @@ protected:
 					}
 					catch(boost::bad_lexical_cast &)
 					{
-						std::cout << "temp";
+						//std::cout << "temp";
 						//args.push_back(0);
 					}
 
@@ -161,7 +161,7 @@ protected:
 					}
 					catch(boost::bad_lexical_cast &)
 					{
-						std::cout << "temp";
+						//std::cout << "temp";
 						//args.push_back(0);
 					}
 
