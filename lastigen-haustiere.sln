@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lastigen-haustiere", "lastigen-haustiere\lastigen-haustiere.vcproj", "{FD30670E-6996-4ABE-95FA-AED14A9B8A72}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TPLinkManager", "TPLinkManager\TPLinkManager.vcproj", "{D447CB3A-00CA-4A98-B556-3493DEA64CB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -13,6 +15,10 @@ Global
 		{FD30670E-6996-4ABE-95FA-AED14A9B8A72}.Debug|Win32.Build.0 = Debug|Win32
 		{FD30670E-6996-4ABE-95FA-AED14A9B8A72}.Release|Win32.ActiveCfg = Release|Win32
 		{FD30670E-6996-4ABE-95FA-AED14A9B8A72}.Release|Win32.Build.0 = Release|Win32
+		{D447CB3A-00CA-4A98-B556-3493DEA64CB4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D447CB3A-00CA-4A98-B556-3493DEA64CB4}.Debug|Win32.Build.0 = Debug|Win32
+		{D447CB3A-00CA-4A98-B556-3493DEA64CB4}.Release|Win32.ActiveCfg = Release|Win32
+		{D447CB3A-00CA-4A98-B556-3493DEA64CB4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
