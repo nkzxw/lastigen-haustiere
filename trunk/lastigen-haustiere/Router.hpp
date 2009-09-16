@@ -9,6 +9,10 @@ public:
 	{
 	}
 
+	friend std::ostream &operator<<(std::ostream &stream, Router ob);
+	//friend std::istream &operator>>(istream &stream, MyClass &ob);
+
+
 public: //protected:	//TODO:
 	std::string bssid_;
 	std::string ssid_;
@@ -16,5 +20,14 @@ public: //protected:	//TODO:
 	int channel_;
 	bool security_;
 };
+
+
+
+std::ostream &operator<<(std::ostream &stream, Router router)
+{
+	
+	stream << router.bssid_ << " - " << router.ssid_ << std::endl;
+	return stream;
+}
 
 #endif //ROUTER_HPP_
