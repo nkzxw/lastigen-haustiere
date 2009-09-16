@@ -15,6 +15,9 @@ public:
 	{
 	}
 
+	virtual void parse(const std::string& html) = 0;
+	virtual void getList() = 0;
+
 	//virtual std::string get_name() 
 	//{
 	//	return "A generic AbstractParser";
