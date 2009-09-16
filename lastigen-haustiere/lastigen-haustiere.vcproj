@@ -177,6 +177,10 @@
 				RelativePath=".\AbstractRouterManager.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\Router.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
