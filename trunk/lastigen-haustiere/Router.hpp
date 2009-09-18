@@ -1,6 +1,9 @@
 #ifndef ROUTER_HPP_
 #define ROUTER_HPP_
 
+#include <iostream>
+#include <string>
+
 class Router
 {
 public:
