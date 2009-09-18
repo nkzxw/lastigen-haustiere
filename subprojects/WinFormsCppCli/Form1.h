@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Router.hpp"
 
 namespace WinFormsCppCli {
 
@@ -31,6 +32,53 @@ namespace WinFormsCppCli {
 		}
 
 	protected:
+
+
+
+		void ToCLRString(const std::string& source, System::String^ target)
+		{
+			//std::string MyInfoText("Welcome User"); 
+			//String^ MyInfoDisp = gcnew String(MyInfoText.c_str());		
+			target = gcnew String(source.c_str());		
+		}
+
+		System::String^ ToCLRString(const std::string& source)
+		{
+			return gcnew String(source.c_str());		
+		}
+
+
+		void addRouterToList(const Router& router)
+		{
+			// System::Windows::Forms::
+			//string s1 = marshal_to<string>( s );
+			//String^ s2 = marshal_to<String^>( s1 ); 
+			//marshal_to<String^>( router.bssid_ );
+			//String^ temp = ToCLRString(router.bssid_);
+			//ListViewItem^ listViewItem = (gcnew ListViewItem(gcnew cli::array< String^  >(4) {"", "", "", ""}, -1));
+			
+			cli::array<String^>^ arr =  gcnew cli::array< String^  >(4);
+			arr[0] = ToCLRString(router.bssid_);
+			arr[1] = ToCLRString(router.ssid_);
+			//arr[2] = ToCLRString(router.signal_);
+			arr[2] = router.signal_.ToString();
+
+			if (router.security_)
+			{
+				arr[3] = ToCLRString("true");
+			}
+			else
+			{
+				arr[3] = ToCLRString("false");
+			}
+
+			ListViewItem^ listViewItem = (gcnew ListViewItem(arr, -1));
+			this->listView1->Items->Add(listViewItem);
+
+			//this->listView1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ListViewItem^  >(2) {listViewItem1, listViewItem2});
+		}
+
+
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -46,10 +94,14 @@ namespace WinFormsCppCli {
 
 
 
-	private: System::Windows::Forms::ListBox^  listBox1;
+
 	private: System::Windows::Forms::ListView^  listView1;
-	private: System::Windows::Forms::ColumnHeader^  columnHeader1;
-	private: System::Windows::Forms::ColumnHeader^  columnHeader2;
+	private: System::Windows::Forms::ColumnHeader^  bssid;
+	private: System::Windows::Forms::ColumnHeader^  ssid;
+	private: System::Windows::Forms::ColumnHeader^  signal;
+	private: System::Windows::Forms::ColumnHeader^  security;
+
+
 
 	protected: 
 
@@ -66,55 +118,59 @@ namespace WinFormsCppCli {
 		/// </summary>
 		void InitializeComponent(void)
 		{
-			System::Windows::Forms::ListViewItem^  listViewItem1 = (gcnew System::Windows::Forms::ListViewItem(gcnew cli::array< System::String^  >(2) {L"hola", 
-				L"sdfsfsdfsdf"}, -1));
-			System::Windows::Forms::ListViewItem^  listViewItem2 = (gcnew System::Windows::Forms::ListViewItem(gcnew cli::array< System::String^  >(2) {L"", 
-				L"como tas"}, -1));
-			this->listBox1 = (gcnew System::Windows::Forms::ListBox());
 			this->listView1 = (gcnew System::Windows::Forms::ListView());
-			this->columnHeader1 = (gcnew System::Windows::Forms::ColumnHeader());
-			this->columnHeader2 = (gcnew System::Windows::Forms::ColumnHeader());
+			this->bssid = (gcnew System::Windows::Forms::ColumnHeader());
+			this->ssid = (gcnew System::Windows::Forms::ColumnHeader());
+			this->signal = (gcnew System::Windows::Forms::ColumnHeader());
+			this->security = (gcnew System::Windows::Forms::ColumnHeader());
 			this->SuspendLayout();
-			// 
-			// listBox1
-			// 
-			this->listBox1->FormattingEnabled = true;
-			this->listBox1->Items->AddRange(gcnew cli::array< System::Object^  >(2) {L"ferni", L"hola"});
-			this->listBox1->Location = System::Drawing::Point(12, 96);
-			this->listBox1->Name = L"listBox1";
-			this->listBox1->Size = System::Drawing::Size(118, 212);
-			this->listBox1->TabIndex = 2;
 			// 
 			// listView1
 			// 
-			this->listView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::ColumnHeader^  >(2) {this->columnHeader1, this->columnHeader2});
+			this->listView1->Activation = System::Windows::Forms::ItemActivation::OneClick;
+			this->listView1->AutoArrange = false;
+			this->listView1->BorderStyle = System::Windows::Forms::BorderStyle::FixedSingle;
+			this->listView1->Columns->AddRange(gcnew cli::array< System::Windows::Forms::ColumnHeader^  >(4) {this->bssid, this->ssid, 
+				this->signal, this->security});
 			this->listView1->FullRowSelect = true;
-			this->listView1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ListViewItem^  >(2) {listViewItem1, listViewItem2});
-			this->listView1->Location = System::Drawing::Point(136, 21);
+			this->listView1->HeaderStyle = System::Windows::Forms::ColumnHeaderStyle::Nonclickable;
+			this->listView1->HideSelection = false;
+			this->listView1->ImeMode = System::Windows::Forms::ImeMode::Off;
+			this->listView1->Location = System::Drawing::Point(12, 12);
+			this->listView1->MultiSelect = false;
 			this->listView1->Name = L"listView1";
 			this->listView1->ShowGroups = false;
-			this->listView1->Size = System::Drawing::Size(458, 212);
+			this->listView1->Size = System::Drawing::Size(458, 346);
 			this->listView1->TabIndex = 3;
 			this->listView1->UseCompatibleStateImageBehavior = false;
 			this->listView1->View = System::Windows::Forms::View::Details;
 			// 
-			// columnHeader1
+			// bssid
 			// 
-			this->columnHeader1->Tag = L"123";
-			this->columnHeader1->Text = L"ColumnHeader22";
+			this->bssid->Tag = L"123";
+			this->bssid->Text = L"BSSID";
+			this->bssid->Width = 150;
 			// 
-			// columnHeader2
+			// ssid
 			// 
-			this->columnHeader2->Tag = L"345";
-			this->columnHeader2->Text = L"ColumnHeader2";
+			this->ssid->Tag = L"345";
+			this->ssid->Text = L"SSID";
+			this->ssid->Width = 150;
+			// 
+			// signal
+			// 
+			this->signal->Text = L"Signal";
+			// 
+			// security
+			// 
+			this->security->Text = L"Security";
 			// 
 			// Form1
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(606, 370);
+			this->ClientSize = System::Drawing::Size(482, 370);
 			this->Controls->Add(this->listView1);
-			this->Controls->Add(this->listBox1);
 			this->Name = L"Form1";
 			this->Text = L"Form1";
 			this->Load += gcnew System::EventHandler(this, &Form1::Form1_Load);
@@ -124,7 +180,16 @@ namespace WinFormsCppCli {
 #pragma endregion
 	private: System::Void Form1_Load(System::Object^  sender, System::EventArgs^  e) 
 			 {
-				 
+				//System::Windows::Forms::ListViewItem^  listViewItem1 = (gcnew System::Windows::Forms::ListViewItem(gcnew cli::array< System::String^  >(2) {L"hola", 
+				//	L"sdfsfsdfsdf"}, -1));
+				//System::Windows::Forms::ListViewItem^  listViewItem2 = (gcnew System::Windows::Forms::ListViewItem(gcnew cli::array< System::String^  >(2) {L"", 
+				//	L"como tas"}, -1));
+	 			//this->listView1->Items->AddRange(gcnew cli::array< System::Windows::Forms::ListViewItem^  >(2) {listViewItem1, listViewItem2});
+
+
+
+				 Router tempRouter("00-00-00-00-00-00", "...", 0, 0, false);
+				 addRouterToList(tempRouter);
 			 }
 	private: System::Void dataGridView1_CellContentClick(System::Object^  sender, System::Windows::Forms::DataGridViewCellEventArgs^  e) 
 			 {
