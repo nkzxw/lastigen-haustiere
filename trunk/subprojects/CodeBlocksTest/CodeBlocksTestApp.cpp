@@ -18,10 +18,20 @@
 #include "CodeBlocksTestApp.h"
 #include "CodeBlocksTestMain.h"
 
+//(*AppHeaders
+#include <wx/image.h>
+//*)
+
 IMPLEMENT_APP(CodeBlocksTestApp);
 
 bool CodeBlocksTestApp::OnInit()
 {
+	//(*AppInitialize
+	bool wxsOK = true;
+	wxInitAllImageHandlers();
+	//*)
+	return wxsOK;
+	
     
     CodeBlocksTestDialog* dlg = new CodeBlocksTestDialog(0L, _("wxWidgets Application Template"));
     dlg->SetIcon(wxICON(aaaa)); // To Set App Icon
