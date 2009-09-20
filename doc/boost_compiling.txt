@@ -18,6 +18,7 @@ http://www.boost.org/doc/libs/1_40_0/more/getting_started/windows.html
 		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-thread stage
 		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-filesystem stage
 
+		bjam --build-dir="C:\Program Files\boost\boost_1_40_0" --toolset=msvc-9.0 --build-type=complete --with-program_options stage
 
 
 - VC++ 10.0
