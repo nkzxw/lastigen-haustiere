@@ -7,6 +7,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TPLinkManager", "TPLinkMana
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WinFormsCppCli", "subprojects\WinFormsCppCli\WinFormsCppCli.vcproj", "{9BC2C234-8595-4F72-834D-7646567CC695}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_program_option", "test_boost_program_option\test_boost_program_option.vcproj", "{E99F3F10-5FA2-469F-84DB-FDDB400141B4}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_serialization_for_configuration", "test_boost_serialization_for_configuration\test_boost_serialization_for_configuration.vcproj", "{49D70D0A-B488-470E-9AF3-69D4F8EDC0BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -25,6 +29,14 @@ Global
 		{9BC2C234-8595-4F72-834D-7646567CC695}.Debug|Win32.Build.0 = Debug|Win32
 		{9BC2C234-8595-4F72-834D-7646567CC695}.Release|Win32.ActiveCfg = Release|Win32
 		{9BC2C234-8595-4F72-834D-7646567CC695}.Release|Win32.Build.0 = Release|Win32
+		{E99F3F10-5FA2-469F-84DB-FDDB400141B4}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E99F3F10-5FA2-469F-84DB-FDDB400141B4}.Debug|Win32.Build.0 = Debug|Win32
+		{E99F3F10-5FA2-469F-84DB-FDDB400141B4}.Release|Win32.ActiveCfg = Release|Win32
+		{E99F3F10-5FA2-469F-84DB-FDDB400141B4}.Release|Win32.Build.0 = Release|Win32
+		{49D70D0A-B488-470E-9AF3-69D4F8EDC0BB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{49D70D0A-B488-470E-9AF3-69D4F8EDC0BB}.Debug|Win32.Build.0 = Debug|Win32
+		{49D70D0A-B488-470E-9AF3-69D4F8EDC0BB}.Release|Win32.ActiveCfg = Release|Win32
+		{49D70D0A-B488-470E-9AF3-69D4F8EDC0BB}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
