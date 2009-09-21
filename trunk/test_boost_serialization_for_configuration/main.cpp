@@ -62,18 +62,18 @@ namespace MyApp
 		template < typename Archive >
 		void load(Archive & ar, const unsigned int version)
 		{
-			ar	& something_important_;
+			ar	& BOOST_SERIALIZATION_NVP(something_important_);
 
 			if (version > 0)
 			{
-				ar	& something_added_later_;
+				ar	& BOOST_SERIALIZATION_NVP(something_added_later_);
 			}
 			else
 			{ /* use default */ }
 			
 			if (version > 1)
 			{
-				ar	& something_added_even_later_;
+				ar	& BOOST_SERIALIZATION_NVP(something_added_even_later_);
 			}
 			else
 			{ /* use default */ }
@@ -134,14 +134,14 @@ int main()
 
 
 
-
+	MyApp::Configuration cfgNew;
 	    // open the archive
-    std::ifstream ifs(filename);
+    std::ifstream ifs(filename.c_str());
     assert(ifs.good());
     boost::archive::xml_iarchive ia(ifs);
 
     // restore the schedule from the archive
-    ia >> BOOST_SERIALIZATION_NVP(s);
+    ia >> BOOST_SERIALIZATION_NVP(cfgNew);
 
 
 
