@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<!DOCTYPE boost_serialization>
+<boost_serialization signature="serialization::archive" version="5">
+<cfg class_id="0" tracking_level="0" version="3">
+	<something_important_>0</something_important_>
+	<something_added_later_>0</something_added_later_>
+	<something_added_even_later_>0</something_added_even_later_>
+</cfg>
+</boost_serialization>
+
