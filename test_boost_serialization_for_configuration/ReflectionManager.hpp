@@ -72,7 +72,9 @@ public:
 			return 0; //1;
 		}
 
-		if ( factories.find("factory") == factories.end() )								//TODO: ver si es la forma correcta de chequear que existe el key
+		//TpLinkManager_factory
+		std::string factoryName = dynamicType + "_factory";
+		if ( factories.find(factoryName) == factories.end() )								//TODO: ver si es la forma correcta de chequear que existe el key
 		{
 			std::cerr << "Error in Shared Library. No Factory founded." << std::endl;
 			return 0; //1;
@@ -81,7 +83,7 @@ public:
 		//boost::scoped_ptr<AbstractRouterManager> type(factories["factory"].create());
 		//return type;
 
-		return factories["factory"].create();
+		return factories[factoryName].create();
 	}
 
 protected:

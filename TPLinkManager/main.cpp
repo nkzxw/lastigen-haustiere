@@ -23,7 +23,8 @@
 using namespace boost::extensions;
 
 ////typedef factory<AbstractRouterManager, int> FactoryType;
-typedef factory<AbstractRouterManager, void> FactoryType;
+//typedef factory<AbstractRouterManager, void> FactoryType;
+typedef factory<AbstractRouterManager> FactoryType;
 typedef std::map<std::string, FactoryType> FactoryMap;
 
 
@@ -185,5 +186,5 @@ protected:
 BOOST_EXTENSION_TYPE_MAP_FUNCTION 
 {
 	FactoryMap& factories(types.get());
-	factories["factory"].set<TpLinkManager>();
+	factories["TpLinkManager_factory"].set<TpLinkManager>();
 }
