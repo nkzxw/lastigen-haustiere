@@ -1,6 +1,8 @@
 #ifndef REFLECTIONMANAGER_HPP
 #define REFLECTIONMANAGER_HPP
 
+#include <typeinfo>
+
 #include <boost/function.hpp>
 //#include <boost/lambda/lambda.hpp>
 #include <boost/mpl/copy_if.hpp>
@@ -13,9 +15,68 @@
 
 using namespace boost::extensions;
 
+
+//#define DECLARE_SPELLABLE( a_type ) template<> class spelling<a_type> { public: static const std::string result; }; const std::string spelling<my_enum>::result = #a_type
+//DECLARE_SPELLABLE(int);
+
+
 class ReflectionManager
 {
 public:
+
+
+
+	template <typename T>
+	T* get()
+	{
+
+		std::string typeNameStr = typeid(T).name();
+
+		typedef factory<AbstractRouterManager, void> FactoryType;
+		typedef std::map<std::string, FactoryType> FactoryMap;
+
+		std::string library_path = "TPLinkManager.dll";
+
+		// Create shared_library object with the relative or absolute
+		// path to the shared library.
+		shared_library lib(library_path);
+
+		// Attempt to open the shared library.
+		if (!lib.open()) 
+		{
+			std::cerr << "Library failed to open: " << library_path << std::endl;
+			return 0; //1;
+		}
+
+		// Use the shared_library::call to automatically call an Extension-specific function in the shared library,
+		// which takes a type_map.
+		type_map types;
+		if (!lib.call(types)) 
+		{
+			std::cerr << "Function not found!" << std::endl;
+			return 0; //1;
+		}
+
+		// Retrieve a map of all animal factories taking an int and indexed by a string from the type_map.
+		FactoryMap& factories(types.get());
+		if (factories.empty()) 
+		{
+			std::cerr << "Animals not found!" << std::endl;
+			return 0; //1;
+		}
+
+		if ( factories.find("factory") == factories.end() )								//TODO: ver si es la forma correcta de chequear que existe el key
+		{
+			std::cerr << "Error in Shared Library. No Factory founded." << std::endl;
+			return 0; //1;
+		}
+
+		//boost::scoped_ptr<AbstractRouterManager> type(factories["factory"].create());
+		//return type;
+
+		return factories["factory"].create();
+	}
+
 protected:
 };
 
