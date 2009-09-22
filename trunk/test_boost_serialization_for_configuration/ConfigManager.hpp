@@ -3,12 +3,14 @@
 
 #include <fstream>
 #include <boost/filesystem/path.hpp>
+#include <boost/serialization/nvp.hpp>
+
 
 template <typename T>
 class ConfigManager
 {
 public:
-	ConfigManager(const std::string& exePath, bool loadAutomatically = false )
+	ConfigManager(const std::string& exePath, bool loadAutomatically = true )
 	{
 		
 		boost::filesystem::path my_path( exePath );

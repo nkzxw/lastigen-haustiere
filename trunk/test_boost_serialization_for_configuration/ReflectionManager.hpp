@@ -12,6 +12,8 @@
 #include <boost/extension/shared_library.hpp>
 #include <boost/extension/type_map.hpp>
 
+#include "ConfigManager.hpp"
+
 
 using namespace boost::extensions;
 
@@ -24,18 +26,23 @@ class ReflectionManager
 {
 public:
 
-
+	ReflectionManager(const std::map<std::string, std::string>& mappings)
+		: mappings_(mappings)
+	{
+	}
 
 	template <typename T>
-	T* get()
+	T* get(const std::string& dynamicType)
 	{
-
-		std::string typeNameStr = typeid(T).name();
+		//std::string typeNameStr = typeid(T).name();
 
 		typedef factory<AbstractRouterManager, void> FactoryType;
 		typedef std::map<std::string, FactoryType> FactoryMap;
 
-		std::string library_path = "TPLinkManager.dll";
+
+		
+		//std::string library_path = "TPLinkManager.dll";
+		std::string library_path = mappings_[dynamicType];
 
 		// Create shared_library object with the relative or absolute
 		// path to the shared library.
@@ -78,6 +85,7 @@ public:
 	}
 
 protected:
+	std::map<std::string, std::string> mappings_;
 };
 
 #endif // REFLECTIONMANAGER_HPP
