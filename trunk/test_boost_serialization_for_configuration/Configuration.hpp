@@ -19,6 +19,44 @@
 //#include <boost/archive/text_iarchive.hpp>
 
 
+class Registration
+{
+public:
+	Registration()
+		: interface_(""), dllPath_("")
+	{}
+
+	friend class boost::serialization::access;
+
+	template < typename Archive >
+	void save(Archive & ar, const unsigned int version) const
+	{
+		ar	& BOOST_SERIALIZATION_NVP(interface_)
+			& BOOST_SERIALIZATION_NVP(dllPath_)
+			;
+
+		//ar & make_nvp("id", id_);
+	}
+
+	template < typename Archive >
+	void load(Archive & ar, const unsigned int version)
+	{
+		ar	& BOOST_SERIALIZATION_NVP(interface_)
+			& BOOST_SERIALIZATION_NVP(dllPath_);
+
+		//ar	& BOOST_SERIALIZATION_NVP(dllPath_);
+
+		//isDefault_ = version < 2;
+	}
+
+
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+	std::string interface_;
+	std::string dllPath_;
+};
+
+
 class Configuration
 {
 public:
@@ -26,7 +64,7 @@ public:
 
 	Configuration()
 		: isDefault_(true)
-		, dllPath_("")
+		//, dllPath_("")
 	{ 
 		/* no-op */ 
 	}
@@ -74,21 +112,28 @@ public:
 	template < typename Archive >
 	void save(Archive & ar, const unsigned int version) const
 	{
-		ar	& BOOST_SERIALIZATION_NVP(dllPath_)
+		ar	& BOOST_SERIALIZATION_NVP(registration_)
 			;
+
+		//ar	& BOOST_SERIALIZATION_NVP(dllPath_)
+		//	;
+
 		//ar & make_nvp("id", id_);
 	}
 
 	template < typename Archive >
 	void load(Archive & ar, const unsigned int version)
 	{
-		ar	& BOOST_SERIALIZATION_NVP(dllPath_);
+		ar	& BOOST_SERIALIZATION_NVP(registration_);
+		//ar	& BOOST_SERIALIZATION_NVP(dllPath_);
 
 		isDefault_ = version < 2;
 	}
 
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+protected:
 
 
 public: //protected:
@@ -97,7 +142,8 @@ public: //protected:
 	//int something_added_later_;
 	//int something_added_even_later_;
 
-	std::string dllPath_;
+	Registration registration_;
+	//std::string dllPath_;
 	bool isDefault_;
 };
 

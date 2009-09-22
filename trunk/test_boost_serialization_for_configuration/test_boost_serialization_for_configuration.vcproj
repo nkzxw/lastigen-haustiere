@@ -181,6 +181,10 @@
 				RelativePath=".\Configuration.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\ReflectionManager.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
