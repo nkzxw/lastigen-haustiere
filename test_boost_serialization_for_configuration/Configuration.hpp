@@ -6,24 +6,34 @@
 
 //#include <fstream>
 //#include <iostream>
+//#include <vector>
+#include <map>
 
 #include <boost/filesystem/path.hpp>
 
 #include <boost/serialization/access.hpp>
-#include <boost/serialization/version.hpp>							//BOOST_CLASS_VERSION
 #include <boost/serialization/split_member.hpp>						//BOOST_SERIALIZATION_SPLIT_MEMBER()
+//#include <boost/serialization/vector.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/version.hpp>							//BOOST_CLASS_VERSION
 
 #include <boost/archive/xml_oarchive.hpp>
 #include <boost/archive/xml_iarchive.hpp>
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
 
+class MappingConfiguration
+{
+public:
+	//std::vector<Registration> mappings_;
+	std::map<std::string, std::string> mappings_;
+};
 
 class Registration
 {
 public:
 	Registration()
-		: interface_(""), dllPath_("")
+		: class_(""), dllPath_("")
 	{}
 
 	friend class boost::serialization::access;
@@ -31,7 +41,7 @@ public:
 	template < typename Archive >
 	void save(Archive & ar, const unsigned int version) const
 	{
-		ar	& BOOST_SERIALIZATION_NVP(interface_)
+		ar	& BOOST_SERIALIZATION_NVP(class_)
 			& BOOST_SERIALIZATION_NVP(dllPath_)
 			;
 
@@ -41,7 +51,7 @@ public:
 	template < typename Archive >
 	void load(Archive & ar, const unsigned int version)
 	{
-		ar	& BOOST_SERIALIZATION_NVP(interface_)
+		ar	& BOOST_SERIALIZATION_NVP(class_)
 			& BOOST_SERIALIZATION_NVP(dllPath_);
 
 		//ar	& BOOST_SERIALIZATION_NVP(dllPath_);
@@ -52,12 +62,12 @@ public:
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-	std::string interface_;
+	std::string class_;
 	std::string dllPath_;
 };
 
 
-class Configuration
+class Configuration : public MappingConfiguration
 {
 public:
 	//enum SomethingImportant { first_possibility__, second_possibility__, };
@@ -112,7 +122,7 @@ public:
 	template < typename Archive >
 	void save(Archive & ar, const unsigned int version) const
 	{
-		ar	& BOOST_SERIALIZATION_NVP(registration_)
+		ar	& BOOST_SERIALIZATION_NVP(mappings_)
 			;
 
 		//ar	& BOOST_SERIALIZATION_NVP(dllPath_)
@@ -124,7 +134,7 @@ public:
 	template < typename Archive >
 	void load(Archive & ar, const unsigned int version)
 	{
-		ar	& BOOST_SERIALIZATION_NVP(registration_);
+		ar	& BOOST_SERIALIZATION_NVP(mappings_);
 		//ar	& BOOST_SERIALIZATION_NVP(dllPath_);
 
 		isDefault_ = version < 2;
@@ -138,16 +148,13 @@ protected:
 
 public: //protected:
 
-	//SomethingImportant something_important_;
-	//int something_added_later_;
-	//int something_added_even_later_;
-
-	Registration registration_;
-	//std::string dllPath_;
+	//std::vector<Registration> mappings_;
+	//std::map<std::string, std::string> mappings_;
 	bool isDefault_;
 };
 
 
 BOOST_CLASS_VERSION(Configuration, 0);
+BOOST_CLASS_VERSION(Registration, 0);
 
 #endif // CONFIGURATION_HPP
