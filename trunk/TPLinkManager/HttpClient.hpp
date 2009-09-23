@@ -1,13 +1,20 @@
 #ifndef HTTPCLIENT_HPP
 #define HTTPCLIENT_HPP
 
+#include <algorithm>
 #include <iostream>
 #include <istream>
 #include <map>
 #include <ostream>
 #include <string>
+#include <vector>
 
 #include <boost/asio.hpp>
+//#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/finder.hpp>
+
+
 
 using boost::asio::ip::tcp;
 
@@ -33,7 +40,7 @@ public:
 		//TODO: eliminar
 		protocol = "http";
 		//host = "192.168.0.254";
-		host = "www.google.com";
+		host = "www.google.com.ar";
 		//path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 		path = "/";
 
@@ -121,6 +128,7 @@ public:
 			while (std::getline(response_stream, header) && header != "\r")
 			{
 				std::cout << header << "\n";
+				addResponseHeader(header);
 			}
 			
 			std::cout << "\n";
@@ -155,6 +163,22 @@ protected:
 
 	void parseUri(const std::string& uri, std::string& protocol, std::string& host, std::string& path)
 	{
+	}
+
+
+	virtual void addResponseHeader(const std::string& header)
+	{
+		std::string key;
+		std::string value;
+
+		std::vector< std::string > result;
+		boost::split( result, header, boost::is_any_of(":") );
+
+
+		boost::first_finder();
+		
+		headers_[key] = value;
+
 	}
 
 	//TODO: usar unorderer_map
