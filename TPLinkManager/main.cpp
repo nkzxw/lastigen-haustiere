@@ -75,14 +75,15 @@ public:
 		try
 		{
 
+			std::string serverProtocol = "http";
 			std::string serverIp = "192.168.0.254";
+			std::string serverPath = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 
 			boost::asio::io_service io_service;
 
 			// Get a list of endpoints corresponding to the server name.
 			tcp::resolver resolver(io_service);
-			//tcp::resolver::query query(argv[1], "http");
-			tcp::resolver::query query(serverIp, "http");
+			tcp::resolver::query query(serverIp, serverProtocol);
 			tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 			tcp::resolver::iterator end;
 
@@ -104,17 +105,15 @@ public:
 			// allow us to treat all data up until the EOF as the content.
 			boost::asio::streambuf request;
 			std::ostream request_stream(&request);
-			//request_stream << "GET " << argv[2] << " HTTP/1.0\r\n";
-			//request_stream << "GET " << "/" << " HTTP/1.0\r\n";
-			request_stream << "GET " << "/" << " HTTP/1.1\r\n";
+			//request_stream << "GET " << serverPath << " HTTP/1.0\r\n";
+			request_stream << "GET " << serverPath << " HTTP/1.1\r\n";
 
 			//request_stream << "Host: " << argv[1] << "\r\n";
 			request_stream << "Host: " << serverIp << "\r\n";
 			request_stream << "Accept: */*\r\n";
 			request_stream << "Connection: close\r\n";
-			//request_stream << "Authorization: Basic YWRtaW46MTIzNA==\r\n";
 
-			std::string usrAndPwd = "admin:candombe";
+			std::string usrAndPwd = "admin:candombe";	//TODO: 
 			std::string credentials = base64_encode(usrAndPwd);
 			request_stream << "Authorization: Basic " << credentials << "\r\n";
 

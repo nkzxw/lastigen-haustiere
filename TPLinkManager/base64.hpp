@@ -2,7 +2,7 @@
 #define BASE64_HPP
 
 #include <string>
-//#include <iostream>
+#include <iostream>
 
 #include "boost/archive/iterators/base64_from_binary.hpp"
 #include "boost/archive/iterators/binary_from_base64.hpp"
@@ -24,7 +24,13 @@ inline std::string base64_encode(const InputContainerType const & cont)
 
 	std::string str = std::string(base64_t(&cont[0]), base64_t(&cont[0] + cont.size()));
 	//str.append(str.size() % 4, CharT('=')); 
-	str.append(str.size() % 4, '='); 
+
+	//int sz = str.size();
+	//std::cout << sz << std::endl;
+	//std::cout << (4-(str.size() % 4)) << std::endl;
+
+	str.append(4-(str.size() % 4), '='); 
+
 
 	return str; 
 } 
