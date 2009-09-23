@@ -177,6 +177,10 @@
 				RelativePath=".\base64.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\HttpClient.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
