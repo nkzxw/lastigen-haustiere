@@ -113,7 +113,9 @@ public:
 			request_stream << "Accept: */*\r\n";
 			request_stream << "Connection: close\r\n";
 			//request_stream << "Authorization: Basic YWRtaW46MTIzNA==\r\n";
-			request_stream << "Authorization: Basic " << base64_encode("admin:candombe") << "\r\n";
+
+			std::string usrAndPwd = "admin:candombe";
+			request_stream << "Authorization: Basic " << base64_encode(usrAndPwd) << "\r\n";
 
 			
 			request_stream << "\r\n";
