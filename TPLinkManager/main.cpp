@@ -115,7 +115,8 @@ public:
 			//request_stream << "Authorization: Basic YWRtaW46MTIzNA==\r\n";
 
 			std::string usrAndPwd = "admin:candombe";
-			request_stream << "Authorization: Basic " << base64_encode(usrAndPwd) << "\r\n";
+			std::string credentials = base64_encode(usrAndPwd);
+			request_stream << "Authorization: Basic " << credentials << "\r\n";
 
 			
 			request_stream << "\r\n";
