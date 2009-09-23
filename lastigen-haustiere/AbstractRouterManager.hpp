@@ -20,6 +20,7 @@ public:
 	{
 	}
 
+	virtual void connect() = 0;
 	virtual void parse(const std::string& html) = 0;
 	virtual std::vector<Router> getRouterList() = 0;
 

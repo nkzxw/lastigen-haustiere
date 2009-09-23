@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;; Z:\Development\CPP\lastigen-haustiere\test_boost_serialization_for_configuration\"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;; ..\test_boost_serialization_for_configuration\"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
