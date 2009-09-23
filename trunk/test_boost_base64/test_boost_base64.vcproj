@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="TPLinkManager"
-	ProjectGUID="{D447CB3A-00CA-4A98-B556-3493DEA64CB4}"
-	RootNamespace="TPLinkManager"
+	Name="test_boost_base64"
+	ProjectGUID="{ABDBBC02-599E-4A9F-A46E-1233BF2C2691}"
+	RootNamespace="test_boost_base64"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -19,7 +19,7 @@
 			Name="Debug|Win32"
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
+			ConfigurationType="1"
 			CharacterSet="2"
 			>
 			<Tool
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;..\lastigen-haustiere&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -173,10 +173,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\base64.hpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
