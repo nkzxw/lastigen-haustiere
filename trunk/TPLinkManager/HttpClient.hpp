@@ -13,7 +13,7 @@
 //#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/finder.hpp>
-
+#include <boost/algorithm/string/regex.hpp>
 
 
 using boost::asio::ip::tcp;
@@ -40,9 +40,10 @@ public:
 		//TODO: eliminar
 		protocol = "http";
 		//host = "192.168.0.254";
-		host = "www.google.com.ar";
+		host = "www.clarin.com.ar";
 		//path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-		path = "/";
+		//path = "/";
+		path = "/diario/2009/09/28/um/m-02007915.htm";
 
 
 		try
@@ -174,10 +175,10 @@ protected:
 		std::vector< std::string > result;
 		boost::split( result, header, boost::is_any_of(":") );
 
-
-		boost::first_finder();
+		//boost::algorithm::split_regex(
+		//boost::first_finder();
 		
-		headers_[key] = value;
+		this->responseHeaders_[key] = value;
 
 	}
 
