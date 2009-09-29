@@ -74,12 +74,15 @@ int main(int argc, char** argv)
 	//boost::scoped_ptr<AbstractRouterManager> manager(factories["factory"].create());		//TODO: investigar scoped_ptr
 
 	ConfigManager<Configuration> cm(argv[0]);
+	Configuration *cfg = cm.getConfigurationClass();
 
-	ReflectionManager rm(cm->mappings_);
+	//ReflectionManager rm(cm->mappings_);
+	//ReflectionManager rm(cfg->mappings_);
+
+	ReflectionManager<boost::unordered_map> rm(cfg->mappings_);
+
 	//boost::scoped_ptr<AbstractRouterManager> manager = rm.get<AbstractRouterManager>();
 	boost::scoped_ptr<AbstractRouterManager> manager(rm.get<AbstractRouterManager>("TpLinkManager"));
-
-
 
 	manager->connect();
 	//manager->connectTo(url);

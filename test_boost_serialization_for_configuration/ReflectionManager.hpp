@@ -12,6 +12,8 @@
 #include <boost/extension/shared_library.hpp>
 #include <boost/extension/type_map.hpp>
 
+#include <boost/unordered_map.hpp>
+
 #include "ConfigManager.hpp"
 
 
@@ -22,11 +24,20 @@ using namespace boost::extensions;
 //DECLARE_SPELLABLE(int);
 
 
+//template <template <typename T> class X> 
+//class A { };
+
+
+//template <template <typename Key, typename Value> class MapType>
 class ReflectionManager
 {
 public:
 
-	ReflectionManager(const std::map<std::string, std::string>& mappings)
+	//typedef std::map<std::string, std::string> MappingType;
+	typedef boost::unordered_map<std::string, std::string> MappingType;
+	//typedef MapType<std::string, std::string> MappingType;
+
+	ReflectionManager(const MappingType& mappings)
 		: mappings_(mappings)
 	{
 	}
@@ -87,7 +98,7 @@ public:
 	}
 
 protected:
-	std::map<std::string, std::string> mappings_;
+	MappingType mappings_;
 };
 
 #endif // REFLECTIONMANAGER_HPP
