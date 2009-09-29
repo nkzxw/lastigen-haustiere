@@ -1,5 +1,7 @@
 // http://boost-extension.redshoelace.com/docs/boost/extension/boost_extension/tutorials/tutorial02.html
 
+//TODO: pasar a proyecto aparte, independiente
+
 #ifndef ABSTRACTROUTERMANAGER_HPP_
 #define ABSTRACTROUTERMANAGER_HPP_
 
