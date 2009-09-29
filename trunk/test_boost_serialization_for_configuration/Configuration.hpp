@@ -1,20 +1,25 @@
 // http://landheer-cieslak.com/wordpress/?p=130
-
+// Se generó archivo <boost/serialization/unordered_map.hpp>
 
 #ifndef CONFIGURATION_HPP
 #define CONFIGURATION_HPP
 
 //#include <fstream>
 //#include <iostream>
+
 //#include <vector>
-#include <map>
+//#include <map>
+#include <boost/unordered_map.hpp> 
 
 #include <boost/filesystem/path.hpp>
 
 #include <boost/serialization/access.hpp>
 #include <boost/serialization/split_member.hpp>						//BOOST_SERIALIZATION_SPLIT_MEMBER()
+
 //#include <boost/serialization/vector.hpp>
-#include <boost/serialization/map.hpp>
+//#include <boost/serialization/map.hpp>
+#include <boost/serialization/unordered_map.hpp>
+
 #include <boost/serialization/version.hpp>							//BOOST_CLASS_VERSION
 
 #include <boost/archive/xml_oarchive.hpp>
@@ -26,7 +31,8 @@ class MappingConfiguration
 {
 public:
 	//std::vector<Registration> mappings_;
-	std::map<std::string, std::string> mappings_;
+	//std::map<std::string, std::string> mappings_;
+	boost::unordered_map<std::string, std::string> mappings_;
 };
 
 class Registration

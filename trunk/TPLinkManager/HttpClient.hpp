@@ -4,11 +4,13 @@
 #include <algorithm>
 #include <iostream>
 #include <istream>
-#include <map>
+//#include <map>
 #include <ostream>
 #include <string>
-#include <vector>
+//#include <vector>
 
+
+#include <boost/unordered_map.hpp>
 #include <boost/asio.hpp>
 //#include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string.hpp>
@@ -22,7 +24,8 @@ class HttpClient
 {
 public:
 
-	typedef std::map<std::string, std::string> HeaderMap;
+	//typedef std::map<std::string, std::string> HeaderMap;
+	typedef boost::unordered_map<std::string, std::string> HeaderMap;
 
 	virtual void addHeader(const std::string& key, const std::string& value)
 	{
@@ -169,6 +172,7 @@ protected:
 
 	virtual void addResponseHeader(const std::string& header)
 	{
+		//TODO: ver como hacer split cuyo delimitador sea un string completo...
 		std::string key;
 		std::string value;
 
@@ -182,7 +186,6 @@ protected:
 
 	}
 
-	//TODO: usar unorderer_map
 	HeaderMap headers_;
 	HeaderMap responseHeaders_;
 };

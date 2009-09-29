@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_base64", "test_b
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWebClient", "TestWebClient\TestWebClient.csproj", "{8300F931-0823-4670-821A-C44DF99D3269}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32IpChanger", "Win32IpChanger\Win32IpChanger.vcproj", "{ABAE8532-933E-4642-90B0-575F10BDB2A6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -95,6 +97,16 @@ Global
 		{8300F931-0823-4670-821A-C44DF99D3269}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8300F931-0823-4670-821A-C44DF99D3269}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8300F931-0823-4670-821A-C44DF99D3269}.Release|Win32.ActiveCfg = Release|Any CPU
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Win32.Build.0 = Debug|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Release|Any CPU.ActiveCfg = Release|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Release|Win32.ActiveCfg = Release|Win32
+		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

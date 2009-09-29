@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
 	manager->connect();
 	//manager->connectTo(url);
-	manager->parse("<html></html>"); // No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
+	manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
 	
 	std::vector<Router> routers = manager->getRouterList();
 	std::vector<Router> routersWithoutSecurity;
