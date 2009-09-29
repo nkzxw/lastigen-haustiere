@@ -7,6 +7,7 @@
 int main(int argc, char** argv)
 {
 	ConfigManager<Configuration> cm(argv[0], false);
+	Configuration *cfg = cm.getConfigurationClass();
 	//std::cout << cm.getConfigClass().something_important_;
 	//std::cout << cm->registrations_.dllPath_;
 
@@ -16,8 +17,11 @@ int main(int argc, char** argv)
 	//cm->registrations_.push_back(tempReg);
 	//cm->registrations_.push_back(tempReg);
 
-	cm->mappings_["TpLinkManager"] = "TPLinkManager.dll";
-	cm->mappings_["Otro"] = "Otro.dll";
+	//cm->mappings_["TpLinkManager"] = "TPLinkManager.dll";
+	//cm->mappings_["Otro"] = "Otro.dll";
+
+	cfg->mappings_["TpLinkManager"] = "TPLinkManager.dll";
+	cfg->mappings_["Otro"] = "Otro.dll";
 
 	cm.save();
 

@@ -1,7 +1,6 @@
 #ifndef WIN32IPCHANGER_HPP_
 #define WIN32IPCHANGER_HPP_
 
-
 #include <string>
 
 #include <windows.h>
@@ -36,7 +35,6 @@ protected:
 
 	virtual bool executeNetshCommand(const std::string& command)
 	{
-		//std::string returnMessage = "";
 		message_ = "";
 		executeCommand(command, message_);
 

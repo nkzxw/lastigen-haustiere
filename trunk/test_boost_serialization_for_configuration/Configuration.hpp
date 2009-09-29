@@ -123,6 +123,8 @@ public:
 	//	isDefault_ = version < 2;
 	//}
 
+protected:
+
 	friend class boost::serialization::access;
 
 	template < typename Archive >
