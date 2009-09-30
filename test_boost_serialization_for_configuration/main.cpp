@@ -1,27 +1,18 @@
 #include <iostream>
 
-#include "Configuration.hpp"
+#include "AppSettings.hpp"
 #include "ConfigManager.hpp"
 
 
 int main(int argc, char** argv)
 {
-	ConfigManager<Configuration> cm(argv[0], false);
-	Configuration *cfg = cm.getConfigurationClass();
-	//std::cout << cm.getConfigClass().something_important_;
-	//std::cout << cm->registrations_.dllPath_;
+	ConfigManager<AppSettings> cm(argv[0], false);
+	AppSettings *cfg = cm.getSettings();
 
-	//Registration tempReg;
-	//tempReg.class_ = "TpLinkManager";
-	//tempReg.dllPath_ = "TPLinkManager.dll";
-	//cm->registrations_.push_back(tempReg);
-	//cm->registrations_.push_back(tempReg);
+	cfg->typeMapping_["TpLinkManager"] = "TPLinkManager.dll";
+	cfg->typeMapping_["Otro"] = "Otro.dll";
 
-	//cm->mappings_["TpLinkManager"] = "TPLinkManager.dll";
-	//cm->mappings_["Otro"] = "Otro.dll";
-
-	cfg->mappings_["TpLinkManager"] = "TPLinkManager.dll";
-	cfg->mappings_["Otro"] = "Otro.dll";
+	cfg->accessPoints_.push_back(AccessPointInformation("tplink", "TpLinkManager"));
 
 	cm.save();
 

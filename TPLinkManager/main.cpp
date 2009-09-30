@@ -16,7 +16,7 @@
 #include <boost/extension/factory.hpp>
 #include <boost/extension/type_map.hpp>
 
-#include "AbstractRouterManager.hpp"
+#include "AbstractAccessPointManager.hpp"
 #include "Router.hpp"
 
 #include "base64.hpp"
@@ -31,9 +31,9 @@ using boost::asio::ip::tcp;
 
 using namespace boost::extensions;
 
-////typedef factory<AbstractRouterManager, int> FactoryType;
-//typedef factory<AbstractRouterManager, void> FactoryType;
-typedef factory<AbstractRouterManager> FactoryType;
+////typedef factory<AbstractAccessPointManager, int> FactoryType;
+//typedef factory<AbstractAccessPointManager, void> FactoryType;
+typedef factory<AbstractAccessPointManager> FactoryType;
 typedef std::map<std::string, FactoryType> FactoryMap;
 
 
@@ -64,7 +64,7 @@ void loadFile(std::string& str, const std::string& fileName)
 
 
 
-class TpLinkManager : public AbstractRouterManager
+class TpLinkManager : public AbstractAccessPointManager
 {
 public:
 	virtual void connect()
