@@ -2,23 +2,23 @@
 
 //TODO: pasar a proyecto aparte, independiente
 
-#ifndef ABSTRACTROUTERMANAGER_HPP_
-#define ABSTRACTROUTERMANAGER_HPP_
+#ifndef ABSTRACTACCESSPOINTMANAGER_HPP_
+#define ABSTRACTACCESSPOINTMANAGER_HPP_
 
 #include <vector>
 
 #include "Router.hpp"
 
 
-class AbstractRouterManager 
+class AbstractAccessPointManager 
 {
 public:
 	
-	AbstractRouterManager()
+	AbstractAccessPointManager()
 	{
 	}
 	
-	virtual ~AbstractRouterManager() 
+	virtual ~AbstractAccessPointManager() 
 	{
 	}
 
@@ -41,4 +41,4 @@ protected:
 
 };
 
-#endif //ABSTRACTROUTERMANAGER_HPP_
+#endif //ABSTRACTACCESSPOINTMANAGER_HPP_
