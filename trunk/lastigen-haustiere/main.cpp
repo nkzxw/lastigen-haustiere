@@ -14,7 +14,7 @@
 #include <boost/extension/shared_library.hpp>
 #include <boost/extension/type_map.hpp>
 
-#include "AbstractRouterManager.hpp"
+#include "AbstractAccessPointManager.hpp"
 #include "ReflectionManager.hpp"
 #include "Router.hpp"
 
@@ -56,12 +56,11 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //result; }; \
 //const std::string spelling<my_enum>::result = #a_type
 
-
+typedef boost::scoped_ptr<AbstractAccessPoint> APPtr;
 
 
 int main(int argc, char** argv) 
 {
-
 	////TODO: pasos a seguir...
 	///*
 	//	1. Obtener URL del AccessPoint que contiene la lista de RoutersRemotos
@@ -71,19 +70,10 @@ int main(int argc, char** argv)
 	//	5. El cliente puede solicitarle al Manager utilizar determinado RouterRemoto.
 	//*/
 
-	//boost::scoped_ptr<AbstractRouterManager> manager(factories["factory"].create());		//TODO: investigar scoped_ptr
-
 	ConfigManager<Configuration> cm(argv[0]);
 	Configuration *cfg = cm.getConfigurationClass();
 
-	//ReflectionManager rm(cm->mappings_);
-	//ReflectionManager rm(cfg->mappings_);
-	//std::map<std::string, std::string> pepe();
-
-	ReflectionManager rm(cfg->mappings_);
-
-	//boost::scoped_ptr<AbstractRouterManager> manager = rm.get<AbstractRouterManager>();
-	boost::scoped_ptr<AbstractRouterManager> manager(rm.get<AbstractRouterManager>("TpLinkManager"));
+	APPtr manager(ReflectionManager::CreateInstance<AbstractAccessPointManager>("TpLinkManager.dll", "TpLinkManager"));
 
 	manager->connect();
 	//manager->connectTo(url);
