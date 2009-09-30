@@ -56,7 +56,7 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //result; }; \
 //const std::string spelling<my_enum>::result = #a_type
 
-typedef boost::scoped_ptr<AbstractAccessPoint> APPtr;
+typedef boost::scoped_ptr<AbstractAccessPointManager> APPtr;
 
 
 int main(int argc, char** argv) 
