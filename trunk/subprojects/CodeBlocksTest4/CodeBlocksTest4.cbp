@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="CodeBlocksTest4" />
+		<Option pch_mode="2" />
+		<Option compiler="msvc8" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\CodeBlocksTest4" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Debug\" />
+				<Option type="0" />
+				<Option compiler="msvc8" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="/Zi" />
+					<Add option="/D_DEBUG" />
+					<Add option="/D__WXDEBUG__" />
+					<Add option="/MDd" />
+					<Add directory="C:\wxWidgets-2.8.10\lib\vc_lib\mswd" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="C:\wxWidgets-2.8.10\lib\vc_lib\mswd" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="/DEBUG" />
+					<Add option="/NODEFAULTLIB:libcmtd.lib" />
+					<Add option="/NODEFAULTLIB:msvcrt.lib" />
+					<Add library="msvcrtd.lib" />
+					<Add library="wxmsw28d_dbgrid.lib" />
+					<Add library="wxbase28d_odbc.lib" />
+					<Add library="wxmsw28d_adv.lib" />
+					<Add library="wxmsw28d_core.lib" />
+					<Add library="wxbase28d.lib" />
+					<Add library="wxpngd.lib" />
+					<Add library="wxzlibd.lib" />
+					<Add directory="C:\wxWidgets-2.8.10\lib\vc_lib" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='mt.exe /nologo /manifest &quot;bin\Debug\CodeBlocksTest4.exe.manifest&quot; /outputresource:&quot;bin\Debug\CodeBlocksTest4.exe&quot;;1' />
+				</ExtraCommands>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\CodeBlocksTest4" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="msvc8" />
+				<Option projectLinkerOptionsRelation="2" />
+				<Compiler>
+					<Add option="/Ox" />
+					<Add option="/DNDEBUG" />
+					<Add option="/MD" />
+					<Add option="/O2" />
+					<Add option="/Ob1" />
+					<Add directory="C:\wxWidgets-2.8.10\lib\vc_lib\msw" />
+				</Compiler>
+				<ResourceCompiler>
+					<Add directory="C:\wxWidgets-2.8.10\lib\vc_lib\msw" />
+				</ResourceCompiler>
+				<Linker>
+					<Add option="/NODEFAULTLIB:libcmt.lib" />
+					<Add library="msvcrt.lib" />
+					<Add library="wxmsw28_dbgrid.lib" />
+					<Add library="wxbase28_odbc.lib" />
+					<Add library="wxmsw28_adv.lib" />
+					<Add library="wxmsw28_core.lib" />
+					<Add library="wxbase28.lib" />
+					<Add library="wxpng.lib" />
+					<Add library="wxzlib.lib" />
+					<Add directory="C:\wxWidgets-2.8.10\lib\vc_lib" />
+				</Linker>
+				<ExtraCommands>
+					<Add after='mt.exe /nologo /manifest &quot;bin\Release\CodeBlocksTest4.exe.manifest&quot; /outputresource:&quot;bin\Release\CodeBlocksTest4.exe&quot;;1' />
+				</ExtraCommands>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="/DWIN32" />
+			<Add option="/D__WIN32__" />
+			<Add option="/D__WXMSW__" />
+			<Add option="/D_WINDOWS" />
+			<Add option="/TP" />
+			<Add option="/Gd" />
+			<Add option="/GF" />
+			<Add option="/EHsc" />
+			<Add option="/D_CRT_SECURE_DEPRECATE" />
+			<Add option="/D_CRT_NONSTDC_NO_DEPRECATE" />
+			<Add option="/Zc:wchar_t" />
+			<Add option="/D_VC80_UPGRADE=0x0600" />
+			<Add option="/W3" />
+			<Add directory="C:\wxWidgets-2.8.10\include" />
+			<Add directory="C:\wxWidgets-2.8.10\contrib\include" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="C:\wxWidgets-2.8.10\include" />
+		</ResourceCompiler>
+		<Linker>
+			<Add option="/INCREMENTAL:NO" />
+			<Add option="/SUBSYSTEM:WINDOWS" />
+			<Add library="winmm.lib" />
+			<Add library="rpcrt4.lib" />
+			<Add library="kernel32.lib" />
+			<Add library="user32.lib" />
+			<Add library="gdi32.lib" />
+			<Add library="winspool.lib" />
+			<Add library="comdlg32.lib" />
+			<Add library="advapi32.lib" />
+			<Add library="shell32.lib" />
+			<Add library="ole32.lib" />
+			<Add library="oleaut32.lib" />
+			<Add library="uuid.lib" />
+			<Add library="comctl32.lib" />
+			<Add library="wsock32.lib" />
+			<Add library="odbc32.lib" />
+		</Linker>
+		<Unit filename="CodeBlocksTest4App.cpp" />
+		<Unit filename="CodeBlocksTest4App.h" />
+		<Unit filename="CodeBlocksTest4Main.cpp" />
+		<Unit filename="CodeBlocksTest4Main.h" />
+		<Unit filename="resource.rc">
+			<Option compilerVar="WINDRES" />
+		</Unit>
+		<Unit filename="wxsmith\CodeBlocksTest4dialog.wxs" />
+		<Extensions>
+			<code_completion />
+			<debugger />
+			<wxsmith version="1">
+				<gui name="wxWidgets" src="CodeBlocksTest4App.cpp" main="CodeBlocksTest4Dialog" init_handlers="necessary" language="CPP" />
+				<resources>
+					<wxDialog wxs="wxsmith/CodeBlocksTest4dialog.wxs" src="CodeBlocksTest4Main.cpp" hdr="CodeBlocksTest4Main.h" name="CodeBlocksTest4Dialog" language="CPP" />
+				</resources>
+			</wxsmith>
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
