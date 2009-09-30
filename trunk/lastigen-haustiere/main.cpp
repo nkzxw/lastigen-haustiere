@@ -78,8 +78,9 @@ int main(int argc, char** argv)
 
 	//ReflectionManager rm(cm->mappings_);
 	//ReflectionManager rm(cfg->mappings_);
+	//std::map<std::string, std::string> pepe();
 
-	ReflectionManager<boost::unordered_map> rm(cfg->mappings_);
+	ReflectionManager rm(cfg->mappings_);
 
 	//boost::scoped_ptr<AbstractRouterManager> manager = rm.get<AbstractRouterManager>();
 	boost::scoped_ptr<AbstractRouterManager> manager(rm.get<AbstractRouterManager>("TpLinkManager"));

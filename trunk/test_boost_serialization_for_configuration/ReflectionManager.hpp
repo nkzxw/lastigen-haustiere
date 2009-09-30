@@ -24,18 +24,14 @@ using namespace boost::extensions;
 //DECLARE_SPELLABLE(int);
 
 
-//template <template <typename T> class X> 
-//class A { };
 
 
-//template <template <typename Key, typename Value> class MapType>
 class ReflectionManager
 {
 public:
 
 	//typedef std::map<std::string, std::string> MappingType;
 	typedef boost::unordered_map<std::string, std::string> MappingType;
-	//typedef MapType<std::string, std::string> MappingType;
 
 	ReflectionManager(const MappingType& mappings)
 		: mappings_(mappings)
