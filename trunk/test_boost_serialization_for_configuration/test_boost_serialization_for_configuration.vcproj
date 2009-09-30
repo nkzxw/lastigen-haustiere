@@ -174,11 +174,11 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\ConfigManager.hpp"
+				RelativePath=".\AppSettings.hpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Configuration.hpp"
+				RelativePath=".\ConfigManager.hpp"
 				>
 			</File>
 			<File

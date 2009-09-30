@@ -10,6 +10,7 @@
 #include "Router.hpp"
 
 
+//TODO: cambiarle el nombre a AbstractAPManager
 class AbstractAccessPointManager 
 {
 public:

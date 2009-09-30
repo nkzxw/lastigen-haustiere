@@ -9,6 +9,9 @@
 
 #include "AbstractIpChanger.hpp"
 
+//TODO: crear una clase IpChanger que adentro verifique por MACROS para ver en que sistema operativo están.
+//      al pedo hacer una clase por cada sistema operativo
+
 class Win32IpChanger : public AbstractIpChanger
 {
 public:
