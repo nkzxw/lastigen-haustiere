@@ -21,18 +21,18 @@
 ////class unordered_map
 //
 //
-//int main()
-//{
-//
-//	B<int> b;
-//	b.member_ = 10;
-//
-//
-//	A<B> ab;
-//
-//	
-//	//A<C> ac;		//No funciona
-//
-//	
-//	return 0;
-//}
+int main()
+{
+
+	//B<int> b;
+	//b.member_ = 10;
+
+
+	//A<B> ab;
+
+	//
+	////A<C> ac;		//No funciona
+
+	
+	return 0;
+}
