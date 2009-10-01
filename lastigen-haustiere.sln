@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_misc", "test_misc\test
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_regex", "test_boost_regex\test_boost_regex.vcproj", "{641E096E-4A8A-4143-AFD6-A695F69B3C71}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_xpressive", "test_boost_xpressive\test_boost_xpressive.vcproj", "{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,16 @@ Global
 		{641E096E-4A8A-4143-AFD6-A695F69B3C71}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{641E096E-4A8A-4143-AFD6-A695F69B3C71}.Release|Win32.ActiveCfg = Release|Win32
 		{641E096E-4A8A-4143-AFD6-A695F69B3C71}.Release|Win32.Build.0 = Release|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Debug|Win32.Build.0 = Debug|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Release|Any CPU.ActiveCfg = Release|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Release|Win32.ActiveCfg = Release|Win32
+		{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
