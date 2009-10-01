@@ -90,24 +90,24 @@ int main(int argc, char** argv)
 	APPtr manager(ReflectionManager::CreateInstance<AbstractAccessPointManager>("TpLinkManager.dll", "TpLinkManager"));
 
 
-	//manager->connect();
-	////manager->connectTo(url);
-	//manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
-	//
-	//std::vector<Router> routers = manager->getRouterList();
-	//std::vector<Router> routersWithoutSecurity;
+	manager->connect();
+	//manager->connectTo(url);
+	manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
+	
+	std::vector<Router> routers = manager->getRouterList();
+	std::vector<Router> routersWithoutSecurity;
 
-	////SecurityDisabled<Router> sd;
-	////std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), std::not1(SecurityDisabled<Router>()) );
-	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), SecurityDisabled<Router>() );
-	//std::sort( routersWithoutSecurity.begin( ), routersWithoutSecurity.end( ), SignalGreater );
+	//SecurityDisabled<Router> sd;
+	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), std::not1(SecurityDisabled<Router>()) );
+	std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), SecurityDisabled<Router>() );
+	std::sort( routersWithoutSecurity.begin( ), routersWithoutSecurity.end( ), SignalGreater );
 
-	////using namespace boost::lambda;
-	//////std::remove_copy_if(s.begin(), s.end(), std::back_inserter(t), _1 == '-');
-	////std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), _1 == false );
+	//using namespace boost::lambda;
+	////std::remove_copy_if(s.begin(), s.end(), std::back_inserter(t), _1 == '-');
+	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), _1 == false );
 
-	//std::cout << "-------------------------------------------------" << std::endl;
-	//std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
+	std::cout << "-------------------------------------------------" << std::endl;
+	std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
 
 
 	std::cin.sync();

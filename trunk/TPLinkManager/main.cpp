@@ -71,16 +71,15 @@ public:
 	{
 		HttpClient client;
 
-		//client.addHeader("Host", "www.google.com");
-		//client.addHeader("Accept", "*/*");
-		//client.addHeader("Connection", "close");
-		//std::string usrAndPwd = "admin:candombe";	//TODO: 
-		//std::string credentials = base64_encode(usrAndPwd);
-		//client.addHeader("Authorization", "Basic " + credentials);
+		client.addHeader("Host", "www.google.com");
+		client.addHeader("Accept", "*/*");
+		client.addHeader("Connection", "close");
+		std::string usrAndPwd = "admin:candombe";	//TODO: 
+		std::string credentials = base64_encode(usrAndPwd);
+		client.addHeader("Authorization", "Basic " + credentials);
 
-		client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+		//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
 
-		//client.addHeader("", "");
 
 		client.openRead("");
 	}

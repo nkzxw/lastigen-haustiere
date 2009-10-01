@@ -42,11 +42,12 @@ public:
 
 		//TODO: eliminar
 		protocol = "http";
-		//host = "192.168.0.254";
-		host = "www.clarin.com.ar";
-		//path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+		host = "192.168.0.254";
+		path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+
+		//host = "www.clarin.com.ar";
 		//path = "/";
-		path = "/diario/2009/09/28/um/m-02007915.htm";
+		//path = "/diario/2009/09/28/um/m-02007915.htm";
 
 
 		try
