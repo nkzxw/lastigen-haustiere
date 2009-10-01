@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9,00"
-	Name="test_boost_regex"
-	ProjectGUID="{641E096E-4A8A-4143-AFD6-A695F69B3C71}"
-	RootNamespace="test_boost_regex"
+	Name="test_boost_xpressive"
+	ProjectGUID="{BBDA89F5-D468-47B2-93C9-8B512F6E06BF}"
+	RootNamespace="test_boost_xpressive"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -111,7 +111,6 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -128,7 +127,6 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalLibraryDirectories="&quot;$(BOOST_ROOT)\stage\lib&quot;"
 				GenerateDebugInformation="true"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
