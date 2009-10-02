@@ -48,6 +48,7 @@ public:
 protected:
 	friend class boost::serialization::access;
 
+	//TODO: poner estos métodos fuera de la clase como friend...
 	template < typename Archive >
 	void save(Archive & ar, const unsigned int version) const
 	{
@@ -91,6 +92,7 @@ protected:
 
 	friend class boost::serialization::access;
 
+	//TODO: poner estos métodos fuera de la clase como friend...
 	template < typename Archive >
 	void save(Archive & ar, const unsigned int version) const
 	{

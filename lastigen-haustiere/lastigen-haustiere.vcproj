@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;; ..\test_boost_serialization_for_configuration\"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;; &quot;..\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -173,14 +173,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\AbstractAccessPointManager.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\Router.hpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

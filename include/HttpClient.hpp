@@ -18,8 +18,12 @@
 #include <boost/algorithm/string/regex.hpp>
 
 
+#include "Uri.hpp"
+
 using boost::asio::ip::tcp;
 
+
+//TODO: namespaces
 class HttpClient
 {
 public:
@@ -32,22 +36,28 @@ public:
 		headers_[key] = value;
 	}
 
-	virtual void openRead(const std::string& uri)
+
+
+	virtual void openRead(const std::string& uriStr)
 	{
-		std::string protocol;
-		std::string host;
-		std::string path;
+		openRead(net::Uri(uriStr));
+	}
 
-		parseUri(uri, protocol, host, path);
+	virtual void openRead(const net::Uri& uri)
+	{
+		//std::string protocol;
+		//std::string host;
+		//std::string path;
+		//parseUri(uri, protocol, host, path);
 
-		//TODO: eliminar
-		protocol = "http";
-		host = "192.168.0.254";
-		path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+		////TODO: eliminar
+		//protocol = "http";
+		//host = "192.168.0.254";
+		//path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 
-		//host = "www.clarin.com.ar";
-		//path = "/";
-		//path = "/diario/2009/09/28/um/m-02007915.htm";
+		////host = "www.clarin.com.ar";
+		////path = "/";
+		////path = "/diario/2009/09/28/um/m-02007915.htm";
 
 
 		try
@@ -56,7 +66,8 @@ public:
 
 			// Get a list of endpoints corresponding to the server name.
 			tcp::resolver resolver(io_service);
-			tcp::resolver::query query(host, protocol);
+			
+			tcp::resolver::query query(uri.host, uri.protocol);
 			tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 			tcp::resolver::iterator end;
 
@@ -78,7 +89,11 @@ public:
 			// allow us to treat all data up until the EOF as the content.
 			boost::asio::streambuf request;
 			std::ostream request_stream(&request);
-			request_stream << "GET " << path << " HTTP/1.1\r\n";
+
+			//TODO: agregar tambien el query concatenado al path...
+			request_stream << "GET " << uri.path << " HTTP/1.1\r\n";
+
+			
 
 			//request_stream << "Host: " << serverIp << "\r\n";
 			//request_stream << "Accept: */*\r\n";

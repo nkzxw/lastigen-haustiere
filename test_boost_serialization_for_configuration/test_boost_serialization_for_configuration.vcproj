@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;"
+				AdditionalIncludeDirectories="&quot;$(BOOST_ROOT)&quot;;&quot;..\include&quot;"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -173,18 +173,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\AppSettings.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ConfigManager.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ReflectionManager.hpp"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
