@@ -5,64 +5,176 @@
 
 using namespace boost::xpressive;
 
+
+//TODO: pasar la clase a un hpp
+//TODO: ver en la clase de .Net si permite modificar los atributos una vez que la clase esté construida...
+//TODO: ver si es necesario constructor parameterless, en este caso, hay que crear un metodo initialize(...)
+//TODO: pasar a StaticRegExp
+#define REG_EXP_STR "^(?:(?P<protocol>(?:ftp|http|https))\\:\\/\\/|~/|/)?(?:(?P<username>\\w+):(?P<password>\\w+)@)?(?P<host>[-\\w\\d\\.]+)(?::(?P<port>[\\d]{1,5}))?(?P<path>(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?(?:\\?(?P<query>(?:(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*))*(?:#(?P<anchor>(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*))?$"
+
+class uri
+{
+public:
+
+	explicit uri(const std::string& uriStr)
+		: valid(false), originalUri(uriStr)//, regularExpression(sregex::compile(REG_EXP_STR))
+	{
+		smatch what;
+		
+		if(regex_match(uriStr, what, regularExpression))
+		{
+			protocol = what["protocol"];
+			username = what["username"];
+			password = what["password"];
+			host = what["host"];
+			port = what["port"];
+			path = what["path"];
+			query = what["query"];
+			anchor = what["anchor"];
+
+			//TODO: ver las cosas que faltan y tomar valores por defecto...
+			valid = true;
+		}
+	}
+
+	uri(const uri& other)
+	{
+		originalUri = other.originalUri;
+		completeUri = other.completeUri;
+		protocol = other.protocol;
+		username = other.username;
+		password = other.password;
+		host = other.host;
+		port = other.port;
+		path = other.path;
+		query = other.query;
+		anchor = other.anchor;
+
+		valid = other.valid;
+	}
+
+
+	//TODO: constructor copia, assig op, etc...
+
+
+	//TODO: poner los atributos protected y generar getters/setters...
+	bool valid;
+	std::string completeUri;
+	std::string originalUri;
+	std::string protocol;
+	std::string username;
+	std::string password;
+	std::string host;
+	std::string port;
+	std::string path;
+	std::string query;
+	std::string anchor;
+
+
+	//TODO: esta variable tiene que ser statica, general para todas las instancias de la clase... es en vano compilarla N veces...
+	static const sregex regularExpression; // = sregex::compile(regExStr);
+
+};
+
+
+const sregex uri::regularExpression = sregex::compile(REG_EXP_STR);
+
 int main()
 {
 
 	//--------------------------------------------------------------------------------------------------------
 
+	uri uri1("http://usuario:password@www.google.com:8080/hola/como/te/va/todo/bien.aspx?name=value&name=value&name=value#fer");
+	//uri uri("pepe");
 
-	/*
-	//std::string regExStr = "^(?#Protocol)(?:(?:ht|f)tp(?:s?)\\:\\/\\/|~/|/)?(?#Username:Password)(?:\\w+:\\w+@)?(?#Subdomains)(?:(?:[-\\w]+\\.)+(?#TopLevel Domains)(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2}))(?#Port)(?::[\\d]{1,5})?(?#Directories)(?:(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?(?#Query)(?:(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*(?#Anchor)(?:#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?$ "; 
-
-	std::string regExStr = "^(?#Protocol)(?:(?:ht|f)tp(?:s?)\\:\\/\\/|~/|/)?
-		                     (?#Username:Password)(?:\\w+:\\w+@)?
-							 (?#Subdomains)(?:(?:[-\\w]+\\.)+
-								(?#TopLevel Domains)(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2})
-							  )
-							  (?#Port)(?::[\\d]{1,5})?
-							  (?#Directories)(?:(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?
-							  (?#Query)(?:(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*
-							  (?#Anchor)(?:#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?$ "; 
-
-	std::string regExStr = "^
-							 (?P<Protocol>(?:ht|f)tp(?:s?)\\:\\/\\/|~/|/)?
-		                     (?P<Username:Password>\\w+:\\w+@)?
-							 (?P<Subdomains>(?:[-\\w]+\\.)+
-								(?P<TopLevel Domains>com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2})
-							  )
-							  (?P<Port>:[\\d]{1,5})?
-							  (?P<Directories>(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?
-							  (?P<Query>(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*
-							  (?P<Anchor>#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?$ "; 
-	*/
-
-
-	std::string regExStr = "^(?:(?P<protocol>(?:ftp|http|https))\\:\\/\\/|~/|/)?(?:(?P<username>\\w+):(?P<password>\\w+)@)?(?P<host>[-\\w\\d\\.]+)(?::(?P<port>[\\d]{1,5}))?(?P<path>(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?(?P<query>(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*(?P<other>.*)?$";
-
-	std::string str( "http://usuario:password@www.google.com:8080/hola/como/te/va/todo/bien.aspx?name=value" );
-
-	smatch what;
-	sregex rx = sregex::compile(regExStr);
+	uri uri2 = uri1;
 	
-	if(regex_match(str, what, rx))
+	if (uri1.valid)
 	{
-		std::cout << "protocol: " << what["protocol"] << std::endl;
-		std::cout << "username: " << what["username"] << std::endl;
-		std::cout << "password: " << what["password"] << std::endl;
-		std::cout << "host: " << what["host"] << std::endl;
-		std::cout << "port: " << what["port"] << std::endl;
-		std::cout << "path: " << what["path"] << std::endl;
-		std::cout << "query: " << what["query"] << std::endl;
-
-		std::cout << "other: " << what["other"] << std::endl;
-
-		std::cout << what[0] << std::endl;
-		std::cout << what[1] << std::endl;
-		std::cout << what[2] << std::endl;
-		std::cout << what[3] << std::endl;
-		//std::cout << what["world"] << std::endl;
-		//std::cout << what["sign"] << std::endl;
+		std::cout << "completeUri: " << uri1.completeUri << std::endl;
+		std::cout << "originalUri: " << uri1.originalUri << std::endl;
+		std::cout << "protocol: " << uri1.protocol << std::endl;
+		std::cout << "username: " << uri1.username << std::endl;
+		std::cout << "password: " << uri1.password << std::endl;
+		std::cout << "host: " << uri1.host << std::endl;
+		std::cout << "port: " << uri1.port << std::endl;
+		std::cout << "path: " << uri1.path << std::endl;
+		std::cout << "query: " << uri1.query << std::endl;
+		std::cout << "anchor: " << uri1.anchor << std::endl;
 	}
+
+
+	if (uri2.valid)
+	{
+		std::cout << "completeUri: " << uri2.completeUri << std::endl;
+		std::cout << "originalUri: " << uri2.originalUri << std::endl;
+		std::cout << "protocol: " << uri2.protocol << std::endl;
+		std::cout << "username: " << uri2.username << std::endl;
+		std::cout << "password: " << uri2.password << std::endl;
+		std::cout << "host: " << uri2.host << std::endl;
+		std::cout << "port: " << uri2.port << std::endl;
+		std::cout << "path: " << uri2.path << std::endl;
+		std::cout << "query: " << uri2.query << std::endl;
+		std::cout << "anchor: " << uri2.anchor << std::endl;
+	}
+
+	//--------------------------------------------------------------------------------------------------------
+
+
+	///*
+	////std::string regExStr = "^(?#Protocol)(?:(?:ht|f)tp(?:s?)\\:\\/\\/|~/|/)?(?#Username:Password)(?:\\w+:\\w+@)?(?#Subdomains)(?:(?:[-\\w]+\\.)+(?#TopLevel Domains)(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2}))(?#Port)(?::[\\d]{1,5})?(?#Directories)(?:(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?(?#Query)(?:(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*(?#Anchor)(?:#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?$ "; 
+
+	//std::string regExStr = "^(?#Protocol)(?:(?:ht|f)tp(?:s?)\\:\\/\\/|~/|/)?
+	//	                     (?#Username:Password)(?:\\w+:\\w+@)?
+	//						 (?#Subdomains)(?:(?:[-\\w]+\\.)+
+	//							(?#TopLevel Domains)(?:com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2})
+	//						  )
+	//						  (?#Port)(?::[\\d]{1,5})?
+	//						  (?#Directories)(?:(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?
+	//						  (?#Query)(?:(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*
+	//						  (?#Anchor)(?:#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?$ "; 
+
+	//std::string regExStr = "^
+	//						 (?P<Protocol>(?:ht|f)tp(?:s?)\\:\\/\\/|~/|/)?
+	//	                     (?P<Username:Password>\\w+:\\w+@)?
+	//						 (?P<Subdomains>(?:[-\\w]+\\.)+
+	//							(?P<TopLevel Domains>com|org|net|gov|mil|biz|info|mobi|name|aero|jobs|museum|travel|[a-z]{2})
+	//						  )
+	//						  (?P<Port>:[\\d]{1,5})?
+	//						  (?P<Directories>(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?
+	//						  (?P<Query>(?:\\?(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*)*
+	//						  (?P<Anchor>#(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)?
+	//						  $ "; 
+	//*/
+
+
+	//std::string regExStr = "^(?:(?P<protocol>(?:ftp|http|https))\\:\\/\\/|~/|/)?(?:(?P<username>\\w+):(?P<password>\\w+)@)?(?P<host>[-\\w\\d\\.]+)(?::(?P<port>[\\d]{1,5}))?(?P<path>(?:(?:/(?:[-\\w~!$+|.,=]|%[a-f\\d]{2})+)+|/)+|\\?|#)?(?:\\?(?P<query>(?:(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)(?:&(?:[-\\w~!$+|.,*:]|%[a-f\\d{2}])+=(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*)*))*(?:#(?P<anchor>(?:[-\\w~!$+|.,*:=]|%[a-f\\d]{2})*))?$";
+
+	//std::string str( "http://usuario:password@www.google.com:8080/hola/como/te/va/todo/bien.aspx?name=value&name=value&name=value#fer" );
+
+	//smatch what;
+	//sregex rx = sregex::compile(regExStr);
+	//
+	//if(regex_match(str, what, rx))
+	//{
+	//	std::cout << "protocol: " << what["protocol"] << std::endl;
+	//	std::cout << "username: " << what["username"] << std::endl;
+	//	std::cout << "password: " << what["password"] << std::endl;
+	//	std::cout << "host: " << what["host"] << std::endl;
+	//	std::cout << "port: " << what["port"] << std::endl;
+	//	std::cout << "path: " << what["path"] << std::endl;
+	//	std::cout << "query: " << what["query"] << std::endl;
+	//	std::cout << "anchor: " << what["anchor"] << std::endl;
+
+	//	std::cout << "other: " << what["other"] << std::endl;
+
+	//	std::cout << what[0] << std::endl;
+	//	std::cout << what[1] << std::endl;
+	//	std::cout << what[2] << std::endl;
+	//	std::cout << what[3] << std::endl;
+	//	//std::cout << what["world"] << std::endl;
+	//	//std::cout << what["sign"] << std::endl;
+	//}
 
 	//--------------------------------------------------------------------------------------------------------
 
