@@ -2,8 +2,8 @@
 
 //TODO: pasar a proyecto aparte, independiente
 
-#ifndef ABSTRACTACCESSPOINTMANAGER_HPP_
-#define ABSTRACTACCESSPOINTMANAGER_HPP_
+#ifndef AbstractAPManager_HPP_
+#define AbstractAPManager_HPP_
 
 #include <vector>
 
@@ -11,21 +11,22 @@
 
 
 //TODO: cambiarle el nombre a AbstractAPManager
-class AbstractAccessPointManager 
+class AbstractAPManager 
 {
 public:
 	
-	AbstractAccessPointManager()
+	AbstractAPManager()
+		: routerListObtained_(false)
 	{
 	}
 	
-	virtual ~AbstractAccessPointManager() 
+	virtual ~AbstractAPManager() 
 	{
 	}
 
 	virtual void connect() = 0;
-	virtual void parse(const std::string& html) = 0;
-	virtual std::vector<Router> getRouterList() = 0;
+	//virtual void parse(const std::string& html) = 0;
+	virtual std::vector<Router> getRouterList(bool refresh = false) = 0;
 
 	//virtual std::string get_name() 
 	//{
@@ -38,8 +39,8 @@ public:
 	//}
 
 protected:
-	//int age_;
+	bool routerListObtained_;
 
 };
 
-#endif //ABSTRACTACCESSPOINTMANAGER_HPP_
+#endif //AbstractAPManager_HPP_
