@@ -14,7 +14,7 @@
 #include <boost/extension/shared_library.hpp>
 #include <boost/extension/type_map.hpp>
 
-#include "AbstractAccessPointManager.hpp"
+#include "AbstractAPManager.hpp"
 #include "ReflectionManager.hpp"
 #include "Router.hpp"
 
@@ -56,7 +56,7 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //result; }; \
 //const std::string spelling<my_enum>::result = #a_type
 
-typedef boost::scoped_ptr<AbstractAccessPointManager> APPtr;
+typedef boost::scoped_ptr<AbstractAPManager> APPtr;
 
 
 int main(int argc, char** argv) 
@@ -83,11 +83,11 @@ int main(int argc, char** argv)
 		//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
 		std::string sharedLibrary = cfg->typeMapping_[it->accessPointManager_];
 
-		APPtr manager(ReflectionManager::CreateInstance<AbstractAccessPointManager>(sharedLibrary, it->accessPointManager_));
+		APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>(sharedLibrary, it->accessPointManager_));
 		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
 	}
 
-	APPtr manager(ReflectionManager::CreateInstance<AbstractAccessPointManager>("TpLinkManager.dll", "TpLinkManager"));
+	APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>("TpLinkManager.dll", "TpLinkManager"));
 
 
 	manager->connect();

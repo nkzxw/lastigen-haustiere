@@ -16,7 +16,7 @@
 #include <boost/extension/factory.hpp>
 #include <boost/extension/type_map.hpp>
 
-#include "AbstractAccessPointManager.hpp"
+#include "AbstractAPManager.hpp"
 #include "Router.hpp"
 
 #include "base64.hpp"
@@ -31,9 +31,9 @@ using boost::asio::ip::tcp;
 
 using namespace boost::extensions;
 
-////typedef factory<AbstractAccessPointManager, int> FactoryType;
-//typedef factory<AbstractAccessPointManager, void> FactoryType;
-typedef factory<AbstractAccessPointManager> FactoryType;
+////typedef factory<AbstractAPManager, int> FactoryType;
+//typedef factory<AbstractAPManager, void> FactoryType;
+typedef factory<AbstractAPManager> FactoryType;
 typedef std::map<std::string, FactoryType> FactoryMap;
 
 
@@ -64,7 +64,7 @@ void loadFile(std::string& str, const std::string& fileName)
 
 
 
-class TpLinkManager : public AbstractAccessPointManager
+class TpLinkManager : public AbstractAPManager
 {
 public:
 	virtual void connect()
@@ -87,32 +87,12 @@ public:
 
 
 
-	virtual void parse(const std::string& html)
+	virtual std::vector<Router> getRouterList(bool refresh = false)
 	{
-		std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
-		std::string regExFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
-		std::string htmlText;
-		std::string regExText;
-
-		loadFile(htmlText, htmlFile);
-		loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
-
-		boost::regex regularExpression(regExText, boost::regex::normal | boost::regbase::icase);
-
-		boost::sregex_token_iterator it(htmlText.begin(), htmlText.end(), regularExpression);
-		boost::sregex_token_iterator end;
-
-		while(it != end)
+		if (refresh || !routerListObtained_)
 		{
-			std::string strItem = *it++;
-			//std::cout << strItem << std::endl;
-
-			parseItem(strItem);
 		}
-	}
 
-	virtual std::vector<Router> getRouterList()
-	{
 		return routers_;
 		//std::cop
 	}
@@ -207,8 +187,37 @@ protected:
 	}
 
 
+	//virtual void parse(const std::string& html)
+	virtual void parse()
+	{
+		std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
+		std::string regExFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
+		std::string htmlText;
+		std::string regExText;
+
+		loadFile(htmlText, htmlFile);
+		loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
+
+		boost::regex regularExpression(regExText, boost::regex::normal | boost::regbase::icase);
+
+		boost::sregex_token_iterator it(htmlText.begin(), htmlText.end(), regularExpression);
+		boost::sregex_token_iterator end;
+
+		while(it != end)
+		{
+			std::string strItem = *it++;
+			//std::cout << strItem << std::endl;
+
+			parseItem(strItem);
+		}
+	}
+
 	
+
 	std::vector<Router> routers_;
+	std::string htmlObtained_;
+
+
 };
 
 
