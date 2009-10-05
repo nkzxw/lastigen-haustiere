@@ -75,38 +75,46 @@ int main(int argc, char** argv)
 	AppSettings *cfg = cm.getSettings();
 	
 	
-	for (std::vector<AccessPointInformation>::const_iterator it = cfg->accessPoints_.begin(); it != cfg->accessPoints_.end(); ++it)
+	for (std::vector<APInformation>::const_iterator it = cfg->accessPoints_.begin(); it != cfg->accessPoints_.end(); ++it)
 	{
 		std::cout << it->name_ << std::endl;
 		std::cout << it->accessPointManager_ << std::endl;
 
 		//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
 		std::string sharedLibrary = cfg->typeMapping_[it->accessPointManager_];
-
 		APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>(sharedLibrary, it->accessPointManager_));
+
+		manager->initialize(*it);
+
+
+
 		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
+
+
+		//manager->connect();
+		//manager->connectTo(url);
+		//manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
+		std::vector<Router> routers = manager->getRouterList();
+		std::vector<Router> routersWithoutSecurity;
+
+		//SecurityDisabled<Router> sd;
+		//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), std::not1(SecurityDisabled<Router>()) );
+		std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), SecurityDisabled<Router>() );
+		std::sort( routersWithoutSecurity.begin( ), routersWithoutSecurity.end( ), SignalGreater );
+
+		//using namespace boost::lambda;
+		////std::remove_copy_if(s.begin(), s.end(), std::back_inserter(t), _1 == '-');
+		//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), _1 == false );
+
+		std::cout << "-------------------------------------------------" << std::endl;
+		std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
+
+
 	}
 
-	APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>("TpLinkManager.dll", "TpLinkManager"));
+	//APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>("TpLinkManager.dll", "TpLinkManager"));
 
 
-	//manager->connect();
-	//manager->connectTo(url);
-	//manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
-	std::vector<Router> routers = manager->getRouterList();
-	std::vector<Router> routersWithoutSecurity;
-
-	//SecurityDisabled<Router> sd;
-	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), std::not1(SecurityDisabled<Router>()) );
-	std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), SecurityDisabled<Router>() );
-	std::sort( routersWithoutSecurity.begin( ), routersWithoutSecurity.end( ), SignalGreater );
-
-	//using namespace boost::lambda;
-	////std::remove_copy_if(s.begin(), s.end(), std::back_inserter(t), _1 == '-');
-	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), _1 == false );
-
-	std::cout << "-------------------------------------------------" << std::endl;
-	std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
 
 
 	std::cin.sync();

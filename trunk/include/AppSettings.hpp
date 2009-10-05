@@ -1,6 +1,8 @@
 // http://landheer-cieslak.com/wordpress/?p=130
 // Se generó archivo <boost/serialization/unordered_map.hpp>
 
+//TODO: cambiar nombre de archivo
+
 #ifndef APPSETTINGS_HPP
 #define APPSETTINGS_HPP
 
@@ -26,6 +28,8 @@
 //#include <boost/archive/text_oarchive.hpp>
 //#include <boost/archive/text_iarchive.hpp>
 
+#include "Router.hpp"
+
 using namespace boost::serialization;
 
 typedef boost::unordered_map<std::string, std::string> MapType;
@@ -33,14 +37,15 @@ typedef boost::unordered_map<std::string, std::string> MapType;
 
 //TODO: ver de hacerla heredar de alguna clase comun... 
 //TODO: ... o algo asi como dividirla en Sections o similar... (generica)
-class AccessPointInformation
+//TODO: poner esta clase en otro archivo, crear un proyecto aparte con para la configuracion
+class APInformation
 {
 public:
-	AccessPointInformation()
+	APInformation()
 		: name_(""), accessPointManager_(""), routerListUri_(""), useRouterUri_(""), httpBasicCredentials_("")
 	{}
 
-	AccessPointInformation(const std::string& name, const std::string& accessPointManager, const std::string& routerListUri, const std::string& useRouterUri, const std::string& httpBasicCredentials)
+	APInformation(const std::string& name, const std::string& accessPointManager, const std::string& routerListUri, const std::string& useRouterUri, const std::string& httpBasicCredentials)
 		: name_(name), accessPointManager_(accessPointManager), routerListUri_(routerListUri), useRouterUri_(useRouterUri), httpBasicCredentials_(httpBasicCredentials)
 	{}
 
@@ -109,6 +114,7 @@ protected:
 	{
 		ar	& make_nvp("AccessPoints", accessPoints_)
 			& make_nvp("TypeMapping", typeMapping_)
+			& make_nvp("KnownRouters", knownRouters_)
 			;
 	}
 
@@ -118,6 +124,7 @@ protected:
 		
 		ar	& make_nvp("AccessPoints", accessPoints_)
 			& make_nvp("TypeMapping", typeMapping_)
+			& make_nvp("KnownRouters", knownRouters_)
 			;
 
 		isDefault_ = version < 2;
@@ -132,13 +139,15 @@ protected:
 public: //protected:
 
 	MapType typeMapping_;
-	std::vector<AccessPointInformation> accessPoints_;
+	std::vector<APInformation> accessPoints_;
 
+	//TODO: cambiar vector por map
+	std::vector<Router> knownRouters_;	//TODO: poner una prioridad o un nivel de preferencia
 	bool isDefault_;
 };
 
 
 BOOST_CLASS_VERSION(AppSettings, 0);
-BOOST_CLASS_VERSION(AccessPointInformation, 0);
+BOOST_CLASS_VERSION(APInformation, 0);
 
 #endif // APPSETTINGS_HPP

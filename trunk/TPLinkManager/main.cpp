@@ -17,8 +17,8 @@ using namespace boost::extensions;
 
 ////typedef factory<AbstractAPManager, int> FactoryType;
 //typedef factory<AbstractAPManager, void> FactoryType;
-//typedef factory<AbstractAPManager> FactoryType;
-typedef boost::extensions::factory<AbstractAPManager, AccessPointInformation> FactoryType;
+//typedef boost::extensions::factory<AbstractAPManager, APInformation> FactoryType;
+typedef boost::extensions::factory<AbstractAPManager> FactoryType;
 typedef std::map<std::string, FactoryType> FactoryMap;
 
 
