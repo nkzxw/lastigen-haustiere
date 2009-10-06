@@ -42,11 +42,11 @@ class APInformation
 {
 public:
 	APInformation()
-		: name_(""), accessPointManager_(""), routerListUri_(""), useRouterUri_(""), httpBasicCredentials_("")
+		: name_(""), accessPointManager_(""), protocol_(""), host_(""), httpBasicCredentials_("")
 	{}
 
-	APInformation(const std::string& name, const std::string& accessPointManager, const std::string& routerListUri, const std::string& useRouterUri, const std::string& httpBasicCredentials)
-		: name_(name), accessPointManager_(accessPointManager), routerListUri_(routerListUri), useRouterUri_(useRouterUri), httpBasicCredentials_(httpBasicCredentials)
+	APInformation(const std::string& name, const std::string& accessPointManager, const std::string& protocol, const std::string& host, const std::string& httpBasicCredentials)
+		: name_(name), accessPointManager_(accessPointManager), protocol_(protocol), host_(host), httpBasicCredentials_(httpBasicCredentials)
 	{}
 
 
@@ -60,8 +60,8 @@ protected:
 		//TODO: cambiar los nombres en el xml
 		ar	& BOOST_SERIALIZATION_NVP(name_)
 			& BOOST_SERIALIZATION_NVP(accessPointManager_)
-			& BOOST_SERIALIZATION_NVP(routerListUri_)
-			& BOOST_SERIALIZATION_NVP(useRouterUri_)
+			& BOOST_SERIALIZATION_NVP(protocol_)
+			& BOOST_SERIALIZATION_NVP(host_)
 			& BOOST_SERIALIZATION_NVP(httpBasicCredentials_)
 			;
 		//ar & make_nvp("id", id_);
@@ -72,8 +72,8 @@ protected:
 	{
 		ar	& BOOST_SERIALIZATION_NVP(name_)
 			& BOOST_SERIALIZATION_NVP(accessPointManager_)
-			& BOOST_SERIALIZATION_NVP(routerListUri_)
-			& BOOST_SERIALIZATION_NVP(useRouterUri_)
+			& BOOST_SERIALIZATION_NVP(protocol_)
+			& BOOST_SERIALIZATION_NVP(host_)
 			& BOOST_SERIALIZATION_NVP(httpBasicCredentials_)
 			;
 
@@ -86,10 +86,18 @@ public: //TODO: ver de hacer metodos para acceder a los datos
 	std::string name_;
 	std::string accessPointManager_;
 
+	////TODO: separar lo que es protocolo y direccion IP de las rutas para acceder a cada funcionalidad.
+	////TODO: las rutas para cada funcionalidad son rutas internas de cada AP y no deberían ser configurables por el usuario... es configuracion, pero a otro nivel.
+	//std::string routerListUri_;
+	//std::string useRouterUri_;
+
+
 	//TODO: separar lo que es protocolo y direccion IP de las rutas para acceder a cada funcionalidad.
 	//TODO: las rutas para cada funcionalidad son rutas internas de cada AP y no deberían ser configurables por el usuario... es configuracion, pero a otro nivel.
-	std::string routerListUri_;
-	std::string useRouterUri_;
+	std::string protocol_;
+	std::string host_;
+	//TODO: port
+
 	std::string httpBasicCredentials_;
 	//TODO: otros datos
 };

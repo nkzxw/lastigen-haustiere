@@ -51,20 +51,7 @@ public:
 	//TODO: manejo de excepciones
 	virtual std::string openRead(const net::Uri& uri)
 	{
-		//std::string protocol;
-		//std::string host;
-		//std::string path;
-		//parseUri(uri, protocol, host, path);
-
-		////TODO: eliminar
-		//protocol = "http";
-		//host = "192.168.0.254";
-		//path = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-
-		////host = "www.clarin.com.ar";
-		////path = "/";
-		////path = "/diario/2009/09/28/um/m-02007915.htm";
-
+		//TODO: solo debe soportar protocolos http o https... (por ahora solo http)
 
 		try
 		{
@@ -73,7 +60,7 @@ public:
 			// Get a list of endpoints corresponding to the server name.
 			tcp::resolver resolver(io_service);
 			
-			tcp::resolver::query query(uri.host, uri.protocol);
+			tcp::resolver::query query(uri.getHost(), uri.getProtocol());
 			tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
 			tcp::resolver::iterator end;
 
@@ -96,9 +83,7 @@ public:
 			boost::asio::streambuf request;
 			std::ostream request_stream(&request);
 
-			//TODO: agregar tambien el query concatenado al path...
-			request_stream << "GET " << uri.path << "?" << uri.query << " HTTP/1.1\r\n";
-
+			request_stream << "GET " << uri.getPathAndQuery() << " HTTP/1.1\r\n";
 			
 
 			//request_stream << "Host: " << serverIp << "\r\n";

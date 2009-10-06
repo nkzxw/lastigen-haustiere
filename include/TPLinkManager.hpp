@@ -79,19 +79,30 @@ public:
 			routers_.clear();
 			HttpClient client;
 
+			/*
+			http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid			
+			*/
+
 			//std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-			std::string uriStr = this->information_.routerListUri_;
+			//std::string uriStr = this->information_.routerListUri_;
+
+			net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery_);
 
 			//client.addHeader("Host", "www.google.com");
 			//client.addHeader("Accept", "*/*");
 			//client.addHeader("Connection", "close");
-			//std::string usrAndPwd = "admin:candombe";	//TODO: 
-			std::string usrAndPwd = this->information_.httpBasicCredentials_;
-			std::string credentials = base64_encode(usrAndPwd);
-			client.addHeader("Authorization", "Basic " + credentials);
-			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
 
-			std::string html = client.openRead(uriStr);
+			if (information_.httpBasicCredentials_.size() > 0)
+			{
+				//std::string usrAndPwd = "admin:candombe";	//TODO: 
+				std::string usrAndPwd = this->information_.httpBasicCredentials_;
+				std::string credentials = base64_encode(usrAndPwd);
+				client.addHeader("Authorization", "Basic " + credentials);
+				//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+			}
+
+			//std::string html = client.openRead(uriStr);
+			std::string html = client.openRead(uri);
 			this->parseRouterList(html);
 
 			routerListObtained_ = true;
@@ -105,7 +116,10 @@ public:
 	{
 		HttpClient client;
 
-		std::string uriStr = this->information_.useRouterUri_;
+		//std::string uriStr = this->information_.useRouterUri_;
+		std::string query = connectToQueryFirst_ + router.bssid_ + connectToQuerySecond_;
+		net::Uri uri(this->information_.protocol_, this->information_.host_, query);
+
 
 		//client.addHeader("Host", "www.google.com");
 		//client.addHeader("Accept", "*/*");
@@ -116,7 +130,8 @@ public:
 		client.addHeader("Authorization", "Basic " + credentials);
 		//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
 
-		std::string html = client.openRead(uriStr);
+		//std::string html = client.openRead(uriStr);
+		std::string html = client.openRead(uri);
 		std::cout << html << std::endl;
 	}
 
@@ -271,7 +286,16 @@ protected:
 
 	
 	std::vector<Router> routers_;
+
+	static const std::string routerListQuery_;       // "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+	static const std::string connectToQueryFirst_;   // "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid="
+	static const std::string connectToQuerySecond_;  // "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save"
+
 };
+
+const std::string TpLinkManager::routerListQuery_ = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+const std::string TpLinkManager::connectToQueryFirst_ = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
+const std::string TpLinkManager::connectToQuerySecond_ = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
 
 
 #endif //TPLINKMANAGER_HPP_
