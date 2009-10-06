@@ -76,8 +76,8 @@ public:
 		//TODO: crear un typedef para std::vector<APInformation>
 		for (std::vector<APInformation>::const_iterator it = settings.accessPoints_.begin(); it != settings.accessPoints_.end(); ++it)
 		{
-			std::cout << it->name_ << std::endl;
-			std::cout << it->accessPointManager_ << std::endl;
+			//std::cout << it->name_ << std::endl;
+			//std::cout << it->accessPointManager_ << std::endl;
 
 			//TODO: poner un metodo en la clase AppSettings para obtener los mappings...
 			//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
@@ -102,8 +102,11 @@ public:
 
 		for (MapType::const_iterator it = accessPointManagers_.begin(); it != accessPointManagers_.end(); ++it)
 		{
-			std::cout << it << std::endl;
-			std::cout << *it << std::endl;
+			
+			std::cout << it->first << std::endl;
+			std::cout << it->second->getName() << std::endl;
+			//std::cout << it->second->name_ << std::endl;
+			//std::cout << *it << std::endl;
 		}
 
 
@@ -117,10 +120,10 @@ public:
 		//}
 
 		
-		AbstractAPManager *tempAPM; // = accessPointManagers_.at(0);
+		//AbstractAPManager *tempAPM; // = accessPointManagers_.at(0);
 
-		//printRouterList(manager.get());
-		printRouterList(tempAPM);
+		////printRouterList(manager.get());
+		//printRouterList(tempAPM);
 
 
 		//int selection;
