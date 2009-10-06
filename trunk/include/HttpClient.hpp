@@ -32,6 +32,8 @@ public:
 	//typedef std::map<std::string, std::string> HeaderMap;
 	typedef boost::unordered_map<std::string, std::string> HeaderMap;
 
+
+	//TODO: ver si se crea una clase aparte para los Headers.
 	virtual void addHeader(const std::string& key, const std::string& value)
 	{
 		headers_[key] = value;
@@ -83,6 +85,7 @@ public:
 			boost::asio::streambuf request;
 			std::ostream request_stream(&request);
 
+			//TODO: el protocolo y la version podrian ir parametrizadas...
 			request_stream << "GET " << uri.getPathAndQuery() << " HTTP/1.1\r\n";
 			
 
