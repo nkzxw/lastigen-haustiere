@@ -7,6 +7,7 @@
 //#include <map>
 #include <ostream>
 #include <string>
+#include <sstream>
 //#include <vector>
 
 
@@ -38,12 +39,17 @@ public:
 
 
 
-	virtual void openRead(const std::string& uriStr)
+	virtual std::string openRead(const std::string& uriStr)
 	{
-		openRead(net::Uri(uriStr));
+		//TODO: manejo de excepciones al crear la Uri
+		//TODO: manejo de excepciones del openRead
+
+		return openRead(net::Uri(uriStr));
 	}
 
-	virtual void openRead(const net::Uri& uri)
+	//TODO: ver de hacer más performante, evitar la copia
+	//TODO: manejo de excepciones
+	virtual std::string openRead(const net::Uri& uri)
 	{
 		//std::string protocol;
 		//std::string host;
@@ -91,7 +97,7 @@ public:
 			std::ostream request_stream(&request);
 
 			//TODO: agregar tambien el query concatenado al path...
-			request_stream << "GET " << uri.path << " HTTP/1.1\r\n";
+			request_stream << "GET " << uri.path << "?" << uri.query << " HTTP/1.1\r\n";
 
 			
 
@@ -130,14 +136,14 @@ public:
 			{
 				std::cout << "Invalid response\n";
 				//return 1;
-				return; 
+				return "";
 			}
 
 			if (status_code != 200)
 			{
 				std::cout << "Response returned with status code " << status_code << "\n";
 				//return 1;
-				return; 
+				return ""; 
 			}
 
 			// Read the response headers, which are terminated by a blank line.
@@ -147,28 +153,39 @@ public:
 			std::string header;
 			while (std::getline(response_stream, header) && header != "\r")
 			{
-				std::cout << header << "\n";
+				//TODO: 
+				//std::cout << header << "\n";
 				addResponseHeader(header);
 			}
 			
-			std::cout << "\n";
+			//std::cout << "\n";
+			//std::cout << "-------------------- FFFFFFFFFF---------------" << "\n";
+
+
+			std::stringstream bodyText;
 
 			// Write whatever content we already have to output.
 			if (response.size() > 0)
 			{
-				std::cout << &response;
+				bodyText <<  &response;
+				//std::cout << &response;
+				
 			}
 
 			// Read until EOF, writing data to output as we go.
 			while (boost::asio::read(socket, response, boost::asio::transfer_at_least(1), error))
 			{
-				std::cout << &response;
+				bodyText << &response;
+				//std::cout << &response;
 			}
 			
 			if (error != boost::asio::error::eof)
 			{
 				throw boost::system::system_error(error);
 			}
+
+			//std::cout << bodyText.str();
+			return bodyText.str();
 		}
 		catch (std::exception& e)
 		{
@@ -176,7 +193,7 @@ public:
 		}
 
 		//return 0;
-		return;
+		return "";
 	}
 
 protected:
