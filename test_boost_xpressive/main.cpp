@@ -19,33 +19,33 @@ int main()
 
 	net::Uri uri2 = uri1;
 	
-	if (uri1.valid)
+	if (uri1.isValid())
 	{
-		std::cout << "completeUri: " << uri1.completeUri << std::endl;
-		std::cout << "originalUri: " << uri1.originalUri << std::endl;
-		std::cout << "protocol: " << uri1.protocol << std::endl;
-		std::cout << "username: " << uri1.username << std::endl;
-		std::cout << "password: " << uri1.password << std::endl;
-		std::cout << "host: " << uri1.host << std::endl;
-		std::cout << "port: " << uri1.port << std::endl;
-		std::cout << "path: " << uri1.path << std::endl;
-		std::cout << "query: " << uri1.query << std::endl;
-		std::cout << "anchor: " << uri1.anchor << std::endl;
+		std::cout << "completeUri: " << uri1.getCompleteUri() << std::endl;
+		std::cout << "originalUri: " << uri1.getOriginalUri() << std::endl;
+		std::cout << "protocol: " << uri1.getProtocol() << std::endl;
+		std::cout << "username: " << uri1.getUsername() << std::endl;
+		std::cout << "password: " << uri1.getPassword() << std::endl;
+		std::cout << "host: " << uri1.getHost() << std::endl;
+		std::cout << "port: " << uri1.getPort() << std::endl;
+		std::cout << "path: " << uri1.getPath() << std::endl;
+		std::cout << "query: " << uri1.getQuery() << std::endl;
+		std::cout << "anchor: " << uri1.getAnchor() << std::endl;
 	}
 
 
 	if (uri2.valid)
 	{
-		std::cout << "completeUri: " << uri2.completeUri << std::endl;
-		std::cout << "originalUri: " << uri2.originalUri << std::endl;
-		std::cout << "protocol: " << uri2.protocol << std::endl;
-		std::cout << "username: " << uri2.username << std::endl;
-		std::cout << "password: " << uri2.password << std::endl;
-		std::cout << "host: " << uri2.host << std::endl;
-		std::cout << "port: " << uri2.port << std::endl;
-		std::cout << "path: " << uri2.path << std::endl;
-		std::cout << "query: " << uri2.query << std::endl;
-		std::cout << "anchor: " << uri2.anchor << std::endl;
+		std::cout << "completeUri: " << uri2.getCompleteUri() << std::endl;
+		std::cout << "originalUri: " << uri2.getOriginalUri() << std::endl;
+		std::cout << "protocol: " << uri2.getProtocol() << std::endl;
+		std::cout << "username: " << uri2.getUsername() << std::endl;
+		std::cout << "password: " << uri2.getPassword() << std::endl;
+		std::cout << "host: " << uri2.getHost() << std::endl;
+		std::cout << "port: " << uri2.getPort() << std::endl;
+		std::cout << "path: " << uri2.getPath() << std::endl;
+		std::cout << "query: " << uri2.getQuery() << std::endl;
+		std::cout << "anchor: " << uri2.getAnchor() << std::endl;
 	}
 
 	//--------------------------------------------------------------------------------------------------------
