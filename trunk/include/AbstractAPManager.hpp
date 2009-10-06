@@ -45,6 +45,11 @@ public:
 	virtual Router getConnectedRouter() const = 0;		//TODO: ver modo de refrescar los datos
 
 
+	std::string getName() const
+	{
+		return information_.name_;
+	}
+
 	//virtual std::string get_name() 
 	//{
 	//	return "A generic AbstractParser";
@@ -56,6 +61,7 @@ public:
 	//}
 
 protected:
+	//std::string name_;
 	bool routerListObtained_;
 	APInformation information_;
 
