@@ -64,10 +64,16 @@ void printRouterList(AbstractAPManager *manager)
 class SmartNetworkManager
 {
 public:
+	typedef boost::ptr_unordered_map<std::string, AbstractAPManager> MapType;
+	//boost::ptr_vector<AbstractAPManager> accessPointManagers_;
+	//boost::ptr_unordered_map<std::string, AbstractAPManager> accessPointManagers_;
+	//boost::ptr_map<std::string, AbstractAPManager> accessPointManagers_;
+
 
 	SmartNetworkManager(const AppSettings& settings)
 	{
 
+		//TODO: crear un typedef para std::vector<APInformation>
 		for (std::vector<APInformation>::const_iterator it = settings.accessPoints_.begin(); it != settings.accessPoints_.end(); ++it)
 		{
 			std::cout << it->name_ << std::endl;
@@ -87,37 +93,53 @@ public:
 			temp->initialize(*it);
 
 			//accessPointManagers_.push_back(temp);
-			accessPointManagers_[it->name_] = temp;
+			//accessPointManagers_[it->name_] = temp;
 
-
-			//for (int i = 0; i < 100; ++i)
-			//{
-			//	printRouterList(manager.get());
-
-			//	Sleep(2000);
-			//}
-
-
-			//printRouterList(manager.get());
-
-			//int selection;
-
-			//std::cout << "Elija el Router a utilizar: ";
-			//std::cin >> selection;
-
-
-			//std::cout << "El router seleccionado es: " << manager->getRouterList()[selection].bssid_ << std::endl;
-
-			//manager->connectTo(manager->getRouterList()[selection]);
-
+			std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
+			accessPointManagers_.insert(tempStr, temp);
 
 		}
+
+		for (MapType::const_iterator it = accessPointManagers_.begin(); it != accessPointManagers_.end(); ++it)
+		{
+			std::cout << it << std::endl;
+			std::cout << *it << std::endl;
+		}
+
+
+		//accessPointManagers_.insert(const_cast<std::string>(it->name_), temp);
+
+		//for (int i = 0; i < 100; ++i)
+		//{
+		//	printRouterList(manager.get());
+
+		//	Sleep(2000);
+		//}
+
+		
+		AbstractAPManager *tempAPM; // = accessPointManagers_.at(0);
+
+		//printRouterList(manager.get());
+		printRouterList(tempAPM);
+
+
+		//int selection;
+
+		//std::cout << "Elija el Router a utilizar: ";
+		//std::cin >> selection;
+
+
+		//std::cout << "El router seleccionado es: " << manager->getRouterList()[selection].bssid_ << std::endl;
+
+		//manager->connectTo(manager->getRouterList()[selection]);
+
+
+		
 
 	}
 
 protected:
-	//boost::ptr_vector<AbstractAPManager> accessPointManagers_;
-	boost::ptr_unordered_map<std::string, AbstractAPManager> accessPointManagers_;
+	MapType accessPointManagers_;
 
 };
 
