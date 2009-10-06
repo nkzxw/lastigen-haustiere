@@ -16,7 +16,8 @@ namespace TestWebClient
                 string sUri = "http://www.google.com.ar/directorio/subdirectorio?variable1=valor1;variable2=valor2";
 
                 System.Uri myUri = new System.Uri(sUri);
-                
+                //System.Uri myUri = new System.Uri(
+            
                 HttpWebRequest HttpWRequest = (HttpWebRequest)WebRequest.Create(myUri);
 
                 string sQuery;
