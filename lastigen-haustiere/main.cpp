@@ -58,13 +58,11 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //result; }; \
 //const std::string spelling<my_enum>::result = #a_type
 
+//TODO: ver diferencias entre auto_ptr y scoped_ptr
 typedef boost::scoped_ptr<AbstractAPManager> APPtr;
 
 void printRouterList(AbstractAPManager *manager)
 {
-	//manager->connect();
-	//manager->connectTo(url);
-	//manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
 	std::vector<Router> routers = manager->getRouterList();
 	std::vector<Router> routersWithoutSecurity;
 
@@ -92,6 +90,10 @@ int main(int argc, char** argv)
 	//	4. El manager debe estar en condiciones de pasar una lista limpia de RoutersRemotos
 	//	5. El cliente puede solicitarle al Manager utilizar determinado RouterRemoto.
 	//*/
+
+
+	//TODO: probar scoped_ptr y shared_ptr con puntero a memoria alocada en el Stack..
+
 
 	
 	ConfigManager<AppSettings> cm(argv[0]);

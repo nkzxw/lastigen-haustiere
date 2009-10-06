@@ -7,9 +7,16 @@
 
 #include <vector>
 
-#include "appsettings.hpp"
+#include "AppSettings.hpp"
 #include "Router.hpp"
 
+
+enum APStatus
+{
+	Disconnected = 0,
+	Connected = 1,
+	NotWorking = 2
+};
 
 class AbstractAPManager 
 {
@@ -30,13 +37,9 @@ public:
 	//{
 	//}
 
-	//virtual void connect() = 0;
-	//virtual void parse(const std::string& html) = 0;
 	virtual std::vector<Router> getRouterList(bool refresh = false) = 0;	//TODO: ver modo de refrescar los datos
 	virtual void connectTo(const Router& router) const = 0;
-
-	virtual bool isConnected() const = 0;				//TODO: ver modo de refrescar los datos
-	
+	virtual APStatus getStatus() const = 0;				//TODO: ver modo de refrescar los datos
 	
 	//TODO: ver de retornar una referencia o puntero del Router
 	virtual Router getConnectedRouter() const = 0;		//TODO: ver modo de refrescar los datos
