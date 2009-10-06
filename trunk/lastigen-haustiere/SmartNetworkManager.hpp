@@ -43,7 +43,7 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //typedef boost::scoped_ptr<AbstractAPManager> APPtr;
 
 
-void printRouterList(AbstractAPManager *manager)
+void printRouterList(const AbstractAPManager *manager)
 {
 	std::vector<Router> routers = manager->getRouterList();
 	std::vector<Router> routersWithoutSecurity;
@@ -105,6 +105,7 @@ public:
 			
 			std::cout << it->first << std::endl;
 			std::cout << it->second->getName() << std::endl;
+			printRouterList(it->second);
 			//std::cout << it->second->name_ << std::endl;
 			//std::cout << *it << std::endl;
 		}

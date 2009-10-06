@@ -53,7 +53,7 @@ void loadFile(std::string& str, const std::string& fileName)
 }
 
 
-
+//TODO: establecer un proceso automatico de refresco de la lista de routers... es necesario??????
 
 class TpLinkManager : public AbstractAPManager
 {
@@ -63,12 +63,20 @@ public:
 	virtual void initialize(const APInformation& information)
 	{
 		this->information_ = information;
+		this->refreshRouterList();
 	}
 
-	virtual std::vector<Router> getRouterList(bool refresh = false)
+	//TODO: ver como hacer para refrescar los datos utilizando la variable refresh y que el metodo pueda seguir siendo CONST
+	//TODO: ver de retornar el vector de forma eficiente para evitar la copia...
+	virtual std::vector<Router> getRouterList(bool refresh = false) const
 	{
-		if (refresh || !routerListObtained_)
-		{
+		return this->routers_;
+	}
+
+	virtual void refreshRouterList()
+	{
+		//if (refresh || !routerListObtained_)
+		//{
 			routers_.clear();
 			HttpClient client;
 
@@ -99,9 +107,8 @@ public:
 			this->parseRouterList(html);
 
 			routerListObtained_ = true;
-		}
+		//}
 
-		return routers_;
 	}
 
 
@@ -231,7 +238,7 @@ protected:
 		//boost::split( splitVec, text, boost::is_any_of(",") ); 
 	}
 
-	virtual void parseRouterList(const std::string& htmlText) 
+	virtual void parseRouterList(const std::string& htmlText)
 	{
 
 		//TODO: esta expresion regular, agregarla... o bien, como Xpressive->Static o bien al archivo de configuracion general.

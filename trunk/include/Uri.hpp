@@ -90,7 +90,7 @@ public:
 		return protocol_;
 	}
 
-	std::string getUsername_() const
+	std::string getUsername() const
 	{
 		return username_;
 	}
