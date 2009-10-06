@@ -85,6 +85,9 @@ protected:
 public: //TODO: ver de hacer metodos para acceder a los datos
 	std::string name_;
 	std::string accessPointManager_;
+
+	//TODO: separar lo que es protocolo y direccion IP de las rutas para acceder a cada funcionalidad.
+	//TODO: las rutas para cada funcionalidad son rutas internas de cada AP y no deberían ser configurables por el usuario... es configuracion, pero a otro nivel.
 	std::string routerListUri_;
 	std::string useRouterUri_;
 	std::string httpBasicCredentials_;

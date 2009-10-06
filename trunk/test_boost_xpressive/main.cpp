@@ -14,10 +14,10 @@ int main()
 
 	//--------------------------------------------------------------------------------------------------------
 
-	net::uri uri1("http://usuario:password@www.google.com:8080/hola/como/te/va/todo/bien.aspx?name=value&name=value&name=value#fer");
+	net::Uri uri1("http://usuario:password@www.google.com:8080/hola/como/te/va/todo/bien.aspx?name=value&name=value&name=value#fer");
 	//uri uri("pepe");
 
-	net::uri uri2 = uri1;
+	net::Uri uri2 = uri1;
 	
 	if (uri1.valid)
 	{

@@ -22,6 +22,8 @@
 #include "ConfigManager.hpp"
 
 
+#include "windows.h" //TODO: eliminar
+
 
 //bool SecurityDisabled( Router router )
 //{ 
@@ -58,6 +60,27 @@ bool SignalGreater ( Router elem1, Router elem2 )
 
 typedef boost::scoped_ptr<AbstractAPManager> APPtr;
 
+void printRouterList(AbstractAPManager *manager)
+{
+	//manager->connect();
+	//manager->connectTo(url);
+	//manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
+	std::vector<Router> routers = manager->getRouterList();
+	std::vector<Router> routersWithoutSecurity;
+
+	//SecurityDisabled<Router> sd;
+	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), std::not1(SecurityDisabled<Router>()) );
+	std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), SecurityDisabled<Router>() );
+	std::sort( routersWithoutSecurity.begin( ), routersWithoutSecurity.end( ), SignalGreater );
+
+	//using namespace boost::lambda;
+	////std::remove_copy_if(s.begin(), s.end(), std::back_inserter(t), _1 == '-');
+	//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), _1 == false );
+
+	std::cout << "--------------------------------------------------------------------------------------------------" << std::endl;
+	std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
+}
+
 
 int main(int argc, char** argv) 
 {
@@ -81,33 +104,31 @@ int main(int argc, char** argv)
 		std::cout << it->accessPointManager_ << std::endl;
 
 		//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
+		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
 		std::string sharedLibrary = cfg->typeMapping_[it->accessPointManager_];
 		APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>(sharedLibrary, it->accessPointManager_));
 
 		manager->initialize(*it);
 
+		//for (int i = 0; i < 100; ++i)
+		//{
+		//	printRouterList(manager.get());
+
+		//	Sleep(2000);
+		//}
 
 
-		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
+		printRouterList(manager.get());
+
+		int selection;
+
+		std::cout << "Elija el Router a utilizar: ";
+		std::cin >> selection;
 
 
-		//manager->connect();
-		//manager->connectTo(url);
-		//manager->parse("<html></html>"); // TODO: No tiene sentido, es temporal, hasta que tengamos el proceso que obtiene el html de la pagina...
-		std::vector<Router> routers = manager->getRouterList();
-		std::vector<Router> routersWithoutSecurity;
+		std::cout << "El router seleccionado es: " << manager->getRouterList()[selection].bssid_ << std::endl;
 
-		//SecurityDisabled<Router> sd;
-		//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), std::not1(SecurityDisabled<Router>()) );
-		std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), SecurityDisabled<Router>() );
-		std::sort( routersWithoutSecurity.begin( ), routersWithoutSecurity.end( ), SignalGreater );
-
-		//using namespace boost::lambda;
-		////std::remove_copy_if(s.begin(), s.end(), std::back_inserter(t), _1 == '-');
-		//std::remove_copy_if (routers.begin(), routers.end(), std::back_inserter(routersWithoutSecurity), _1 == false );
-
-		std::cout << "-------------------------------------------------" << std::endl;
-		std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
+		manager->connectTo(manager->getRouterList()[selection]);
 
 
 	}
