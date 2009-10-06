@@ -10,7 +10,6 @@
 #include <sstream>
 //#include <vector>
 
-
 #include <boost/unordered_map.hpp>
 #include <boost/asio.hpp>
 //#include <boost/algorithm/string/split.hpp>
@@ -18,11 +17,10 @@
 #include <boost/algorithm/string/finder.hpp>
 #include <boost/algorithm/string/regex.hpp>
 
-
 #include "Uri.hpp"
 
-using boost::asio::ip::tcp;
 
+using boost::asio::ip::tcp;
 
 //TODO: namespaces
 class HttpClient
@@ -190,7 +188,7 @@ protected:
 	{
 	}
 
-
+	//TODO: ver si se crea una clase aparte para los Headers.
 	virtual void addResponseHeader(const std::string& header)
 	{
 		//TODO: ver como hacer split cuyo delimitador sea un string completo...

@@ -14,7 +14,6 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
 
-
 #include <boost/extension/extension.hpp>
 #include <boost/extension/factory.hpp>
 #include <boost/extension/type_map.hpp>
@@ -26,13 +25,7 @@
 #include "HttpClient.hpp"
 
 
-
-
-
 using boost::asio::ip::tcp;
-
-//using namespace boost::extensions;
-
 
 
 void loadFile(std::string& str, std::istream& inputStream)
@@ -135,10 +128,10 @@ public:
 		std::cout << html << std::endl;
 	}
 
-	virtual bool isConnected() const
+	virtual APStatus getStatus() const
 	{
 		//TODO:
-		return false;
+		return Disconnected;
 	}
 	
 	virtual Router getConnectedRouter() const
@@ -152,6 +145,7 @@ protected:
 	{
 		//typedef std::vector<std::string> split_vector_type;
 		
+		//TODO: usar boost::xpressive y Static RegEx 
 		std::string regExText = "\"[^\"]*\"|\\d{1,}";
 
 		boost::regex regularExpression(regExText, boost::regex::normal | boost::regbase::icase);
@@ -237,38 +231,23 @@ protected:
 		//boost::split( splitVec, text, boost::is_any_of(",") ); 
 	}
 
-
-	virtual void connect()
-	{
-		HttpClient client;
-
-		std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-		client.addHeader("Host", "www.google.com");
-		client.addHeader("Accept", "*/*");
-		client.addHeader("Connection", "close");
-		std::string usrAndPwd = "admin:candombe";	//TODO: 
-		std::string credentials = base64_encode(usrAndPwd);
-		client.addHeader("Authorization", "Basic " + credentials);
-		//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-
-		//TODO: de donde sacamos esta URL ????
-		client.openRead(uriStr);
-	}
-
-
-
-
 	virtual void parseRouterList(const std::string& htmlText) 
 	{
-		////std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
-		////std::string regExFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
-		//std::string htmlFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
-		std::string regExFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
-		//std::string htmlText;
-		std::string regExText;
+
+		//TODO: esta expresion regular, agregarla... o bien, como Xpressive->Static o bien al archivo de configuracion general.
+
+		//////std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
+		//////std::string regExFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
+		////std::string htmlFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
+		//std::string regExFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
+		////std::string htmlText;
+		//std::string regExText;
+
+		std::string regExText = "\"[^\"]*\", \"[^\"]*\", \"[^\"]*\", \d{1,}, \d{1,}, ";
+
 
 		//loadFile(htmlText, htmlFile);
-		loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
+		//loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
 
 		boost::regex regularExpression(regExText, boost::regex::normal | boost::regbase::icase);
 
@@ -293,6 +272,7 @@ protected:
 
 };
 
+//TODO: ver si estos valores van a ir harcodeados en el binario o bien en una seccion aparte del archivo de configuracion...
 const std::string TpLinkManager::routerListQuery_ = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 const std::string TpLinkManager::connectToQueryFirst_ = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
 const std::string TpLinkManager::connectToQuerySecond_ = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";

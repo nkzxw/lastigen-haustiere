@@ -30,7 +30,6 @@ public:
 	explicit Uri(const std::string& protocol, const std::string& host, const std::string& pathAndQuery)
 		: valid_(false)
 	{
-		//TODO: ver cuando agregar la barra antes del query... solo agregar si el primer caracter no es barra..
 		std::string uriStr = protocol + "://" + host;
 		
 		if (pathAndQuery.size() > 0 && pathAndQuery[0] == '/')
@@ -63,7 +62,7 @@ public:
 	}
 
 
-	//TODO: constructor copia, assig op, etc...
+	//TODO: assig op, etc...
 
 
 	std::string getPathAndQuery() const
