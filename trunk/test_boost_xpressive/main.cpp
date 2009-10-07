@@ -34,7 +34,7 @@ int main()
 	}
 
 
-	if (uri2.valid)
+	if ( uri2.isValid() )
 	{
 		std::cout << "completeUri: " << uri2.getCompleteUri() << std::endl;
 		std::cout << "originalUri: " << uri2.getOriginalUri() << std::endl;

@@ -60,10 +60,14 @@ class TpLinkManager : public AbstractAPManager
 public:
 
 	//TODO: ver como hacer esto en el constructor. El problema está en la clase ReflectionManager
-	virtual void initialize(const APInformation& information)
+	virtual void initialize(const APInformation& information, bool refresh = false)
 	{
 		this->information_ = information;
-		this->refreshRouterList();
+
+		if (refresh)
+		{
+			this->refreshRouterList();
+		}
 	}
 
 	//TODO: ver como hacer para refrescar los datos utilizando la variable refresh y que el metodo pueda seguir siendo CONST
@@ -137,7 +141,25 @@ public:
 
 	virtual APStatus getStatus() const
 	{
-		//TODO:
+		HttpClient client;
+
+		net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery_);
+
+		//client.addHeader("Host", "www.google.com");
+		//client.addHeader("Accept", "*/*");
+		//client.addHeader("Connection", "close");
+
+		if (information_.httpBasicCredentials_.size() > 0)
+		{
+			//std::string usrAndPwd = "admin:candombe";	//TODO: 
+			std::string usrAndPwd = this->information_.httpBasicCredentials_;
+			std::string credentials = base64_encode(usrAndPwd);
+			client.addHeader("Authorization", "Basic " + credentials);
+			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+		}
+
+		std::string html = client.openRead(uri);
+
 		return Disconnected;
 	}
 	
@@ -246,15 +268,19 @@ protected:
 		//////std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
 		//////std::string regExFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
 		////std::string htmlFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink_survey.htm";
-		//std::string regExFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
 		////std::string htmlText;
+
+
+		//std::string regExFile = "E:\\Development\\CPP\\lastigen-haustiere\\Debug\\regexvalue.txt";
 		//std::string regExText;
+		//loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
 
-		std::string regExText = "\"[^\"]*\", \"[^\"]*\", \"[^\"]*\", \d{1,}, \d{1,}, ";
 
+		std::string regExText = "\"[^\"]*\", \"[^\"]*\", \"[^\"]*\", \\d{1,}, \\d{1,}, ";
+                             //   "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
+                             //  \"[^\"]*\", \"[^\"]*\", \"[^\"]*\", \d{1,}, \d{1,}, 
 
 		//loadFile(htmlText, htmlFile);
-		//loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
 
 		boost::regex regularExpression(regExText, boost::regex::normal | boost::regbase::icase);
 
@@ -276,6 +302,7 @@ protected:
 	static const std::string routerListQuery_;       // "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 	static const std::string connectToQueryFirst_;   // "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid="
 	static const std::string connectToQuerySecond_;  // "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save"
+	static const std::string statusQuery_;			///userRpm/StatusRpm.htm
 
 };
 
@@ -283,6 +310,7 @@ protected:
 const std::string TpLinkManager::routerListQuery_ = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 const std::string TpLinkManager::connectToQueryFirst_ = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
 const std::string TpLinkManager::connectToQuerySecond_ = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
+const std::string TpLinkManager::statusQuery_ = "/userRpm/StatusRpm.htm";
 
 
 #endif //TPLINKMANAGER_HPP_
