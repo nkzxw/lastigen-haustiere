@@ -100,15 +100,22 @@ public:
 
 		}
 
-		for (MapType::const_iterator it = accessPointManagers_.begin(); it != accessPointManagers_.end(); ++it)
+		for (MapType::iterator it = accessPointManagers_.begin(); it != accessPointManagers_.end(); ++it)
 		{
-			
 			std::cout << it->first << std::endl;
 			std::cout << it->second->getName() << std::endl;
-			printRouterList(it->second);
 			//std::cout << it->second->name_ << std::endl;
 			//std::cout << *it << std::endl;
+
+			it->second->getStatus();
+
+			it->second->refreshRouterList();
+			printRouterList(it->second);
 		}
+
+
+
+
 
 
 		//accessPointManagers_.insert(const_cast<std::string>(it->name_), temp);
