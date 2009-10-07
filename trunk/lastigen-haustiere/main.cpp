@@ -109,9 +109,9 @@ int main(int argc, char** argv)
 ////TODO: ver diferencias entre auto_ptr y scoped_ptr
 //typedef boost::scoped_ptr<AbstractAPController> APPtr;
 //
-//void printRouterList(AbstractAPController *manager)
+//void printRouterList(AbstractAPController *controller)
 //{
-//	std::vector<Router> routers = manager->getRouterList();
+//	std::vector<Router> routers = controller->getRouterList();
 //	std::vector<Router> routersWithoutSecurity;
 //
 //	//SecurityDisabled<Router> sd;
@@ -133,10 +133,10 @@ int main(int argc, char** argv)
 //	////TODO: pasos a seguir...
 //	///*
 //	//	1. Obtener URL del AccessPoint que contiene la lista de RoutersRemotos
-//	//	2. Pasarle la URL al Manager
-//	//	3. El manager debe obtener el HTML y parsear los datos.
-//	//	4. El manager debe estar en condiciones de pasar una lista limpia de RoutersRemotos
-//	//	5. El cliente puede solicitarle al Manager utilizar determinado RouterRemoto.
+//	//	2. Pasarle la URL al Controller
+//	//	3. El controller debe obtener el HTML y parsear los datos.
+//	//	4. El controller debe estar en condiciones de pasar una lista limpia de RoutersRemotos
+//	//	5. El cliente puede solicitarle al Controller utilizar determinado RouterRemoto.
 //	//*/
 //
 //
@@ -151,24 +151,24 @@ int main(int argc, char** argv)
 //	for (std::vector<APInformation>::const_iterator it = cfg->accessPoints_.begin(); it != cfg->accessPoints_.end(); ++it)
 //	{
 //		std::cout << it->name_ << std::endl;
-//		std::cout << it->accessPointManager_ << std::endl;
+//		std::cout << it->accessPointController_ << std::endl;
 //
-//		//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
+//		//TODO: ver que clase puede encargarse de instanciar totalmente los APcontrollers...
 //		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
-//		std::string sharedLibrary = cfg->typeMapping_[it->accessPointManager_];
-//		APPtr manager(ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointManager_));
+//		std::string sharedLibrary = cfg->typeMapping_[it->accessPointController_];
+//		APPtr controller(ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointController_));
 //
-//		manager->initialize(*it);
+//		controller->initialize(*it);
 //
 //		//for (int i = 0; i < 100; ++i)
 //		//{
-//		//	printRouterList(manager.get());
+//		//	printRouterList(controller.get());
 //
 //		//	Sleep(2000);
 //		//}
 //
 //
-//		printRouterList(manager.get());
+//		printRouterList(controller.get());
 //
 //		int selection;
 //
@@ -176,14 +176,14 @@ int main(int argc, char** argv)
 //		std::cin >> selection;
 //
 //
-//		std::cout << "El router seleccionado es: " << manager->getRouterList()[selection].bssid_ << std::endl;
+//		std::cout << "El router seleccionado es: " << controller->getRouterList()[selection].bssid_ << std::endl;
 //
-//		manager->connectTo(manager->getRouterList()[selection]);
+//		controller->connectTo(manager->getRouterList()[selection]);
 //
 //
 //	}
 //
-//	//APPtr manager(ReflectionManager::CreateInstance<AbstractAPController>("TpLinkController.dll", "TpLinkController"));
+//	//APPtr controller(ReflectionManager::CreateInstance<AbstractAPController>("TpLinkController.dll", "TpLinkController"));
 //
 //
 //

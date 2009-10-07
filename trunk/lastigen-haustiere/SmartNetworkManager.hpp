@@ -4,6 +4,9 @@
 //#include <boost/ptr_container/ptr_vector.hpp>
 //#include <boost/ptr_container/ptr_map.hpp>
 #include <boost/ptr_container/ptr_unordered_map.hpp>
+#include <boost/thread.hpp>
+
+#include "TpLinkController.hpp"
 
 
 
@@ -43,9 +46,9 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //typedef boost::scoped_ptr<AbstractAPController> APPtr;
 
 
-void printRouterList(const AbstractAPController *manager)
+void printRouterList(const AbstractAPController *controller)
 {
-	std::vector<Router> routers = manager->getRouterList();
+	std::vector<Router> routers = controller->getRouterList();
 	std::vector<Router> routersWithoutSecurity;
 
 	//SecurityDisabled<Router> sd;
@@ -65,9 +68,9 @@ class SmartNetworkManager
 {
 public:
 	typedef boost::ptr_unordered_map<std::string, AbstractAPController> MapType;
-	//boost::ptr_vector<AbstractAPController> accessPointManagers_;
-	//boost::ptr_unordered_map<std::string, AbstractAPController> accessPointManagers_;
-	//boost::ptr_map<std::string, AbstractAPController> accessPointManagers_;
+	//boost::ptr_vector<AbstractAPController> accessPointControllers_;
+	//boost::ptr_unordered_map<std::string, AbstractAPController> accessPointControllers_;
+	//boost::ptr_map<std::string, AbstractAPController> accessPointControllers_;
 
 
 	SmartNetworkManager(const AppSettings& settings)
@@ -77,40 +80,51 @@ public:
 		for (std::vector<APInformation>::const_iterator it = settings.accessPoints_.begin(); it != settings.accessPoints_.end(); ++it)
 		{
 			//std::cout << it->name_ << std::endl;
-			//std::cout << it->accessPointManager_ << std::endl;
+			//std::cout << it->accessPointController_ << std::endl;
 
 			//TODO: poner un metodo en la clase AppSettings para obtener los mappings...
-			//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
+			//TODO: ver que clase puede encargarse de instanciar totalmente los APControllers...
 			//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
-			//std::string sharedLibrary = settings.typeMapping_[it->accessPointManager_];
-			std::string sharedLibrary = settings.typeMapping_.at(it->accessPointManager_);
+			//std::string sharedLibrary = settings.typeMapping_[it->accessPointController_];
+			std::string sharedLibrary = settings.typeMapping_.at(it->accessPointController_);
 
 
-			//APPtr manager(ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointManager_));
-			//manager->initialize(*it);
+			//APPtr controller(ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointController_));
+			//controller->initialize(*it);
 
-			AbstractAPController *temp = ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointManager_);
+			AbstractAPController *temp = ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointController_);
 			temp->initialize(*it);
 
-			//accessPointManagers_.push_back(temp);
-			//accessPointManagers_[it->name_] = temp;
+			//accessPointControllers_.push_back(temp);
+			//accessPointControllers_[it->name_] = temp;
 
 			std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
-			accessPointManagers_.insert(tempStr, temp);
+			accessPointControllers_.insert(tempStr, temp);
 
 		}
 
-		for (MapType::iterator it = accessPointManagers_.begin(); it != accessPointManagers_.end(); ++it)
+		for (MapType::iterator it = accessPointControllers_.begin(); it != accessPointControllers_.end(); ++it)
 		{
 			std::cout << it->first << std::endl;
 			std::cout << it->second->getName() << std::endl;
 			//std::cout << it->second->name_ << std::endl;
 			//std::cout << *it << std::endl;
 
-			it->second->getStatus();
+			boost::thread tempThread(  boost::bind( &AbstractAPController::getStatus, it->second ) );
+			tempThread.join();
 
-			it->second->refreshRouterList();
-			printRouterList(it->second);
+			//TpLinkController cont;
+			//boost::thread tempThread(  boost::bind( &TpLinkController::getStatus, &cont ) );
+			//tempThread.join();
+
+
+			while ( it->second->getStatus() == APStatus::Disconnected )
+			{
+				std::cout << "Connecting..." << std::endl;
+			}
+
+			//it->second->refreshRouterList();
+			//printRouterList(it->second);
 		}
 
 
@@ -118,19 +132,19 @@ public:
 
 
 
-		//accessPointManagers_.insert(const_cast<std::string>(it->name_), temp);
+		//accessPointControllers_.insert(const_cast<std::string>(it->name_), temp);
 
 		//for (int i = 0; i < 100; ++i)
 		//{
-		//	printRouterList(manager.get());
+		//	printRouterList(controller.get());
 
 		//	Sleep(2000);
 		//}
 
 		
-		//AbstractAPController *tempAPM; // = accessPointManagers_.at(0);
+		//AbstractAPController *tempAPM; // = accessPointControllers_.at(0);
 
-		////printRouterList(manager.get());
+		////printRouterList(controller.get());
 		//printRouterList(tempAPM);
 
 
@@ -140,9 +154,9 @@ public:
 		//std::cin >> selection;
 
 
-		//std::cout << "El router seleccionado es: " << manager->getRouterList()[selection].bssid_ << std::endl;
+		//std::cout << "El router seleccionado es: " << controller->getRouterList()[selection].bssid_ << std::endl;
 
-		//manager->connectTo(manager->getRouterList()[selection]);
+		//controller->connectTo(manager->getRouterList()[selection]);
 
 
 		
@@ -150,7 +164,7 @@ public:
 	}
 
 protected:
-	MapType accessPointManagers_;
+	MapType accessPointControllers_;
 
 };
 

@@ -42,11 +42,11 @@ class APInformation
 {
 public:
 	APInformation()
-		: name_(""), accessPointManager_(""), protocol_(""), host_(""), httpBasicCredentials_("")
+		: name_(""), accessPointController_(""), protocol_(""), host_(""), httpBasicCredentials_("")
 	{}
 
-	APInformation(const std::string& name, const std::string& accessPointManager, const std::string& protocol, const std::string& host, const std::string& httpBasicCredentials)
-		: name_(name), accessPointManager_(accessPointManager), protocol_(protocol), host_(host), httpBasicCredentials_(httpBasicCredentials)
+	APInformation(const std::string& name, const std::string& accessPointController, const std::string& protocol, const std::string& host, const std::string& httpBasicCredentials)
+		: name_(name), accessPointController_(accessPointController), protocol_(protocol), host_(host), httpBasicCredentials_(httpBasicCredentials)
 	{}
 
 
@@ -59,7 +59,7 @@ protected:
 	{
 		//TODO: cambiar los nombres en el xml
 		ar	& BOOST_SERIALIZATION_NVP(name_)
-			& BOOST_SERIALIZATION_NVP(accessPointManager_)
+			& BOOST_SERIALIZATION_NVP(accessPointController_)
 			& BOOST_SERIALIZATION_NVP(protocol_)
 			& BOOST_SERIALIZATION_NVP(host_)
 			& BOOST_SERIALIZATION_NVP(httpBasicCredentials_)
@@ -71,7 +71,7 @@ protected:
 	void load(Archive & ar, const unsigned int version)
 	{
 		ar	& BOOST_SERIALIZATION_NVP(name_)
-			& BOOST_SERIALIZATION_NVP(accessPointManager_)
+			& BOOST_SERIALIZATION_NVP(accessPointController_)
 			& BOOST_SERIALIZATION_NVP(protocol_)
 			& BOOST_SERIALIZATION_NVP(host_)
 			& BOOST_SERIALIZATION_NVP(httpBasicCredentials_)
@@ -84,7 +84,7 @@ protected:
 
 public: //TODO: ver de hacer metodos para acceder a los datos
 	std::string name_;
-	std::string accessPointManager_;
+	std::string accessPointController_;
 
 	////TODO: separar lo que es protocolo y direccion IP de las rutas para acceder a cada funcionalidad.
 	////TODO: las rutas para cada funcionalidad son rutas internas de cada AP y no deberían ser configurables por el usuario... es configuracion, pero a otro nivel.

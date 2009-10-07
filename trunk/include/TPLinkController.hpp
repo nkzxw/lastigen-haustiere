@@ -1,4 +1,5 @@
 // http://boost-extension.redshoelace.com/docs/boost/extension/boost_extension/tutorials/tutorial02.html
+// http://www.boost.org/doc/libs/1_38_0/doc/html/xpressive/user_s_guide.html#boost_xpressive.user_s_guide.quick_start
 
 #ifndef TPLINKCONTROLLER_HPP_
 #define TPLINKCONTROLLER_HPP_
@@ -12,7 +13,9 @@
 
 #include <boost/algorithm/string.hpp>		// trim_copy, split, erase_all_copy
 #include <boost/lexical_cast.hpp>
-#include <boost/regex.hpp>
+//#include <boost/regex.hpp>
+#include <boost/xpressive/xpressive.hpp>
+
 
 #include <boost/extension/extension.hpp>
 #include <boost/extension/factory.hpp>
@@ -26,7 +29,10 @@
 
 
 using boost::asio::ip::tcp;
+using namespace boost::xpressive;
 
+
+//#define STATUS_PAGE_REGEX "^(?:.*\\r?\\n)*var wlanPara = new Array\\(\\r?\\n\\d{0,4},\\r?\\n\"(?P<ssid>(?:\\w+))\",\\r?\\n(?P<channel>(?:\\d{0,4})),\\r?\\n\\d{0,4},\\r?\\n\"[\\w-]+\",\\r?\\n\"[\\w\\.]+\",\\r?\\n\\d{0,4},\\r?\\n\\d{0,4},\\r?\\n\"(?P<signal>(?:\\d{0,4})) dB\",\\r?\\n\\d{0,4},\\d{0,4} \\);(?:.*\\r?\\n)*$"
 
 void loadFile(std::string& str, std::istream& inputStream)
 {
@@ -55,6 +61,7 @@ void loadFile(std::string& str, const std::string& fileName)
 
 //TODO: establecer un proceso automatico de refresco de la lista de routers... es necesario??????
 
+//TODO: separar la información que brinda el router de las operaciones. Ejemplo. El Controller debe conectarse y parsear la lista de routers, pero el dato en si, deberia estar en otra clase. De esta forma puedo llamar al getters de los datos sin necesidad de que los getters modifiquen miembros de la clase.
 class TpLinkController : public AbstractAPController
 {
 public:
@@ -91,7 +98,7 @@ public:
 			//std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 			//std::string uriStr = this->information_.routerListUri_;
 
-			net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery_);
+			net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery);
 
 			//client.addHeader("Host", "www.google.com");
 			//client.addHeader("Accept", "*/*");
@@ -121,7 +128,7 @@ public:
 		HttpClient client;
 
 		//std::string uriStr = this->information_.useRouterUri_;
-		std::string query = connectToQueryFirst_ + router.bssid_ + connectToQuerySecond_;
+		std::string query = connectToQueryFirst + router.bssid_ + connectToQuerySecond;
 		net::Uri uri(this->information_.protocol_, this->information_.host_, query);
 
 
@@ -141,26 +148,57 @@ public:
 
 	virtual APStatus getStatus() const
 	{
-		HttpClient client;
+		//HttpClient client;
 
-		net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery_);
+		//net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery);
 
-		//client.addHeader("Host", "www.google.com");
-		//client.addHeader("Accept", "*/*");
-		//client.addHeader("Connection", "close");
+		////client.addHeader("Host", "www.google.com");
+		////client.addHeader("Accept", "*/*");
+		////client.addHeader("Connection", "close");
 
-		if (information_.httpBasicCredentials_.size() > 0)
+		//if (information_.httpBasicCredentials_.size() > 0)
+		//{
+		//	//std::string usrAndPwd = "admin:candombe";	//TODO: 
+		//	std::string usrAndPwd = this->information_.httpBasicCredentials_;
+		//	std::string credentials = base64_encode(usrAndPwd);
+		//	client.addHeader("Authorization", "Basic " + credentials);
+		//	//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+		//}
+
+		//std::string html = client.openRead(uri);
+
+		std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
+		std::string htmlText;
+		loadFile(htmlText, htmlFile);
+
+		//this->parseStatusPage(htmlText);
+
+		//--------------------------------------------------------------------------------------------------------
+
+		//std::cout << STATUS_PAGE_REGEX << std::endl;
+
+
+		std::string ssid = "";
+		std::string channel = "";
+		std::string signal = "";
+
+		smatch what;
+		
+		if(regex_match(htmlText, what, statusPageRegEx))
 		{
-			//std::string usrAndPwd = "admin:candombe";	//TODO: 
-			std::string usrAndPwd = this->information_.httpBasicCredentials_;
-			std::string credentials = base64_encode(usrAndPwd);
-			client.addHeader("Authorization", "Basic " + credentials);
-			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+			ssid = what[1];
+			channel = what[2];
+			signal = what[3];
 		}
 
-		std::string html = client.openRead(uri);
-
-		return Disconnected;
+		if (ssid.size() > 0)
+		{
+			return APStatus::Connected;
+		}
+		else
+		{
+			return APStatus::Disconnected;
+		}
 	}
 	
 	virtual Router getConnectedRouter() const
@@ -275,6 +313,7 @@ protected:
 		//std::string regExText;
 		//loadFile(regExText, regExFile);	// "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
 
+		//--------------------------------------------------------------------------------------
 
 		std::string regExText = "\"[^\"]*\", \"[^\"]*\", \"[^\"]*\", \\d{1,}, \\d{1,}, ";
                              //   "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
@@ -294,23 +333,52 @@ protected:
 
 			parseItem(strItem);
 		}
+
+		//--------------------------------------------------------------------------------------
+
+		//std::string regExText = "\"[^\"]*\", \"[^\"]*\", \"[^\"]*\", \\d{1,}, \\d{1,}, ";
+		//                     //	   "[^"]*", "[^"]*", "[^"]*", \d{1,}, \d{1,}, 
+		//sregex regularExpression = '"' >> *~'"' >> '"';
+
+		////loadFile(htmlText, htmlFile);
+
+
+		//boost::sregex_token_iterator it(htmlText.begin(), htmlText.end(), regularExpression);
+		//boost::sregex_token_iterator end;
+
+		//while(it != end)
+		//{
+		//	std::string strItem = *it++;
+		//	//std::cout << strItem << std::endl;
+
+		//	parseItem(strItem);
+		//}
 	}
 
-	
+
+
+
 	std::vector<Router> routers_;
 
-	static const std::string routerListQuery_;       // "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-	static const std::string connectToQueryFirst_;   // "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid="
-	static const std::string connectToQuerySecond_;  // "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save"
-	static const std::string statusQuery_;			///userRpm/StatusRpm.htm
+	static const std::string routerListQuery;       // "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+	static const std::string connectToQueryFirst;   // "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid="
+	static const std::string connectToQuerySecond;  // "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save"
+	static const std::string statusQuery;			 // /userRpm/StatusRpm.htm
+
+	static const sregex commonDigitRegEx;
+	static const sregex statusPageRegEx;
 
 };
 
 //TODO: ver si estos valores van a ir harcodeados en el binario o bien en una seccion aparte del archivo de configuracion...
-const std::string TpLinkController::routerListQuery_ = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-const std::string TpLinkController::connectToQueryFirst_ = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
-const std::string TpLinkController::connectToQuerySecond_ = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
-const std::string TpLinkController::statusQuery_ = "/userRpm/StatusRpm.htm";
+const std::string TpLinkController::routerListQuery = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+const std::string TpLinkController::connectToQueryFirst = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
+const std::string TpLinkController::connectToQuerySecond = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
+const std::string TpLinkController::statusQuery = "/userRpm/StatusRpm.htm";
+
+//const sregex TpLinkController::statusPageRegEx = sregex::compile(STATUS_PAGE_REGEX);
+const sregex TpLinkController::commonDigitRegEx = repeat<0,4>(_d);
+const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s1= +_w) >> "\"," >> _ln >> (s2= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s3= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;
 
 
 #endif //TPLINKCONTROLLER_HPP_
