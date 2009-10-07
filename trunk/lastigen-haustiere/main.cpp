@@ -14,7 +14,7 @@
 #include <boost/extension/shared_library.hpp>
 #include <boost/extension/type_map.hpp>
 
-#include "AbstractAPManager.hpp"
+#include "AbstractAPController.hpp"
 #include "ReflectionManager.hpp"
 #include "Router.hpp"
 
@@ -62,7 +62,7 @@ int main(int argc, char** argv)
 //#include <boost/extension/shared_library.hpp>
 //#include <boost/extension/type_map.hpp>
 //
-//#include "AbstractAPManager.hpp"
+//#include "AbstractAPController.hpp"
 //#include "ReflectionManager.hpp"
 //#include "Router.hpp"
 //
@@ -107,9 +107,9 @@ int main(int argc, char** argv)
 ////const std::string spelling<my_enum>::result = #a_type
 //
 ////TODO: ver diferencias entre auto_ptr y scoped_ptr
-//typedef boost::scoped_ptr<AbstractAPManager> APPtr;
+//typedef boost::scoped_ptr<AbstractAPController> APPtr;
 //
-//void printRouterList(AbstractAPManager *manager)
+//void printRouterList(AbstractAPController *manager)
 //{
 //	std::vector<Router> routers = manager->getRouterList();
 //	std::vector<Router> routersWithoutSecurity;
@@ -156,7 +156,7 @@ int main(int argc, char** argv)
 //		//TODO: ver que clase puede encargarse de instanciar totalmente los APManagers...
 //		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
 //		std::string sharedLibrary = cfg->typeMapping_[it->accessPointManager_];
-//		APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>(sharedLibrary, it->accessPointManager_));
+//		APPtr manager(ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointManager_));
 //
 //		manager->initialize(*it);
 //
@@ -183,7 +183,7 @@ int main(int argc, char** argv)
 //
 //	}
 //
-//	//APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>("TpLinkManager.dll", "TpLinkManager"));
+//	//APPtr manager(ReflectionManager::CreateInstance<AbstractAPController>("TpLinkController.dll", "TpLinkController"));
 //
 //
 //

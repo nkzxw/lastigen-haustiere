@@ -40,10 +40,10 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //result; }; \
 //const std::string spelling<my_enum>::result = #a_type
 
-//typedef boost::scoped_ptr<AbstractAPManager> APPtr;
+//typedef boost::scoped_ptr<AbstractAPController> APPtr;
 
 
-void printRouterList(const AbstractAPManager *manager)
+void printRouterList(const AbstractAPController *manager)
 {
 	std::vector<Router> routers = manager->getRouterList();
 	std::vector<Router> routersWithoutSecurity;
@@ -64,10 +64,10 @@ void printRouterList(const AbstractAPManager *manager)
 class SmartNetworkManager
 {
 public:
-	typedef boost::ptr_unordered_map<std::string, AbstractAPManager> MapType;
-	//boost::ptr_vector<AbstractAPManager> accessPointManagers_;
-	//boost::ptr_unordered_map<std::string, AbstractAPManager> accessPointManagers_;
-	//boost::ptr_map<std::string, AbstractAPManager> accessPointManagers_;
+	typedef boost::ptr_unordered_map<std::string, AbstractAPController> MapType;
+	//boost::ptr_vector<AbstractAPController> accessPointManagers_;
+	//boost::ptr_unordered_map<std::string, AbstractAPController> accessPointManagers_;
+	//boost::ptr_map<std::string, AbstractAPController> accessPointManagers_;
 
 
 	SmartNetworkManager(const AppSettings& settings)
@@ -86,10 +86,10 @@ public:
 			std::string sharedLibrary = settings.typeMapping_.at(it->accessPointManager_);
 
 
-			//APPtr manager(ReflectionManager::CreateInstance<AbstractAPManager>(sharedLibrary, it->accessPointManager_));
+			//APPtr manager(ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointManager_));
 			//manager->initialize(*it);
 
-			AbstractAPManager *temp = ReflectionManager::CreateInstance<AbstractAPManager>(sharedLibrary, it->accessPointManager_);
+			AbstractAPController *temp = ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, it->accessPointManager_);
 			temp->initialize(*it);
 
 			//accessPointManagers_.push_back(temp);
@@ -128,7 +128,7 @@ public:
 		//}
 
 		
-		//AbstractAPManager *tempAPM; // = accessPointManagers_.at(0);
+		//AbstractAPController *tempAPM; // = accessPointManagers_.at(0);
 
 		////printRouterList(manager.get());
 		//printRouterList(tempAPM);
