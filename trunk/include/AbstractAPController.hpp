@@ -2,8 +2,8 @@
 
 //TODO: pasar a proyecto aparte, independiente
 
-#ifndef ABSTRACTAPMANAGER_HPP_
-#define ABSTRACTAPMANAGER_HPP_
+#ifndef ABSTRACTAPCONTROLLER_HPP_
+#define ABSTRACTAPCONTROLLER_HPP_
 
 #include <vector>
 
@@ -18,22 +18,22 @@ enum APStatus
 	NotWorking = 2
 };
 
-class AbstractAPManager 
+class AbstractAPController
 {
 public:
 
-	//AbstractAPManager(const APInformation& information)
+	//AbstractAPController(const APInformation& information)
 	//	: routerListObtained_(false), information_(information)
 	//{
 	//}
 
-	AbstractAPManager()
+	AbstractAPController()
 		: routerListObtained_(false)
 	{}
 
 	virtual void initialize(const APInformation& information, bool refresh = false) = 0;
 
-	//virtual ~AbstractAPManager() 
+	//virtual ~AbstractAPController() 
 	//{
 	//}
 
@@ -71,4 +71,4 @@ protected:
 
 };
 
-#endif //ABSTRACTAPMANAGER_HPP_
+#endif //ABSTRACTAPCONTROLLER_HPP_

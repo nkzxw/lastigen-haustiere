@@ -1,7 +1,7 @@
 // http://boost-extension.redshoelace.com/docs/boost/extension/boost_extension/tutorials/tutorial02.html
 
-#ifndef TPLINKMANAGER_HPP_
-#define TPLINKMANAGER_HPP_
+#ifndef TPLINKCONTROLLER_HPP_
+#define TPLINKCONTROLLER_HPP_
 
 #include <fstream>
 #include <iostream>
@@ -18,7 +18,7 @@
 #include <boost/extension/factory.hpp>
 #include <boost/extension/type_map.hpp>
 
-#include "AbstractAPManager.hpp"
+#include "AbstractAPController.hpp"
 #include "Router.hpp"
 
 #include "base64.hpp"
@@ -55,7 +55,7 @@ void loadFile(std::string& str, const std::string& fileName)
 
 //TODO: establecer un proceso automatico de refresco de la lista de routers... es necesario??????
 
-class TpLinkManager : public AbstractAPManager
+class TpLinkController : public AbstractAPController
 {
 public:
 
@@ -307,11 +307,11 @@ protected:
 };
 
 //TODO: ver si estos valores van a ir harcodeados en el binario o bien en una seccion aparte del archivo de configuracion...
-const std::string TpLinkManager::routerListQuery_ = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-const std::string TpLinkManager::connectToQueryFirst_ = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
-const std::string TpLinkManager::connectToQuerySecond_ = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
-const std::string TpLinkManager::statusQuery_ = "/userRpm/StatusRpm.htm";
+const std::string TpLinkController::routerListQuery_ = "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+const std::string TpLinkController::connectToQueryFirst_ = "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid=";
+const std::string TpLinkController::connectToQuerySecond_ = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
+const std::string TpLinkController::statusQuery_ = "/userRpm/StatusRpm.htm";
 
 
-#endif //TPLINKMANAGER_HPP_
+#endif //TPLINKCONTROLLER_HPP_
 
