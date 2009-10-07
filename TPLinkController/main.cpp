@@ -9,7 +9,7 @@
 #include <boost/extension/type_map.hpp>
 
 #include "TpLinkController.hpp"
-#include "appsettings.hpp"
+#include "AppSettings.hpp"
 
 using namespace boost::extensions;
 
