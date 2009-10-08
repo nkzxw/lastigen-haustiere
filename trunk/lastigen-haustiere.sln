@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_base64", "test_b
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestWebClient", "TestWebClient\TestWebClient.csproj", "{8300F931-0823-4670-821A-C44DF99D3269}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_change_ip_address_win32", "test_change_ip_address_win32\test_change_ip_address_win32.vcproj", "{D4A7893B-67E8-4164-9BC4-9FD8D734119D}"
+EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Win32IpChanger", "Win32IpChanger\Win32IpChanger.vcproj", "{ABAE8532-933E-4642-90B0-575F10BDB2A6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_misc", "test_misc\test_misc.vcproj", "{D3E85BC1-663D-4BE3-9340-656F8DADBB31}"
@@ -103,6 +105,16 @@ Global
 		{8300F931-0823-4670-821A-C44DF99D3269}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{8300F931-0823-4670-821A-C44DF99D3269}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{8300F931-0823-4670-821A-C44DF99D3269}.Release|Win32.ActiveCfg = Release|Any CPU
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Debug|Win32.Build.0 = Debug|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Release|Any CPU.ActiveCfg = Release|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Release|Win32.ActiveCfg = Release|Win32
+		{D4A7893B-67E8-4164-9BC4-9FD8D734119D}.Release|Win32.Build.0 = Release|Win32
 		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Any CPU.ActiveCfg = Debug|Win32
 		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
 		{ABAE8532-933E-4642-90B0-575F10BDB2A6}.Debug|Mixed Platforms.Build.0 = Debug|Win32
