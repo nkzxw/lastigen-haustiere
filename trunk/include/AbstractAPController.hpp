@@ -38,16 +38,15 @@ public:
 	//}
 
 	//TODO: ver de separar este metodo en dos, uno para refrescar los datos, otro para obtenerlo
-	virtual std::vector<Router> getRouterList(bool refresh = false) const = 0;	//TODO: ver modo de refrescar los datos
-	virtual void refreshRouterList() = 0;				
-
+	virtual std::vector<Router> getRouterList(bool refresh = false) const = 0;
 	virtual void connectTo(const Router& router) const = 0;
-	virtual APStatus getStatus() const = 0;										//TODO: ver modo de refrescar los datos
+	virtual APStatus getStatus() const = 0;
 	
 	//TODO: ver de retornar una referencia o puntero del Router
-	virtual Router getConnectedRouter() const = 0;								//TODO: ver modo de refrescar los datos
+	virtual Router getConnectedRouter() const = 0;
 
 
+	//TODO: ver de retornar una referencia o puntero
 	std::string getName() const
 	{
 		return information_.name_;
@@ -65,7 +64,7 @@ public:
 
 protected:
 	//std::string name_;
-	bool routerListObtained_;
+	//bool routerListObtained_;
 	APInformation information_;
 
 
