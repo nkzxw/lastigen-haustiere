@@ -7,6 +7,9 @@ using System.IO;
 
 namespace TestWebClient
 {
+    class pepe : System.Object
+    { 
+    }
     class Program
     {
         public static void Main(string[] args)
