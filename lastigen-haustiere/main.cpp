@@ -1,4 +1,6 @@
 // http://boost-extension.redshoelace.com/docs/boost/extension/boost_extension/tutorials/tutorial02.html
+// SINGLETON: http://torjo.com/tobias/
+
 
 #include <algorithm>
 #include <functional>
@@ -27,10 +29,14 @@
 
 int main(int argc, char** argv) 
 {
+	//TODO: esto deberia ser un singleton
 	ConfigManager<AppSettings> cm(argv[0]);
 	AppSettings *cfg = cm.getSettings();
 		
+	{
 	SmartNetworkManager snm(*cfg);
+	std::cout << "--- DESTRUCTORES ---" << std::endl;
+	}
 
 	std::cin.sync();
 	std::cin.get();

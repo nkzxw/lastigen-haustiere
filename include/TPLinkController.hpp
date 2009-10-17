@@ -117,7 +117,7 @@ public:
 			std::string html = client.openRead(uri);
 			this->parseRouterList(html);
 
-			routerListObtained_ = true;
+			//routerListObtained_ = true;
 		//}
 
 	}

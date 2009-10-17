@@ -28,7 +28,7 @@ public:
 	//}
 
 	AbstractAPController()
-		: routerListObtained_(false)
+		//: routerListObtained_(false)
 	{}
 
 	virtual void initialize(const APInformation& information, bool refresh = false) = 0;
