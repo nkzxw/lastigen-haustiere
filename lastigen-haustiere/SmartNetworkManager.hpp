@@ -17,6 +17,28 @@
 //}
 
 
+
+/*
+// http://ubuntuforums.org/showthread.php?t=201776
+
+class X {
+public: 
+   void run();
+   void complexOperation( int limit );
+};
+...
+X x;
+boost::thread thr1( boost::bind( &X::run, &x ) );
+boost::thread thr2( boost::bind( &X::complexOperation, &x, 30 ) );
+boost::thread thr3( boost::bind( &X::complexOperation, &x, 100 ) );
+... // while threads work in background
+thr1.join();
+thr2.join();
+thr3.join();
+*/
+
+
+
 // Create a new predicate from unary_function.
 template <class Arg>
 struct SecurityDisabled : public std::unary_function<Arg, bool>
