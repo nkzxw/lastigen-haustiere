@@ -5,12 +5,27 @@
 #include <boost/filesystem/path.hpp>
 #include <boost/serialization/nvp.hpp>
 
+#include <boost/utility/singleton.hpp> //torjo
+
 
 template <typename T>
-class ConfigManager
+class ConfigManager : public boost::singleton< ConfigManager<T> >
 {
 public:
-	ConfigManager(const std::string& exePath, bool loadAutomatically = true )
+	ConfigManager(boost::restricted);
+
+	//ConfigManager(const std::string& exePath, bool loadAutomatically = true )
+	//{
+	//	boost::filesystem::path path( exePath );
+	//	configFile_ = path.replace_extension("cfg").string();
+
+	//	if ( loadAutomatically )
+	//	{
+	//		load();
+	//	}
+	//}
+
+	void initialize( const std::string& exePath, bool loadAutomatically = true )
 	{
 		boost::filesystem::path path( exePath );
 		configFile_ = path.replace_extension("cfg").string();
