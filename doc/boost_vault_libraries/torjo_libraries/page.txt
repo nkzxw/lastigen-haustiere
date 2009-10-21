@@ -1,0 +1,33 @@
+------------------------------------------------------------------------------------
+Torjo
+------------------------------------------------------------------------------------
+
+http://torjo.com/portofolio.html
+
+
+
+Settings: http://www.ddj.com/cpp/202101554?pgno=4
+
+
+GUI: http://torjo.com/win32gui/index.html
+
+
+Logv2: http://torjo.com/log2/index.html
+       http://torjo.com/log2/doc/html/index.html
+
+
+Range Library RTL: http://torjo.com/rangelib/index.html
+
+------------------------------------------------------------------------------------
+synesis libraries
+------------------------------------------------------------------------------------
+
+http://www.synesis.com.au/resources.html
+
+FastFormat: http://www.synesis.com.au/resources.html#fastformat
+            http://fastformat.org/
+
+
+
+
+VER BASE64
