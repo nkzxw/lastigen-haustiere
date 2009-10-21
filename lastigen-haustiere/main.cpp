@@ -30,11 +30,19 @@
 int main(int argc, char** argv) 
 {
 	//TODO: esto deberia ser un singleton
-	ConfigManager<AppSettings> cm(argv[0]);
-	AppSettings *cfg = cm.getSettings();
-		
+	//ConfigManager<AppSettings> cm(argv[0]);
+	//AppSettings *cfg = cm.getSettings();
+
+    ConfigManager<AppSettings>::lease cm;
+	//cm->initialize( argv[0] );
+
+
+    //ConfigManager<AppSettings>::instance->initialize( argv[0] );
+
+
 	{
-	SmartNetworkManager snm(*cfg);
+	//SmartNetworkManager snm(*cfg);
+	SmartNetworkManager snm();
 	std::cout << "--- DESTRUCTORES ---" << std::endl;
 	}
 
