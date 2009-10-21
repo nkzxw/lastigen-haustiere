@@ -27,13 +27,48 @@
 #include "windows.h" //TODO: eliminar
 
 
+//#include <boost/utility/singleton.hpp> //torjo
+#include <boost/utility/mutexed_singleton.hpp> //torjo
+
+
+class my_singleton
+  : public boost::mutexed_singleton<my_singleton>
+{
+    // [... private members]
+  public:
+
+    my_singleton(boost::restricted);
+
+    // public interface, e.g:
+    int foo(int)
+	{
+		return 0;
+	}
+
+    int bar(int)
+	{
+		return 0;
+	}
+    
+	int baz;
+};
+
+
 int main(int argc, char** argv) 
 {
+
+	my_singleton::instance->foo(1);
+
 	//TODO: esto deberia ser un singleton
 	//ConfigManager<AppSettings> cm(argv[0]);
 	//AppSettings *cfg = cm.getSettings();
 
-    ConfigManager<AppSettings>::lease cm;
+	//ConfigManager::lease cm;
+	//ConfigManager::instance->temp();
+
+
+
+    //ConfigManager<AppSettings>::lease cm;
 	//cm->initialize( argv[0] );
 
 

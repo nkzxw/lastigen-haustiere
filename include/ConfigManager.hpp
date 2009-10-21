@@ -8,8 +8,9 @@
 #include <boost/utility/singleton.hpp> //torjo
 
 
-template <typename T>
-class ConfigManager : public boost::singleton< ConfigManager<T> >
+//template <typename T>
+//class ConfigManager : public boost::singleton< ConfigManager<T> >
+class ConfigManager : public boost::singleton<ConfigManager>
 {
 public:
 	ConfigManager(boost::restricted);
@@ -24,6 +25,10 @@ public:
 	//		load();
 	//	}
 	//}
+
+	void temp()
+	{
+	}
 
 	void initialize( const std::string& exePath, bool loadAutomatically = true )
 	{
@@ -42,7 +47,7 @@ public:
 		assert(ifs.good());
 		boost::archive::xml_iarchive ia(ifs);
 
-		ia >> boost::serialization::make_nvp("Settings", settings_);
+		//ia >> boost::serialization::make_nvp("Settings", settings_);
 		
 	}
 
@@ -52,7 +57,7 @@ public:
 		assert(ofs.good());
 		boost::archive::xml_oarchive oa(ofs);
 
-		oa << boost::serialization::make_nvp("Settings", settings_);
+		//oa << boost::serialization::make_nvp("Settings", settings_);
 	}
 
 	//T& getConfigClass()
@@ -60,18 +65,18 @@ public:
 	//	return configurationClass_;
 	//}
 
-	T* getSettings() 
-	{ 
-		return &settings_;
-		//return temp;
-		//return *p; 
-		//return configurationClass_; 
-	}
+	//T* getSettings() 
+	//{ 
+	//	return &settings_;
+	//	//return temp;
+	//	//return *p; 
+	//	//return configurationClass_; 
+	//}
 
 
 protected:
 	std::string configFile_;
-	T settings_;
+	//T settings_;
 };
 
 
