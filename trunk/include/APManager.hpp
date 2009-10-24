@@ -21,15 +21,17 @@ public:
 
 	APManager(const APInformation& apInformation)
 	{
-		////TODO: poner un metodo en la clase AppSettings para obtener los mappings...
-		////TODO: ver que clase puede encargarse de instanciar totalmente los APControllers...
-		////TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
-		////std::string sharedLibrary = settings.typeMapping_[it->accessPointController_];
-		//std::string sharedLibrary = settings.typeMapping_.at(apInformation.accessPointController_);
+		AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
 
-		////shared_ptr
-		//controller_ = ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, apInformation.accessPointController_);
-		//controller_->initialize(apInformation);
+		//TODO: poner un metodo en la clase AppSettings para obtener los mappings...
+		//TODO: ver que clase puede encargarse de instanciar totalmente los APControllers...
+		//TODO: implementar un cache de DLL's ya abiertas para no reabrir la misma DLL muchas veces
+		//std::string sharedLibrary = settings.typeMapping_[it->accessPointController_];
+		std::string sharedLibrary = settings->typeMapping_.at(apInformation.accessPointController_);
+
+		//shared_ptr
+		controller_ = ReflectionManager::CreateInstance<AbstractAPController>(sharedLibrary, apInformation.accessPointController_);
+		controller_->initialize(apInformation);
 	}
 
 	virtual void init()
