@@ -96,46 +96,46 @@ public:
 	//SmartNetworkManager(const AppSettings& settings)
 	SmartNetworkManager()
 	{
+		AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
 
-		////TODO: crear un typedef para std::vector<APInformation>
-		//for (std::vector<APInformation>::const_iterator it = settings.accessPoints_.begin(); it != settings.accessPoints_.end(); ++it)
-		//{
-		//	//std::cout << it->name_ << std::endl;
-		//	//std::cout << it->accessPointController_ << std::endl;
+		//TODO: crear un typedef para std::vector<APInformation>
+		for (std::vector<APInformation>::const_iterator it = settings->accessPoints_.begin(); it != settings->accessPoints_.end(); ++it)
+		{
+			//std::cout << it->name_ << std::endl;
+			//std::cout << it->accessPointController_ << std::endl;
 
-		//	APManager *tempAPManager = new APManager(*it);
+			APManager *tempAPManager = new APManager(*it);
 
-		//	std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
-		//	//accessPointControllers_.insert(tempStr, temp);
-		//	apManagers_.insert(tempStr, tempAPManager);
+			std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
+			//accessPointControllers_.insert(tempStr, temp);
+			apManagers_.insert(tempStr, tempAPManager);
 
-		//}
+		}
 
-		////for (MapType::iterator it = accessPointControllers_.begin(); it != accessPointControllers_.end(); ++it)
-		//for (APManagerListType::const_iterator it = apManagers_.begin(); it != apManagers_.end(); ++it)
-		//{
-		//	std::cout << it->first << std::endl;
-		//	//std::cout << it->second->getName() << std::endl;
-		//	////std::cout << it->second->name_ << std::endl;
-		//	////std::cout << *it << std::endl;
+		//for (MapType::iterator it = accessPointControllers_.begin(); it != accessPointControllers_.end(); ++it)
+		for (APManagerListType::const_iterator it = apManagers_.begin(); it != apManagers_.end(); ++it)
+		{
+			std::cout << it->first << std::endl;
+			//std::cout << it->second->getName() << std::endl;
+			////std::cout << it->second->name_ << std::endl;
+			////std::cout << *it << std::endl;
 
-		//	//boost::thread tempThread(  boost::bind( &AbstractAPController::getStatus, it->second ) );
-		//	//tempThread.join();
+			//boost::thread tempThread(  boost::bind( &AbstractAPController::getStatus, it->second ) );
+			//tempThread.join();
 
-		//	////TpLinkController cont;
-		//	////boost::thread tempThread(  boost::bind( &TpLinkController::getStatus, &cont ) );
-		//	////tempThread.join();
+			////TpLinkController cont;
+			////boost::thread tempThread(  boost::bind( &TpLinkController::getStatus, &cont ) );
+			////tempThread.join();
 
 
-		//	//while ( it->second->getStatus() == APStatus::Disconnected )
-		//	//{
-		//	//	std::cout << "Connecting..." << std::endl;
-		//	//}
+			//while ( it->second->getStatus() == APStatus::Disconnected )
+			//{
+			//	std::cout << "Connecting..." << std::endl;
+			//}
 
-		//	////it->second->refreshRouterList();
-		//	////printRouterList(it->second);
-		//}
-
+			//it->second->refreshRouterList();
+			//printRouterList(it->second);
+		}
 
 
 
