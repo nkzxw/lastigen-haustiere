@@ -59,68 +59,100 @@ void loadFile(std::string& str, const std::string& fileName)
 }
 
 
-//TODO: establecer un proceso automatico de refresco de la lista de routers... es necesario??????
+//TODO: establecer un proceso automatico de refresco de la lista de routers... es necesario?????? En APManager
 
-//TODO: separar la información que brinda el router de las operaciones. Ejemplo. El Controller debe conectarse y parsear la lista de routers, pero el dato en si, deberia estar en otra clase. De esta forma puedo llamar al getters de los datos sin necesidad de que los getters modifiquen miembros de la clase.
 class TpLinkController : public AbstractAPController
 {
 public:
 
 	//TODO: ver como hacer esto en el constructor. El problema está en la clase ReflectionManager
-	virtual void initialize(const APInformation& information, bool refresh = false)
-	{
-		this->information_ = information;
+	//virtual void initialize(const APInformation& information) //, bool refresh = false
+	//{
+	//	this->information_ = information;
 
-		if (refresh)
+	//	//if (refresh)
+	//	//{
+	//	//	this->refreshRouterList();
+	//	//}
+	//}
+
+	//TODO: ver de retornar el vector de forma eficiente para evitar la copia... Pasar por referencia o bien usar un shared_ptr<vector de punteros>
+	virtual std::vector<Router> getRouterList() const		//bool refresh = false
+	{
+		std::vector<Router> tempRouters;
+
+		//routers_.clear();
+		HttpClient client;
+
+		/*
+		http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid			
+		*/
+
+		//std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+		//std::string uriStr = this->information_.routerListUri_;
+
+		net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery);
+
+		//client.addHeader("Host", "www.google.com");
+		//client.addHeader("Accept", "*/*");
+		//client.addHeader("Connection", "close");
+
+		if (information_.httpBasicCredentials_.size() > 0)
 		{
-			this->refreshRouterList();
+			//std::string usrAndPwd = "admin:candombe";	//TODO: 
+			std::string usrAndPwd = this->information_.httpBasicCredentials_;
+			std::string credentials = base64_encode(usrAndPwd);
+			client.addHeader("Authorization", "Basic " + credentials);
+			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
 		}
-	}
 
-	//TODO: ver como hacer para refrescar los datos utilizando la variable refresh y que el metodo pueda seguir siendo CONST
-	//TODO: ver de retornar el vector de forma eficiente para evitar la copia...
-	virtual std::vector<Router> getRouterList(bool refresh = false) const
-	{
-		return this->routers_;
-	}
+		//std::string html = client.openRead(uriStr);
+		std::string html = client.openRead(uri);
+		this->parseRouterList(html, tempRouters);
 
-	virtual void refreshRouterList()
-	{
-		//if (refresh || !routerListObtained_)
-		//{
-			routers_.clear();
-			HttpClient client;
+		//return this->routers_;
 
-			/*
-			http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid			
-			*/
-
-			//std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-			//std::string uriStr = this->information_.routerListUri_;
-
-			net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery);
-
-			//client.addHeader("Host", "www.google.com");
-			//client.addHeader("Accept", "*/*");
-			//client.addHeader("Connection", "close");
-
-			if (information_.httpBasicCredentials_.size() > 0)
-			{
-				//std::string usrAndPwd = "admin:candombe";	//TODO: 
-				std::string usrAndPwd = this->information_.httpBasicCredentials_;
-				std::string credentials = base64_encode(usrAndPwd);
-				client.addHeader("Authorization", "Basic " + credentials);
-				//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-			}
-
-			//std::string html = client.openRead(uriStr);
-			std::string html = client.openRead(uri);
-			this->parseRouterList(html);
-
-			//routerListObtained_ = true;
-		//}
+		return tempRouters;
 
 	}
+
+	//virtual void refreshRouterList()
+	//{
+	//	//if (refresh || !routerListObtained_)
+	//	//{
+	//		routers_.clear();
+	//		HttpClient client;
+
+	//		/*
+	//		http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid			
+	//		*/
+
+	//		//std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
+	//		//std::string uriStr = this->information_.routerListUri_;
+
+	//		net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery);
+
+	//		//client.addHeader("Host", "www.google.com");
+	//		//client.addHeader("Accept", "*/*");
+	//		//client.addHeader("Connection", "close");
+
+	//		if (information_.httpBasicCredentials_.size() > 0)
+	//		{
+	//			//std::string usrAndPwd = "admin:candombe";	//TODO: 
+	//			std::string usrAndPwd = this->information_.httpBasicCredentials_;
+	//			std::string credentials = base64_encode(usrAndPwd);
+	//			client.addHeader("Authorization", "Basic " + credentials);
+	//			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+	//		}
+
+	//		//std::string html = client.openRead(uriStr);
+	//		std::string html = client.openRead(uri);
+	//		this->parseRouterList(html);
+
+	//		//routerListObtained_ = true;
+	//	//}
+
+	//}
 
 
 	virtual void connectTo(const Router& router) const
@@ -208,7 +240,7 @@ public:
 	}
 
 protected:
-	virtual void parseItem(const std::string& text)
+	virtual void parseItem(const std::string& text, std::vector<Router>& routers) const
 	{
 		//typedef std::vector<std::string> split_vector_type;
 		
@@ -292,13 +324,14 @@ protected:
 			}
 		}
 
-		routers_.push_back(Router(bssid, ssid, signal, channel, security));
+		//routers_.push_back(Router(bssid, ssid, signal, channel, security));
+		routers.push_back(Router(bssid, ssid, signal, channel, security));
  	    
 		//std::vector<std::string> splitVec; 
 		//boost::split( splitVec, text, boost::is_any_of(",") ); 
 	}
 
-	virtual void parseRouterList(const std::string& htmlText)
+	virtual void parseRouterList(const std::string& htmlText, std::vector<Router>& routers) const
 	{
 
 		//TODO: esta expresion regular, agregarla... o bien, como Xpressive->Static o bien al archivo de configuracion general.
@@ -331,7 +364,7 @@ protected:
 			std::string strItem = *it++;
 			//std::cout << strItem << std::endl;
 
-			parseItem(strItem);
+			parseItem(strItem, routers);
 		}
 
 		//--------------------------------------------------------------------------------------
@@ -358,7 +391,7 @@ protected:
 
 
 
-	std::vector<Router> routers_;
+	//std::vector<Router> routers_;
 
 	static const std::string routerListQuery;       // "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 	static const std::string connectToQueryFirst;   // "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid="
@@ -376,6 +409,8 @@ const std::string TpLinkController::connectToQueryFirst = "/userRpm/WlanModeRpm.
 const std::string TpLinkController::connectToQuerySecond = "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save";
 const std::string TpLinkController::statusQuery = "/userRpm/StatusRpm.htm";
 
+
+// Compile-time regex
 //const sregex TpLinkController::statusPageRegEx = sregex::compile(STATUS_PAGE_REGEX);
 const sregex TpLinkController::commonDigitRegEx = repeat<0,4>(_d);
 const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s1= +_w) >> "\"," >> _ln >> (s2= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s3= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;

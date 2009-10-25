@@ -31,14 +31,19 @@ public:
 		//: routerListObtained_(false)
 	{}
 
-	virtual void initialize(const APInformation& information, bool refresh = false) = 0;
+	//virtual void initialize(const APInformation& information, bool refresh = false) = 0;
+	virtual void initialize(const APInformation& information)
+	{
+		this->information_ = information;
+	}
+
 
 	//virtual ~AbstractAPController() 
 	//{
 	//}
 
-	//TODO: ver de separar este metodo en dos, uno para refrescar los datos, otro para obtenerlo
-	virtual std::vector<Router> getRouterList(bool refresh = false) const = 0;
+	//virtual std::vector<Router> getRouterList(bool refresh = false) const = 0;
+	virtual std::vector<Router> getRouterList() const = 0;
 	virtual void connectTo(const Router& router) const = 0;
 	virtual APStatus getStatus() const = 0;
 	
