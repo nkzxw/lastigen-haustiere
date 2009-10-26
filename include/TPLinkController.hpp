@@ -260,6 +260,7 @@ protected:
 		bool security;
 
 
+		//TODO: este enum está declarado dentro de la funcion.
 		enum States {ExtractBSSID, ExtractSSID, ExtractSignal, ExtractChannel, ExtractSecurity};
 		States state = ExtractBSSID;
 

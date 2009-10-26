@@ -5,8 +5,16 @@
 
 #include <vector>
 
+#include <boost/thread.hpp>
+
 #include "AppSettings.hpp"
 #include "AbstractAPController.hpp"
+
+
+namespace APManagerState
+{
+	enum APManagerState {NotConnected = 0, Connecting = 1, Connected = 2};
+}
 
 
 //TODO: le pongo una interface ????
@@ -16,7 +24,7 @@ public:
 
 	//TODO: ver si conviene inicializar la DLL's en multiples hilos simultaneamente, o en serie, uno después de otro. Probar ambos mecanismos y ver cual es más performante
 	APManager(const APInformation& apInformation)
-		//: connectedRouter_(0)
+		: state_(APManagerState::NotConnected)
 	{
 		//shared_ptr
 		AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
@@ -69,6 +77,12 @@ public:
 	//TODO: start de la maquina de estados. Debe correr en un thread separado. Quien se encarga de levantar el thread. El SNM o el APManager mismo (desde el constructor)?
 	virtual void startStateMachine()
 	{
+		//boost::thread thr1( this );
+		boost::thread thr1( boost::bind( &APManager::startStateMachine, this ) );
+
+		//boost::thread thr1( boost::bind( &X::run, &x ) );
+		//boost::thread thr2( boost::bind( &X::complexOperation, &x, 30 ) );
+		//boost::thread thr3( boost::bind( &X::complexOperation, &x, 100 ) );
 	}
 
 	virtual ~APManager()
@@ -78,6 +92,31 @@ public:
 
 
 protected:
+
+    //void operator()() //startStateMachine()
+    void startStateMachine()
+	{
+		std::cout << "starting state machine" << std::endl;
+
+		while (true)
+		{
+			switch (state_)
+			{
+				case APManagerState::NotConnected:
+					std::cout << "APMSNotConnected: finding connections" << std::endl;
+					break;
+				case APManagerState::Connecting:
+						std::cout << "APMSConnecting" << std::endl;
+						break;
+				case APManagerState::Connected:
+						std::cout << "APMSConnected" << std::endl;
+						break;
+			}
+		}
+	}
+
+	APManagerState::APManagerState state_;
+
 	//shared_ptr
 	std::vector<Router> routers_;
 	
