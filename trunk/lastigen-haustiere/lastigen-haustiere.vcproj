@@ -177,6 +177,10 @@
 				RelativePath=".\SmartNetworkManager.hpp"
 				>
 			</File>
+			<File
+				RelativePath="..\include\ThreadManager.hpp"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
