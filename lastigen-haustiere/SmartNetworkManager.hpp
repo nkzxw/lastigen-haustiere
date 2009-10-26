@@ -69,6 +69,7 @@ bool SignalGreater ( Router elem1, Router elem2 )
 //typedef boost::scoped_ptr<AbstractAPController> APPtr;
 
 
+
 void printRouterList(const AbstractAPController *controller)
 {
 	std::vector<Router> routers = controller->getRouterList();
@@ -113,8 +114,15 @@ public:
 			std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
 			//accessPointControllers_.insert(tempStr, temp);
 			apManagers_.insert(tempStr, tempAPManager);
+			tempAPManager->run();
 
 		}
+
+
+		//TODO: poner un join a los threads para que no se detena la ejecucion...
+
+
+
 
 		//for (MapType::iterator it = accessPointControllers_.begin(); it != accessPointControllers_.end(); ++it)
 		for (APManagerListType::const_iterator it = apManagers_.begin(); it != apManagers_.end(); ++it)
@@ -176,7 +184,11 @@ public:
 
 	}
 
+
 protected:
+
+
+
 	//MapType accessPointControllers_;
 	APManagerListType apManagers_;
 

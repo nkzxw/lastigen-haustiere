@@ -103,7 +103,6 @@ int main(int argc, char** argv)
 	//AppSettings *cfg = cm.getSettings();
 
 
-
 	{
 	SmartNetworkManager snm;
 	std::cout << "--- DESTRUCTORES ---" << std::endl;
