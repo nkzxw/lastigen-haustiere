@@ -17,6 +17,8 @@ namespace APManagerState
 }
 
 
+//TODO: ver de usar thread_group de boost::thread
+
 //TODO: le pongo una interface ????
 class APManager
 {
