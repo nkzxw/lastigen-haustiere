@@ -9,6 +9,10 @@
 //TODO: esta libreria no está soportada por boost, ver la posibilidad de implementar Singleton de Loki
 
 
+//TODO: implementar un mecanismo para refrescar la información
+//TODO: evaluar Straightforward Settings de Torjo
+
+
 //TODO: ver de cambiar por el singleton mutexed, ya que este que estamos usando no debe ser thread-safe
 template <typename T>
 class ConfigManager : public boost::singleton< ConfigManager<T> >

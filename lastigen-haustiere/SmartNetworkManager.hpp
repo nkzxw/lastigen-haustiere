@@ -87,6 +87,10 @@ void printRouterList(const AbstractAPController *controller)
 	std::copy (routersWithoutSecurity.begin(), routersWithoutSecurity.end(), std::ostream_iterator<Router>(std::cout));
 }
 
+
+
+
+//---------------------------------------------------------------------------
 class SmartNetworkManager
 {
 public:

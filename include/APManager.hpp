@@ -14,11 +14,6 @@ class APManager
 {
 public:
 
-	//APManager(const APInformation& information)
-	//	: routerListObtained_(false), information_(information)
-	//{
-	//}
-
 	//TODO: ver si conviene inicializar la DLL's en multiples hilos simultaneamente, o en serie, uno después de otro. Probar ambos mecanismos y ver cual es más performante
 	APManager(const APInformation& apInformation)
 		//: connectedRouter_(0)
@@ -51,7 +46,7 @@ public:
 		refreshConnectedRouter();
 	}
 
-	virtual void refreshtRouterList()
+	virtual void refreshRouterList()
 	{
 		this->routers_ = controller_->getRouterList();
 	}
@@ -72,7 +67,7 @@ public:
 
 
 	//TODO: start de la maquina de estados. Debe correr en un thread separado. Quien se encarga de levantar el thread. El SNM o el APManager mismo (desde el constructor)?
-	virtual void start()
+	virtual void startStateMachine()
 	{
 	}
 
