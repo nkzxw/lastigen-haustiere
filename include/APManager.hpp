@@ -14,7 +14,7 @@
 
 namespace APManagerState
 {
-	enum APManagerState {Initializing = 0, APNotConnected = 1, APConnecting = 2, APConnected = 2};
+	enum APManagerState {Initializing = 0, APNotConnected = 1, APConnecting = 2, APConnected = 3};
 }
 
 
