@@ -84,7 +84,7 @@ public:
 protected:
 	//TODO: ver si conviene inicializar la DLL's en multiples hilos simultaneamente, o en serie, uno después de otro. Probar ambos mecanismos y ver cual es más performante
 	APManager(const APInformation& apInformation)
-		: apInformation_(apInformation), state_(APManagerState::NotConnected)
+		: apInformation_(apInformation), state_(APManagerState::Initializing)
 	{
 		//shared_ptr
 		AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
