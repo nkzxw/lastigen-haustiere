@@ -178,7 +178,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\ThreadManager.hpp"
+				RelativePath="..\include\ThreadedClass.hpp"
 				>
 			</File>
 		</Filter>

@@ -96,7 +96,8 @@ class SmartNetworkManager
 {
 public:
 	//typedef boost::ptr_unordered_map<std::string, AbstractAPController> MapType;
-	typedef boost::ptr_unordered_map<std::string, APManager> APManagerListType;
+	//typedef boost::ptr_unordered_map<std::string, APManager> APManagerListType;
+	typedef boost::unordered_map<std::string, boost::shared_ptr<APManager> > APManagerListType;
 
 	//SmartNetworkManager(const AppSettings& settings)
 	SmartNetworkManager()
@@ -109,12 +110,17 @@ public:
 			//std::cout << it->name_ << std::endl;
 			//std::cout << it->accessPointController_ << std::endl;
 
-			APManager *tempAPManager = new APManager(*it);
+			//APManager *tempAPManager = new APManager(*it);
+			boost::shared_ptr<APManager> tempAPManager = ThreadedClass<APManager>::Create(*it);
 
-			std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
-			//accessPointControllers_.insert(tempStr, temp);
-			apManagers_.insert(tempStr, tempAPManager);
-			tempAPManager->run();
+			//std::string tempStr = it->name_;			//TODO: ver como se puede hacer esta insercion más simple
+			////accessPointControllers_.insert(tempStr, temp);
+			//apManagers_.insert(tempStr, tempAPManager);
+			////tempAPManager->run();
+
+
+			//apManagers_.insert(it->name_, tempAPManager);
+			apManagers_[it->name_] = tempAPManager;
 
 		}
 
