@@ -77,7 +77,7 @@ public:
 
 
 	//TODO: start de la maquina de estados. Debe correr en un thread separado. Quien se encarga de levantar el thread. El SNM o el APManager mismo (desde el constructor)?
-	virtual void startStateMachine()
+	virtual void run()
 	{
 		//boost::thread thr1( this );
 		boost::thread thr1( boost::bind( &APManager::startStateMachine, this ) );

@@ -14,10 +14,18 @@ public:
 //        : stopRequested_(false), thread_(boost::bind( &T::doWork, this)) //Note 2
 
 	ThreadedClass()
-        : stopRequested_(false), thread_(boost::bind( &T::doWork, dynamic_cast<T*>(this) )) //Note 2
+        : stopRequested_(false)//, thread_(boost::bind( &T::doWork, dynamic_cast<T*>(this) )) //Note 2
     {
+		//this->doWork();
+		//dynamic_cast<T*>(this)->doWork();
     }
 	
+	virtual void test()
+	{
+		this->doWork();
+		//dynamic_cast<T*>(this)->doWork();
+		static_cast<T*>(this)->doWork();
+	}
  
     ~ThreadedClass()
     {
