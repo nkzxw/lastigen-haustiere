@@ -88,7 +88,8 @@ int main(int argc, char** argv)
 
 	{
 	temp t;
-	
+	t.test();
+
 	boost::this_thread::sleep(boost::posix_time::milliseconds(1500));
 	//boost::this_thread::sleep(boost::posix_time::nanoseconds(10)); 
 
