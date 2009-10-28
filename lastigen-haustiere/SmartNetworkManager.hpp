@@ -146,7 +146,7 @@ public:
 			////tempThread.join();
 
 
-			//while ( it->second->getStatus() == APStatus::Disconnected )
+			//while ( it->second->getStatus() == APConnectionStatus::Disconnected )
 			//{
 			//	std::cout << "Connecting..." << std::endl;
 			//}
