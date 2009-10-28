@@ -4,14 +4,14 @@ var statusPara = new Array(
 0,
 16,
 20000,
-152,
-"4.0.1 Build 080909 Rel.52917n ",
-"WA500G v2/WA501G v1 081520C2",
+8928,
+"4.3.0 Build 090604 Rel.57269n ",
+"WA5110G v1 081520C2",
 0,0 );
 </script>
 <script language=JavaScript>
 var lanPara = new Array(
-"00-23-CD-CC-64-D3", "192.168.0.254", "255.255.255.0", 
+"00-23-CD-D2-95-6A", "192.168.1.252", "255.255.255.0", 
 0,0 );
 </script>
 <script language=JavaScript>
@@ -20,8 +20,8 @@ var wlanPara = new Array(
 "HG520s",
 1,
 2,
-"00-23-CD-CC-64-D3",
-"192.168.0.254",
+"00-23-CD-D2-95-6A",
+"192.168.1.252",
 0,
 5,
 "10 dB",
@@ -29,20 +29,20 @@ var wlanPara = new Array(
 </script>
 <script language=JavaScript>
 var statistList = new Array(
-1173528, 236492, 1595, 1428, 
+69615978, 4782462, 100461, 38106, 
 0,0 );
 </script>
 <script language=JavaScript>
 var wanPara = new Array(
-0, "00-23-CD-CC-64-D3", "0.0.0.0", 1, "0.0.0.0", 0, 0, "0.0.0.0", 2, 1, 0, "0.0.0.0 , 0.0.0.0", "", 0, 
+0, "00-23-CD-D2-95-6B", "0.0.0.0", 1, "0.0.0.0", 0, 0, "0.0.0.0", 2, 1, 0, "0.0.0.0 , 0.0.0.0", "", 0, 
 0,0 );
 </script>
-<meta http-equiv="pragma" content="no-cache">
+<html><head><meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="expires" content="wed, 26 Feb 1997 08:21:57 GMT">
 <LINK href="/dynaform/css_main.css" rel=stylesheet>
 <script language="JavaScript" src="/dynaform/common.js" type="text/JavaScript"></script>
 <script language="JavaScript"><!--
-if(window.parent == window){window.location.href="http://192.168.0.254";}
+if(window.parent == window){window.location.href="http://192.168.1.252";}
 function Click(){ window.event.returnValue=false;}
 document.oncontextmenu=Click;
 //--></script>
@@ -187,7 +187,7 @@ if (wlanPara[7]!=7){
 document.write('<TR><TD class=Item id = "t_mode">Mode:</TD><TD colspan=2>' + wlanTypeStringArray[wlanModeIndex] +'</TD></TR>');
 }
 	document.write('<TR><TD class=Item id = "t_mac_addr2">MAC Address:</TD><TD colspan=2>' + wlanMac +'</TD></TR>');
-	document.write('<TR><TD class=Item id = "t_ip_addr2">IP Address:</TD><TD colspan=2>' + wlanIp +'</TD></TR>');
+	//document.write('<TR><TD class=Item id = "t_ip_addr2">IP Address:</TD><TD colspan=2>' + wlanIp +'</TD></TR>');
 	document.write('<TR><TD class=blue colspan=3></TD></TR>');
 }
 

@@ -14,6 +14,11 @@ public:
 	{
 	}
 
+	Router(const std::string& bssid, const std::string& ssid, int signal, int channel)
+		: bssid_(bssid), ssid_(ssid), signal_(signal), channel_(channel), knownIpAddress_("")
+	{
+	}
+
 	Router(const std::string& bssid, const std::string& ssid, int signal, int channel, bool security, std::string knownIpAddress = "")
 		: bssid_(bssid), ssid_(ssid), signal_(signal), channel_(channel), security_(security), knownIpAddress_(knownIpAddress)
 	{
@@ -28,8 +33,8 @@ public: //protected:	//TODO:
 	std::string ssid_;
 	int signal_;
 	int channel_;
-	bool security_;
-	std::string knownIpAddress_;
+	bool security_;					//TODO: ver si uso boost::try_bool o boost::optional<bool>
+	std::string knownIpAddress_;	//TODO: boost::optional<std::string>
 
 	std::string protocol_; //TODO: 802.11B o 802.11G,... etc... investigar...
 

@@ -11,7 +11,7 @@
 #include "Router.hpp"
 
 
-enum APStatus
+enum APConnectionStatus
 {
 	Disconnected = 0,
 	Connected = 1,

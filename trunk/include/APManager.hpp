@@ -112,6 +112,7 @@ protected:
 				
 				case APManagerState::Initializing:
 					std::cout << apInformation_.name_ << " - Initializing" << std::endl;
+					controller_->getStatus();
 					boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
 					break;
 				case APManagerState::APNotConnected:

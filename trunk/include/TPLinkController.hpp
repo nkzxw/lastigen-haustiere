@@ -172,7 +172,7 @@ public:
 
 		//std::cout << STATUS_PAGE_REGEX << std::endl;
 
-
+		std::string apBssid = "";
 		std::string ssid = "";
 		std::string channel = "";
 		std::string signal = "";
@@ -181,9 +181,10 @@ public:
 		
 		if(regex_match(htmlText, what, statusPageRegEx))
 		{
-			ssid = what[1];
-			channel = what[2];
-			signal = what[3];
+			apBssid = what[1];
+			ssid = what[2];
+			channel = what[3];
+			signal = what[4];
 		}
 
 		if (ssid.size() > 0)
@@ -377,7 +378,8 @@ const std::string TpLinkController::statusQuery = "/userRpm/StatusRpm.htm";
 // Compile-time regex
 //const sregex TpLinkController::statusPageRegEx = sregex::compile(STATUS_PAGE_REGEX);
 const sregex TpLinkController::commonDigitRegEx = repeat<0,4>(_d);
-const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s1= +_w) >> "\"," >> _ln >> (s2= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s3= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;
+//const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s1= +_w) >> "\"," >> _ln >> (s2= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s3= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;
+const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var lanPara = new Array("  >> _ln >> '"' >> (s1= +(_w | '-')) >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s2= +_w) >> "\"," >> _ln >> (s3= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s4= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;
 
 
 #endif //TPLINKCONTROLLER_HPP_
