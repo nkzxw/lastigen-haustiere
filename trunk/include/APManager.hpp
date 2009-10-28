@@ -54,21 +54,8 @@ public:
 		return this->connectedRouter_;
 	}
 
-
-
-
-	//TODO: start de la maquina de estados. Debe correr en un thread separado. Quien se encarga de levantar el thread. El SNM o el APManager mismo (desde el constructor)?
-	//virtual void run()
-	//{
-	//	//boost::thread thr1( this );
-	//	boost::thread thr1( boost::bind( &APManager::startStateMachine, this ) );
-
-	//	//boost::thread thr1( boost::bind( &X::run, &x ) );
-	//	//boost::thread thr2( boost::bind( &X::complexOperation, &x, 30 ) );
-	//	//boost::thread thr3( boost::bind( &X::complexOperation, &x, 100 ) );
-	//}
-
-	virtual void doWork()
+	//Thread Entry-point
+	virtual void doWork()	//TODO: poner un nombre mejor 
 	{
 		startStateMachine();
 	}
@@ -108,9 +95,15 @@ protected:
 			switch (state_)
 			{
 				case APManagerState::Initializing:
-					std::cout << apInformation_.name_ << " - Initializing" << std::endl;
-					controller_->getStatus();
-					boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
+					std::cout << apInformation_.name_ << " - Initializing" << std::endl; //TODO: logger
+					if ( isConnected() )
+					{
+						state_ = APManagerState::APConnected;
+					}
+					else
+					{
+						state_ = APManagerState::APNotConnected;
+					}
 					break;
 				case APManagerState::APNotConnected:
 					std::cout << apInformation_.name_ << " - APNotConnected: finding connections" << std::endl;
@@ -126,6 +119,14 @@ protected:
 					break;
 			}
 		}
+	}
+
+
+	bool isConnected()
+	{
+		controller_->getStatus();
+
+		return false;
 	}
 
 	APManagerState::APManagerState state_;
