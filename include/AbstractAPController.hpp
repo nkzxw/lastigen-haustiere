@@ -18,6 +18,14 @@ enum APConnectionStatus
 	NotWorking = 2
 };
 
+class APStatus
+{
+public:
+	APConnectionStatus connectionStatus_;
+	Router connectedRouter_;
+
+};
+
 class AbstractAPController
 {
 public:
@@ -45,7 +53,7 @@ public:
 	//virtual std::vector<Router> getRouterList(bool refresh = false) const = 0;
 	virtual std::vector<Router> getRouterList() const = 0;
 	virtual void connectTo(const Router& router) const = 0;
-	virtual APStatus getStatus() const = 0;
+	virtual APConnectionStatus getStatus() const = 0;
 	
 	//TODO: ver de retornar una referencia o puntero del Router
 	virtual Router getConnectedRouter() const = 0;

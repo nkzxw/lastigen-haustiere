@@ -1,21 +1,20 @@
 <script language=JavaScript>
 var apModePara = new Array(
-4, "111111111", 1, 0, "", "", "", "00-1B-9E-CE-4B-BC", "", "", "", "", "", "", "", 0, 0, 0, 0, 
+4, "111111111", 0, 0, "000000000000000", "00-00-00-00-00-00", "00-00-00-00-00-01", "00-1B-9E-CE-4B-BC", "00-00-00-00-00-02", "00-00-00-00-00-03", "00-00-00-00-00-04", "00-00-00-00-00-05", "00-00-00-00-00-06", "00-00-00-00-00-07", "00-00-00-00-00-08", 0, 0, 1, 0, 3, 
 0,0 );
 </script>
-<meta http-equiv="pragma" content="no-cache">
+<html><head><meta http-equiv="pragma" content="no-cache">
 <meta http-equiv="expires" content="wed, 26 Feb 1997 08:21:57 GMT">
 <LINK href="/dynaform/css_main.css" rel=stylesheet>
 <script language="JavaScript" src="/dynaform/common.js" type="text/JavaScript"></script>
 <script language="JavaScript"><!--
-if(window.parent == window){window.location.href="http://192.168.0.254";}
+if(window.parent == window){window.location.href="http://192.168.1.252";}
 function Click(){ window.event.returnValue=false;}
 document.oncontextmenu=Click;
 //--></script>
 <SCRIPT language="javascript"><!--
 var apModeStr = new Array(
-	'<TR><TD colspan = 2 style="padding-left:30px;font-weight:bold;font-size:14px"><input name="apMode" id="apMode" type="radio" value="0" onclick="apModeOnClick(0);">&nbsp;<span id="t_disable">Disable Wireless</span></TD></TR>' +
-	'<tr><td colspan=2><br></td></tr>'
+	'<TR><TD colspan = 2 style="padding-left:30px;font-weight:bold;font-size:14px"><input name="apMode" id="apMode" type="radio" value="0" onclick="apModeOnClick(0);"></TD></TR>'
 	,
 	'<TR><TD colspan = 2 style="padding-left:30px;font-weight:bold;font-size:14px"><input name="apMode" id="apMode" type="radio" value="1" onclick="apModeOnClick(1);">&nbsp;<span id="t_access">Access Point</span></TD></TR>' +
 	'<TR><td colspan=2 style="padding-left:60px"><input name="apBroadcast" id="apBroadcast" type="checkbox" value="2">&nbsp;<span id="t_enBroadcast">Enable SSID Broadcast</span></TD></TR>' +
@@ -539,12 +538,12 @@ function doSurvey(){Dialog (generateURL(), "", "");}
 
 <TR><TD class=h1 colSpan=2><span id="t_title">Wireless Mode Settings</span></TD></TR>
 <TR><TD class=blue colSpan=2></TD></TR>
-<SCRIPT language="javascript">
+<SCRIPT language="javascript"><!--
 for(var i=0; i<mlist.count; i++){
 if (mlist.itemShow(i))
 document.write(mlist.itemHtml(i));
 }
-</SCRIPT>
+//--></SCRIPT>
 <TR><TD></TD><TD><input name="Survey" id="survey" type="button" class="buttonBig" value="Survey" onClick="doSurvey();"></TD></TR>
 <TR><TD class=blue colSpan=2></TD></TR>
 <TR><TD>&nbsp;</TD><TD><INPUT class=buttonBig type=submit value=Save name=Save></TD></TR>
@@ -552,7 +551,7 @@ document.write(mlist.itemHtml(i));
 <TR><TD colspan=2 style="text-align:left; white-space:normal; COLOR: #696969;"><strong id="t_note">Note:</strong>&nbsp; <span id="t_msg">The current security method may be invalid after changing the wireless mode.</span></TD></TR></TABLE>
 </TBODY></TABLE></FORM>
 </CENTER></BODY>
-<SCRIPT language="javascript">
+<SCRIPT language="javascript"><!--
 for(var i=0; i<=mlist.count; i++){
 if (mlist.itemShow(i))
 mlist.item(i).setPara();}
@@ -564,6 +563,26 @@ survey.disabled = false;
 }	
 if("101000011" == apModePara[1]){
 document.getElementById('chkWds').style.display='none';}
-</SCRIPT>
+if(0 == apModePara[19]){
+	document.forms[0].apMode[0].disabled = true;
+	document.forms[0].apMode[1].disabled = true;
+	document.forms[0].apMode[3].disabled = true;
+	document.forms[0].apMode[4].disabled = true;
+	document.forms[0].apMode[5].disabled = true;
+	document.forms[0].apMode[6].disabled = true;
+	document.getElementById('chkWds').style.display='none';
+}
+if(4 == apModePara[19]){
+	document.forms[0].apMode[0].disabled = true;
+	document.forms[0].apMode[2].disabled = true;
+	document.forms[0].apMode[3].disabled = true;
+	document.forms[0].apMode[4].disabled = true;
+	document.forms[0].apMode[5].disabled = true;
+	document.forms[0].apMode[6].disabled = true;
+	document.getElementById('chkWds').style.display='none';
+}
+
+document.forms[0].apMode[0].style.display='none';
+//--></SCRIPT>
 
 </HTML>

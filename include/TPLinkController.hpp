@@ -140,7 +140,7 @@ public:
 		std::cout << html << std::endl;
 	}
 
-	virtual APStatus getStatus() const
+	virtual APConnectionStatus getStatus() const
 	{
 		//HttpClient client;
 
@@ -179,7 +179,8 @@ public:
 
 		smatch what;
 		
-		if(regex_match(htmlText, what, statusPageRegEx))
+		//TODO: ver si hay un regex_match_iterator
+		if (regex_match(htmlText, what, statusPageRegEx))
 		{
 			apBssid = what[1];
 			ssid = what[2];
@@ -187,13 +188,17 @@ public:
 			signal = what[4];
 		}
 
+		//TODO: ver como retornar los datos devueltos por este metodo. Ver de armar un objeto que contenga toda la informacion necesaria para el ApManager para ser retornado por GetStatus().
+		//TODO: GetStatus puede ser cambiado de nombre a GetInformation u otra cosa... porque no solo estamos obteniendo el Status, sino otro tipo de informacion.... me parece que no solo es Status.
+		parseWirelessStatisticsPage();
+
 		if (ssid.size() > 0)
 		{
-			return APStatus::Connected;
+			return APConnectionStatus::Connected;
 		}
 		else
 		{
-			return APStatus::Disconnected;
+			return APConnectionStatus::Disconnected;
 		}
 	}
 	
@@ -358,6 +363,55 @@ protected:
 
 	//std::vector<Router> routers_;
 
+	virtual void parseWirelessStatisticsPage() const
+	{
+		//HttpClient client;
+
+		//net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery);
+
+		////client.addHeader("Host", "www.google.com");
+		////client.addHeader("Accept", "*/*");
+		////client.addHeader("Connection", "close");
+
+		//if (information_.httpBasicCredentials_.size() > 0)
+		//{
+		//	//std::string usrAndPwd = "admin:candombe";	//TODO: 
+		//	std::string usrAndPwd = this->information_.httpBasicCredentials_;
+		//	std::string credentials = base64_encode(usrAndPwd);
+		//	client.addHeader("Authorization", "Basic " + credentials);
+		//	//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+		//}
+
+		//std::string html = client.openRead(uri);
+
+		//std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-wireless-statistics.html";
+		std::string htmlFile = "D:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-wireless-statistics.html";
+		std::string htmlText;
+		loadFile(htmlText, htmlFile);
+
+		//this->parseStatusPage(htmlText);
+
+		//--------------------------------------------------------------------------------------------------------
+
+		//std::cout << STATUS_PAGE_REGEX << std::endl;
+
+		std::string ssid = "";
+		std::string receivedPackets = "";
+		std::string sentPackets = "";
+
+		smatch what;
+		
+		//TODO: ver si hay un regex_match_iterator
+		if (regex_match(htmlText, what, wirelessStatisticsPageRegEx))
+		{
+			ssid = what[1];
+			receivedPackets = what[2];
+			sentPackets = what[3];
+		}
+	}
+
+
+
 	static const std::string routerListQuery;       // "/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
 	static const std::string connectToQueryFirst;   // "/userRpm/WlanModeRpm.htm?staSsid=&staType=1&staBssid=&rptBssid=&apMode=4&urptBssid="
 	static const std::string connectToQuerySecond;  // "&pptBssid=&mptBssid1=&mptBssid2=&mptBssid3=&mptBssid4=&mptBssid5=&mptBssid6=&Save=Save"
@@ -365,6 +419,7 @@ protected:
 
 	static const sregex commonDigitRegEx;
 	static const sregex statusPageRegEx;
+	static const sregex wirelessStatisticsPageRegEx;
 
 };
 
@@ -378,9 +433,25 @@ const std::string TpLinkController::statusQuery = "/userRpm/StatusRpm.htm";
 // Compile-time regex
 //const sregex TpLinkController::statusPageRegEx = sregex::compile(STATUS_PAGE_REGEX);
 const sregex TpLinkController::commonDigitRegEx = repeat<0,4>(_d);
-//const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s1= +_w) >> "\"," >> _ln >> (s2= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s3= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;
 const sregex TpLinkController::statusPageRegEx = bos >> *_ >> "var lanPara = new Array("  >> _ln >> '"' >> (s1= +(_w | '-')) >> *_ >> "var wlanPara = new Array(" >> _ln >> _d >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s2= +_w) >> "\"," >> _ln >> (s3= commonDigitRegEx) >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> +(_w | '-') >> "\"," >> _ln >> '"' >> +(_w | '.') >> "\"," >> _ln >> commonDigitRegEx >> ',' >> _ln >> commonDigitRegEx >> ',' >> _ln >> '"' >> (s4= commonDigitRegEx) >> " dB\"," >> _ln >> commonDigitRegEx >> ',' >> commonDigitRegEx >> " );" >> *_ >> eos;
+const sregex TpLinkController::wirelessStatisticsPageRegEx = bos >> *_ >> "var hostList = new Array("  >> _ln >> '"' >> +(_w | '-') >> '"' >> ", " >> "8, " >> repeat<0,7>(_d) >>  ", " >> repeat<0,7>(_d) >>  ", " >> _ln >> '"' >> (s1= +(_w | '-')) >> '"' >> ", " >> "8, " >> (s2= repeat<0,7>(_d)) >>  ", " >> (s3= repeat<0,7>(_d)) >> *_ >> eos;
 
+
+/*
+<script language=JavaScript>
+var hostList = new Array(
+"00-23-CD-D2-95-6A", 8, 97027, 181922, 
+"00-1B-9E-CE-4B-BC", 8, 52568, 120119, 
+"00-22-FB-3F-47-8C", 1, 38549, 53114, 
+"00-15-6D-53-55-B1", 10, 0, 0, 
+"00-1F-E1-08-69-DE", 1, 134, 10, 
+"00-02-CF-A2-9A-CE", 10, 0, 0, 
+"00-08-54-93-95-23", 1, 8, 2, 
+"00-21-27-D1-BC-FE", 1, 5768, 5213, 
+0,0 );
+</script>
+
+*/
 
 #endif //TPLINKCONTROLLER_HPP_
 
