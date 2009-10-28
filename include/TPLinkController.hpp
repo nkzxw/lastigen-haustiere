@@ -173,26 +173,31 @@ public:
 		//std::cout << STATUS_PAGE_REGEX << std::endl;
 
 		std::string apBssid = "";
-		std::string ssid = "";
-		std::string channel = "";
-		std::string signal = "";
+
+		std::string routerBssid = "";
+		std::string routerSsid = "";
+		std::string routerChannel = "";
+		std::string routerSignal = "";
+
+		std::string receivedPackets = "";
+		std::string sentPackets = "";
+
 
 		smatch what;
-		
-		//TODO: ver si hay un regex_match_iterator
 		if (regex_match(htmlText, what, statusPageRegEx))
 		{
 			apBssid = what[1];
-			ssid = what[2];
-			channel = what[3];
-			signal = what[4];
+			routerSsid = what[2];
+			routerChannel = what[3];
+			routerSignal = what[4];
 		}
 
 		//TODO: ver como retornar los datos devueltos por este metodo. Ver de armar un objeto que contenga toda la informacion necesaria para el ApManager para ser retornado por GetStatus().
 		//TODO: GetStatus puede ser cambiado de nombre a GetInformation u otra cosa... porque no solo estamos obteniendo el Status, sino otro tipo de informacion.... me parece que no solo es Status.
-		parseWirelessStatisticsPage();
+		parseWirelessStatisticsPage(routerBssid, receivedPackets, sentPackets);
 
-		if (ssid.size() > 0)
+
+		if (routerSignal.size() > 0)
 		{
 			return APConnectionStatus::Connected;
 		}
@@ -363,7 +368,7 @@ protected:
 
 	//std::vector<Router> routers_;
 
-	virtual void parseWirelessStatisticsPage() const
+	virtual void parseWirelessStatisticsPage(std::string& bssid, std::string& receivedPackets, std::string& sentPackets) const
 	{
 		//HttpClient client;
 
@@ -395,16 +400,16 @@ protected:
 
 		//std::cout << STATUS_PAGE_REGEX << std::endl;
 
-		std::string ssid = "";
-		std::string receivedPackets = "";
-		std::string sentPackets = "";
+		//std::string bssid = "";
+		//std::string receivedPackets = "";
+		//std::string sentPackets = "";
 
 		smatch what;
 		
 		//TODO: ver si hay un regex_match_iterator
 		if (regex_match(htmlText, what, wirelessStatisticsPageRegEx))
 		{
-			ssid = what[1];
+			bssid = what[1];
 			receivedPackets = what[2];
 			sentPackets = what[3];
 		}
