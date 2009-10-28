@@ -49,8 +49,6 @@ public:
 		this->connectedRouter_ = controller_->getConnectedRouter();
 	}
 
-
-
 	virtual Router getConnectedRouter() const
 	{
 		return this->connectedRouter_;
@@ -109,7 +107,6 @@ protected:
 		{
 			switch (state_)
 			{
-				
 				case APManagerState::Initializing:
 					std::cout << apInformation_.name_ << " - Initializing" << std::endl;
 					controller_->getStatus();
