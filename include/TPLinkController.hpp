@@ -116,44 +116,6 @@ public:
 
 	}
 
-	//virtual void refreshRouterList()
-	//{
-	//	//if (refresh || !routerListObtained_)
-	//	//{
-	//		routers_.clear();
-	//		HttpClient client;
-
-	//		/*
-	//		http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid			
-	//		*/
-
-	//		//std::string uriStr = "http://192.168.0.254/userRpm/popupSiteSurveyRpm.htm?iMAC=urptBssid";
-	//		//std::string uriStr = this->information_.routerListUri_;
-
-	//		net::Uri uri(this->information_.protocol_, this->information_.host_, this->routerListQuery);
-
-	//		//client.addHeader("Host", "www.google.com");
-	//		//client.addHeader("Accept", "*/*");
-	//		//client.addHeader("Connection", "close");
-
-	//		if (information_.httpBasicCredentials_.size() > 0)
-	//		{
-	//			//std::string usrAndPwd = "admin:candombe";	//TODO: 
-	//			std::string usrAndPwd = this->information_.httpBasicCredentials_;
-	//			std::string credentials = base64_encode(usrAndPwd);
-	//			client.addHeader("Authorization", "Basic " + credentials);
-	//			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-	//		}
-
-	//		//std::string html = client.openRead(uriStr);
-	//		std::string html = client.openRead(uri);
-	//		this->parseRouterList(html);
-
-	//		//routerListObtained_ = true;
-	//	//}
-
-	//}
-
 
 	virtual void connectTo(const Router& router) const
 	{
@@ -199,7 +161,8 @@ public:
 
 		//std::string html = client.openRead(uri);
 
-		std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
+		//std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
+		std::string htmlFile = "D:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
 		std::string htmlText;
 		loadFile(htmlText, htmlFile);
 
