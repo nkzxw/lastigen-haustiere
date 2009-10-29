@@ -14,7 +14,7 @@
 
 namespace APManagerState
 {
-	enum APManagerState {Initializing = 0, APNotConnected = 1, APConnecting = 2, APConnected = 3};
+	enum APManagerState {Initializing = 0, APNotConnected = 1, APConnecting = 2, APConnected = 3, Closing = 99};
 }
 
 
@@ -115,8 +115,21 @@ protected:
 					break;
 				case APManagerState::APConnected:
 					std::cout << apInformation_.name_ << " - APConnected" << std::endl;
-					boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
+					boost::this_thread::sleep(boost::posix_time::milliseconds(15000)); //TODO: pasar al archivo de configuración el tiempo de chequeo
+					//TODO: ver de cambiar por el equivalente a Monitor.Wait(x) porque si el thread está en sleep no es posible "avisarle" de su destruccion...
+
+					if ( isConnected() )
+					{
+						state_ = APManagerState::APConnected;
+					}
+					else
+					{
+						state_ = APManagerState::APNotConnected;
+					}
+
 					break;
+				case APManagerState::Closing:
+					return;
 			}
 		}
 	}
@@ -124,9 +137,7 @@ protected:
 
 	bool isConnected()
 	{
-		controller_->getStatus();
-
-		return false;
+		return (controller_->getStatus().get() != 0);
 	}
 
 	APManagerState::APManagerState state_;

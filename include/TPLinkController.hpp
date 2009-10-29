@@ -146,35 +146,32 @@ public:
 
 
 	//virtual APConnectionStatus getStatus() const
-	//virtual const boost::shared_ptr<Router> getStatus() const
-	virtual Router* getStatus() const
+	//virtual Router* getStatus() const
+	virtual const boost::shared_ptr<Router> getStatus() const
 	{
-		boost::shared_ptr<Router> tempRouter2(); //nullptr
-		Router* tempRouter = 0; //nullptr
+		HttpClient client;
 
-		//HttpClient client;
+		net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery);
 
-		//net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery);
+		//client.addHeader("Host", "www.google.com");
+		//client.addHeader("Accept", "*/*");
+		//client.addHeader("Connection", "close");
 
-		////client.addHeader("Host", "www.google.com");
-		////client.addHeader("Accept", "*/*");
-		////client.addHeader("Connection", "close");
+		if (information_.httpBasicCredentials_.size() > 0)
+		{
+			//std::string usrAndPwd = "admin:candombe";	//TODO: 
+			std::string usrAndPwd = this->information_.httpBasicCredentials_;
+			std::string credentials = base64_encode(usrAndPwd);
+			client.addHeader("Authorization", "Basic " + credentials);
+			//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
+		}
 
-		//if (information_.httpBasicCredentials_.size() > 0)
-		//{
-		//	//std::string usrAndPwd = "admin:candombe";	//TODO: 
-		//	std::string usrAndPwd = this->information_.httpBasicCredentials_;
-		//	std::string credentials = base64_encode(usrAndPwd);
-		//	client.addHeader("Authorization", "Basic " + credentials);
-		//	//client.addHeader("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.2; .NET CLR 1.0.3705;)");
-		//}
+		std::string htmlText = client.openRead(uri);
 
-		//std::string html = client.openRead(uri);
-
-		//std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
-		std::string htmlFile = "D:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
-		std::string htmlText;
-		loadFile(htmlText, htmlFile);
+		////std::string htmlFile = "Z:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
+		//std::string htmlFile = "D:\\Development\\CPP\\lastigen-haustiere\\Debug\\tplink-status.html";
+		//std::string htmlText;
+		//loadFile(htmlText, htmlFile);
 
 		//this->parseStatusPage(htmlText);
 
@@ -216,16 +213,20 @@ public:
 			}
 			catch(boost::bad_lexical_cast &)
 			{
-				return tempRouter;
+				//return tempRouter;
+				return boost::shared_ptr<Router>(); //nullptr
 			}
 
+			return boost::shared_ptr<Router>( new Router(routerBssid, routerSsid, routerSignal, routerChannel) );
 			//tempRouter.reset( new Router(routerBssid, routerSsid, routerSignal, routerChannel) );
-			boost::shared_ptr<Router> spp ( new Router(routerBssid, routerSsid, routerSignal, routerChannel) );
-			Router* pp = new Router(routerBssid, routerSsid, routerSignal, routerChannel);
+			//boost::shared_ptr<Router> spp ( new Router(routerBssid, routerSsid, routerSignal, routerChannel) );
+			//Router* pp = new Router(routerBssid, routerSsid, routerSignal, routerChannel);
 		}
 
 
-		return tempRouter;
+		//return tempRouter;
+		return boost::shared_ptr<Router>(); //nullptr
+
 	}
 	
 	virtual Router getConnectedRouter() const
