@@ -15,11 +15,10 @@
 #include <boost/lexical_cast.hpp>
 //#include <boost/regex.hpp>
 #include <boost/xpressive/xpressive.hpp>
-
-
 #include <boost/extension/extension.hpp>
 #include <boost/extension/factory.hpp>
 #include <boost/extension/type_map.hpp>
+
 
 #include "AbstractAPController.hpp"
 #include "Router.hpp"
@@ -140,8 +139,19 @@ public:
 		std::cout << html << std::endl;
 	}
 
-	virtual APConnectionStatus getStatus() const
+
+
+
+
+
+
+	//virtual APConnectionStatus getStatus() const
+	//virtual const boost::shared_ptr<Router> getStatus() const
+	virtual Router* getStatus() const
 	{
+		boost::shared_ptr<Router> tempRouter2(); //nullptr
+		Router* tempRouter = 0; //nullptr
+
 		//HttpClient client;
 
 		//net::Uri uri(this->information_.protocol_, this->information_.host_, this->statusQuery);
@@ -172,15 +182,13 @@ public:
 
 		//std::cout << STATUS_PAGE_REGEX << std::endl;
 
-		std::string apBssid = "";
-
+		std::string apBssid = "";			//TODO: no se está usando
 		std::string routerBssid = "";
 		std::string routerSsid = "";
-		std::string routerChannel = "";
-		std::string routerSignal = "";
-
-		std::string receivedPackets = "";
-		std::string sentPackets = "";
+		std::string tempRouterChannel = "";
+		std::string tempRouterSignal = "";
+		std::string receivedPackets = ""; //TODO: no se está usando
+		std::string sentPackets = "";     //TODO: no se está usando
 
 
 		smatch what;
@@ -188,23 +196,36 @@ public:
 		{
 			apBssid = what[1];
 			routerSsid = what[2];
-			routerChannel = what[3];
-			routerSignal = what[4];
+			tempRouterChannel = what[3];
+			tempRouterSignal = what[4];
 		}
 
 		//TODO: ver como retornar los datos devueltos por este metodo. Ver de armar un objeto que contenga toda la informacion necesaria para el ApManager para ser retornado por GetStatus().
 		//TODO: GetStatus puede ser cambiado de nombre a GetInformation u otra cosa... porque no solo estamos obteniendo el Status, sino otro tipo de informacion.... me parece que no solo es Status.
 		parseWirelessStatisticsPage(routerBssid, receivedPackets, sentPackets);
 
+		if (tempRouterSignal.size() > 0)
+		{
+			int routerSignal;
+			int routerChannel;
 
-		if (routerSignal.size() > 0)
-		{
-			return APConnectionStatus::Connected;
+			try
+			{
+				routerSignal = boost::lexical_cast<int>( tempRouterSignal );
+				routerChannel = boost::lexical_cast<int>( tempRouterChannel );
+			}
+			catch(boost::bad_lexical_cast &)
+			{
+				return tempRouter;
+			}
+
+			//tempRouter.reset( new Router(routerBssid, routerSsid, routerSignal, routerChannel) );
+			boost::shared_ptr<Router> spp ( new Router(routerBssid, routerSsid, routerSignal, routerChannel) );
+			Router* pp = new Router(routerBssid, routerSsid, routerSignal, routerChannel);
 		}
-		else
-		{
-			return APConnectionStatus::Disconnected;
-		}
+
+
+		return tempRouter;
 	}
 	
 	virtual Router getConnectedRouter() const

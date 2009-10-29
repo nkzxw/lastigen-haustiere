@@ -53,8 +53,10 @@ public:
 	//virtual std::vector<Router> getRouterList(bool refresh = false) const = 0;
 	virtual std::vector<Router> getRouterList() const = 0;
 	virtual void connectTo(const Router& router) const = 0;
-	virtual APConnectionStatus getStatus() const = 0;
-	
+	//virtual APConnectionStatus getStatus() const = 0;
+	//virtual const boost::shared_ptr<Router> getStatus() const = 0;
+	virtual Router* getStatus() const = 0;
+
 	//TODO: ver de retornar una referencia o puntero del Router
 	virtual Router getConnectedRouter() const = 0;
 
