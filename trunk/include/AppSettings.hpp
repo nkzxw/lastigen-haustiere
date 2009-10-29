@@ -38,6 +38,42 @@ using namespace boost::serialization;
 
 typedef boost::unordered_map<std::string, std::string> MapType;
 
+//TODO: Esta es una clase Generica, de la cual todas las clases especializadas deberán heredar. Ver como hacer esa herencia obligatoria.
+//TODO: poner la clase en un proyecto separado, junto con ConfigurationManager.
+class MappingConfiguration
+{
+protected:
+
+	friend class boost::serialization::access;
+
+	//TODO: poner estos métodos fuera de la clase como friend...
+	template < typename Archive >
+	void save(Archive & ar, const unsigned int version) const
+	{
+		ar	& make_nvp("AccessPoints", accessPoints_)
+			& make_nvp("TypeMapping", typeMapping_)
+			& make_nvp("KnownRouters", knownRouters_)
+			;
+	}
+
+	template < typename Archive >
+	void load(Archive & ar, const unsigned int version)
+	{
+		
+		ar	& make_nvp("AccessPoints", accessPoints_)
+			& make_nvp("TypeMapping", typeMapping_)
+			& make_nvp("KnownRouters", knownRouters_)
+			;
+
+		//isDefault_ = version < 2;
+	}
+
+
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
+
+protected:
+	MapType keyValueSettings_;
+};
 
 //TODO: ver de hacerla heredar de alguna clase comun... 
 //TODO: ... o algo asi como dividirla en Sections o similar... (generica)
