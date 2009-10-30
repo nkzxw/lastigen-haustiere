@@ -115,7 +115,12 @@ protected:
 					break;
 				case APManagerState::APConnected:
 					std::cout << apInformation_.name_ << " - APConnected" << std::endl;
-					boost::this_thread::sleep(boost::posix_time::milliseconds(15000)); //TODO: pasar al archivo de configuración el tiempo de chequeo
+
+					int millisecondsToWait = ConfigManager<AppSettings>::instance->get<int>("APManagerState.APConnected.MillisecondsToWait");
+					boost::this_thread::sleep(boost::posix_time::milliseconds(millisecondsToWait)); //TODO: pasar al archivo de configuración el tiempo de chequeo
+					//boost::this_thread::sleep(boost::posix_time::milliseconds(15000)); //TODO: pasar al archivo de configuración el tiempo de chequeo
+
+
 					//TODO: ver de cambiar por el equivalente a Monitor.Wait(x) porque si el thread está en sleep no es posible "avisarle" de su destruccion...
 
 					if ( isConnected() )
@@ -128,8 +133,8 @@ protected:
 					}
 
 					break;
-				case APManagerState::Closing:
-					return;
+				//case APManagerState::Closing:
+				//	return;
 			}
 		}
 	}
