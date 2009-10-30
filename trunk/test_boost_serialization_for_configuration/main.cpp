@@ -20,7 +20,11 @@ int main(int argc, char** argv)
 	while (true) 
 	{
 		int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
+		std::string dll = settings->typeMapping_["Otro"];
+
 		std::cout << "wait: " << wait << std::endl;
+		std::cout << "dll: " << dll << std::endl;
+
 		boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
 	}
 
