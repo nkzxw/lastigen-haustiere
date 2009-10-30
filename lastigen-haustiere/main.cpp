@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 			//boost::this_thread::sleep(boost::posix_time::milliseconds(300));
 
 			char ch;
-			cin.get(ch); // blocking wait for standard input
+			std::cin.get(ch); // blocking wait for standard input
 			//if (ch == 3) // ctrl-C to end program
 			if (ch == 'z') // ctrl-C to end program
 			{

@@ -12,6 +12,11 @@
 //TODO: esta libreria no está soportada por boost, ver la posibilidad de implementar Singleton de Loki
 
 
+//TODO: ver de usar ThreadedClass
+#include <boost/thread.hpp>
+#include <boost/shared_ptr.hpp>
+
+
 //TODO: implementar un mecanismo para refrescar la información
 //TODO: evaluar Straightforward Settings de Torjo
 
@@ -63,6 +68,10 @@ public: //protected:
 };
 
 
+
+
+typedef boost::mutex::scoped_lock lock;
+
 //TODO: ver de cambiar por el singleton mutexed, ya que este que estamos usando no debe ser thread-safe/
 //TODO: poner un atributo "autoRefresh". En caso de ser TRUE, levantar un hilo que se encargue de refrescar la configuración.
 //TODO: podria ponerse un callback para notificar al usuario de esta clase que la configuracion ha cambiado
@@ -77,7 +86,9 @@ public:
 	ConfigManager(boost::restricted)
 	{}
 
-	void initialize( const std::string& exePath, bool loadAutomatically = true )
+	//TODO: hacer el "save" automaticamente en el destructor de la clase, o tambien un saver que sea automatico dentro de un thread
+
+	void initialize( const std::string& exePath, bool loadAutomatically = true, bool automaticRefresh = true )
 	{
 		boost::filesystem::path path( exePath );
 		configFile_ = path.replace_extension("cfg").string();
@@ -86,20 +97,45 @@ public:
 		{
 			load();
 		}
+
+		if (automaticRefresh)
+		{
+			//refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ThreadedClass::doWork, this)));
+			refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&ConfigManager<T>::refreshMethod, this)));
+		}
+
+	}
+
+	void refreshMethod()
+	{
+		while (true)
+		{
+			boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
+
+			//TODO: ver de aplicar conditional variables
+			{
+	        lock lk(mutex_);
+			load();
+			}
+		}
 	}
 
 	void load()
 	{
+		//lock lk(mutex_);
+
 		std::ifstream ifs(configFile_.c_str());
 		assert(ifs.good());
 		boost::archive::xml_iarchive ia(ifs);
 
 		ia >> boost::serialization::make_nvp("Settings", settings_);
-		
 	}
 
 	void save()
 	{
+		//lock lk(mutex_);
+
 		std::ofstream ofs(configFile_.c_str());
 		assert(ofs.good());
 		boost::archive::xml_oarchive oa(ofs);
@@ -107,14 +143,16 @@ public:
 		oa << boost::serialization::make_nvp("Settings", settings_);
 	}
 
-	T& getConfigClass()
-	{
-		return configurationClass_;
-	}
+	//T& getConfigClass()
+	//{
+	//	return configurationClass_; //TODO: ?????????????????????????
+	//}
 
 	//TODO: ver de retornar una referencia en vez de un puntero.
 	T* getSettings() 
 	{ 
+		lock lk(mutex_);
+
 		//return &settings_;
 		return &settings_.customSettings_;
 	}
@@ -131,6 +169,8 @@ public:
 	template <typename E>
 	E get(const std::string& key) const
 	{
+		lock lk(mutex_);
+
 		//return keyValueSettings_.at(key);
 		//return boost::any_cast<E>(settings_.keyValueSettings_.at(key));
 		return boost::lexical_cast<E>(settings_.keyValueSettings_.at(key));
@@ -140,12 +180,16 @@ public:
 	template <typename E>
 	void set(const std::string& key, const E& value)
 	{
+		lock lk(mutex_);
+
 		//settings_.keyValueSettings_[key] = value;
 		settings_.keyValueSettings_[key] = boost::lexical_cast<std::string>(value);
 	}
 
 	T* getCustomSettings() 
 	{ 
+		lock lk(mutex_);
+
 		return &settings_.customSettings_;
 	}
 
@@ -153,6 +197,10 @@ protected:
 	std::string configFile_;
 	//T settings_;
 	CommonSettings<T> settings_;
+
+    boost::shared_ptr<boost::thread> refreshThread_;
+    mutable boost::mutex mutex_;
+
 };
 
 
