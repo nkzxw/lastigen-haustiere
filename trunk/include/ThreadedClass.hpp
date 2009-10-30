@@ -54,6 +54,7 @@ public:
     }
  
 	virtual void doWork() = 0;
+	//TODO: implementar start, stop, interrupt, sleep, etc...
 
 protected:
 //        : stopRequested_(false), thread_(boost::bind(&ThreadedClass::doWork, this)) //Note 2
