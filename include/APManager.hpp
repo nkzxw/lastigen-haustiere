@@ -90,7 +90,8 @@ protected:
 		std::cout << "starting state machine" << std::endl;
 		//TODO: acá deberíamos obtener el status del AP. Entonces, en la maquina, deberiamos agregar un estado llamado GettingInformation
 
-		while (true)
+		//TODO: implementar un CONDITIONAL para que la forma de salir no sea esta, así se puede salir del Wait automáticamente.
+		while (! stopRequested_)
 		{
 			switch (state_)
 			{

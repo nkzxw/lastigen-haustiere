@@ -46,7 +46,8 @@ int main(int argc, char** argv)
 
 			char ch;
 			cin.get(ch); // blocking wait for standard input
-			if (ch == 3) // ctrl-C to end program
+			//if (ch == 3) // ctrl-C to end program
+			if (ch == 'z') // ctrl-C to end program
 			{
 				break;
 			}
