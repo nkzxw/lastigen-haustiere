@@ -27,6 +27,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_xpressive", "tes
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_vcpp_return_value_optimizations", "test_vcpp_return_value_optimizations\test_vcpp_return_value_optimizations.vcproj", "{1CB81E07-15D6-4E2F-A3E8-B6AEBFAF1C5D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_active_object", "test_active_object\test_active_object.vcproj", "{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -167,6 +169,16 @@ Global
 		{1CB81E07-15D6-4E2F-A3E8-B6AEBFAF1C5D}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{1CB81E07-15D6-4E2F-A3E8-B6AEBFAF1C5D}.Release|Win32.ActiveCfg = Release|Win32
 		{1CB81E07-15D6-4E2F-A3E8-B6AEBFAF1C5D}.Release|Win32.Build.0 = Release|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Debug|Win32.Build.0 = Debug|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Release|Any CPU.ActiveCfg = Release|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Release|Win32.ActiveCfg = Release|Win32
+		{2CFCE0E2-C581-4A35-AB3D-7D82E20BA42A}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
