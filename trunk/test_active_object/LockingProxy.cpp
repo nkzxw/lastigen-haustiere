@@ -38,6 +38,11 @@
 //};
 
 
+//------------------------------------------------------------------------------------------------
+
+
+// http://bytes.com/topic/c/answers/532766-lock-pointer-implementation
+
 template <typename T>
 class LockPointer
 {
