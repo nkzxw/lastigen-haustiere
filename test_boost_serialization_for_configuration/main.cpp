@@ -25,7 +25,7 @@ int main(int argc, char** argv)
 		std::cout << "wait: " << wait << std::endl;
 		std::cout << "dll: " << dll << std::endl;
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
 	}
 
 

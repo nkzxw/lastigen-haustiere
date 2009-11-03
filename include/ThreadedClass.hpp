@@ -39,7 +39,8 @@ public:
        return ptr;
     }
 
-   template <typename P1, typename P2>
+	//TODO: ver como hacer para emular "variadic templates parameters", o sea, multiples parametros de templates, pero sin hacer N métodos similares. 
+	template <typename P1, typename P2>
     static boost::shared_ptr<T> Create (P1 p1, P2 p2)
     {
        boost::shared_ptr<T> ptr (new T(p1, p2));

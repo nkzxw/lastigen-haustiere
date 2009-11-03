@@ -110,7 +110,7 @@ public:
 	{
 		while (true)
 		{
-			boost::this_thread::sleep(boost::posix_time::milliseconds(10000));
+			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
 			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
 
 			//TODO: ver de aplicar conditional variables
