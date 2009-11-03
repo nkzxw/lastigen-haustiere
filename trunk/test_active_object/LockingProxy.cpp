@@ -54,11 +54,17 @@ public:
 		LockProxy(boost::shared_ptr<T> p, boost::shared_ptr<boost::recursive_mutex> mutex)
 			: p_(p), lock_(new boost::recursive_mutex::scoped_lock(*mutex))
 		{
+			std::cout << "LockProxy()" << std::endl;
 		}
 
 		boost::shared_ptr<T> operator->()
 		{
 			return p_;
+		}
+
+		~LockProxy()
+		{
+			std::cout << "~LockProxy()" << std::endl;
 		}
 
 	private:
@@ -73,8 +79,14 @@ public:
 
 	LockProxy operator->()
 	{
+		//mutex_->lock();
 		return LockProxy(p_, mutex_);
 	}
+
+    T * get() const // never throws
+    {
+        return p_.get();
+    }
 
 	private:
 		boost::shared_ptr<T> p_;
@@ -85,18 +97,43 @@ public:
 class A
 {
 public:
+	A(int waitTime)
+		: waitTime_(waitTime)
+	{}
+
 	void method()
 	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(waitTime_));
 		std::cout << "void method()" << std::endl;
 	}
+
+	int waitTime_;
 };
+
+template<class T> inline T * get_pointer(LockPointer<T> const & p)
+{
+    return p.get();
+}
 
 int main()
 {
 	//LockingProxy<A> lp(new A);
 	
-	boost::shared_ptr<A> asp(new A);
+	boost::shared_ptr<A> asp(new A(10000));
 	LockPointer<A> lp(asp);
-	lp->method();
+	//lp->method();
+
+	boost::shared_ptr<A> asp2(new A(15000));
+	LockPointer<A> lp2(asp2);
+	//lp2->method();
+	
+	boost::thread thr1( boost::bind( &A::method, lp ) );
+	boost::thread thr2( boost::bind( &A::method, lp2 ) );
+
+	//thr1.join();
+	//thr2.join();
+
+	std::cin.get();
+	return 0;
 	
 }
