@@ -116,8 +116,11 @@ public:
 			//TODO: ver de aplicar conditional variables
 			{
 	        lock lk(mutex_);
+			std::cout << "updating ... (locked)" << std::endl;
+			boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
 			load();
 			}
+			std::cout << "updated ... (unlocked)" << std::endl;
 		}
 	}
 

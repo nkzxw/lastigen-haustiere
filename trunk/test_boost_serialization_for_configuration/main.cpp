@@ -19,9 +19,13 @@ int main(int argc, char** argv)
 
 	while (true) 
 	{
-		int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
+		std::cout << "accessing to the variables via pointer..." << std::endl;
+		//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
+		int wait = 0;
 		std::string dll = settings->typeMapping_["Otro"];
 
+
+		std::cout << "settings: " << settings << std::endl;
 		std::cout << "wait: " << wait << std::endl;
 		std::cout << "dll: " << dll << std::endl;
 
