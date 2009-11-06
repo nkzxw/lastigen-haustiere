@@ -151,6 +151,9 @@ public:
 	//	return configurationClass_; //TODO: ?????????????????????????
 	//}
 
+
+
+	//TODO: ver de retornar un ProxyObject. http://www.informit.com/articles/article.aspx?p=31529&seqNum=13
 	//TODO: ver de retornar una referencia en vez de un puntero.
 	T* getSettings() 
 	{ 
