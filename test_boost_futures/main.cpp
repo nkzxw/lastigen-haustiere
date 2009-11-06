@@ -14,16 +14,21 @@ using boost::future_wrapper;
 class JobQueue1 {
   public:
     template <class T>
-      future<T> schedule(boost::function<T (void)> const& fn) {
+      future<T> schedule(boost::function<T (void)> const& fn) 
+	  {
         boost::mutex::scoped_lock lck(mutex_);
         promise<T> prom; // create promise
         q_.push_back(future_wrapper<T>(fn, prom)); //queue the job
         condition_.notify_all(); // wake worker thread(s)
         return future<T>(prom); // return a future created from the promise
       }
-    void exec_loop();
-    JobQueue1() : waiting_for_god_(false), active_threads_(0) {}
-    ~JobQueue1() { // we must kill thread before we're dead
+    
+	  void exec_loop();
+    
+	JobQueue1() : waiting_for_god_(false), active_threads_(0) {}
+    
+	~JobQueue1() 
+	{ // we must kill thread before we're dead
       boost::mutex::scoped_lock lck(mutex_);
       waiting_for_god_ = true; // flag to tell thread to die
       condition_.notify_all();
@@ -38,13 +43,16 @@ class JobQueue1 {
     boost::condition condition_; // signal we wait for when queue is empty
 };
 
-void JobQueue1::exec_loop() {
+void JobQueue1::exec_loop() 
+{
   boost::mutex::scoped_lock lck(mutex_);
   ++active_threads_;
-  while (true) {
+  while (true) 
+  {
     while ((q_.size() == 0) && !waiting_for_god_)
       condition_.wait(lck); // wait for a job to be added to queue
-    if (waiting_for_god_) {
+    if (waiting_for_god_) 
+	{
       --active_threads_;
       condition_.notify_all();
       return;
@@ -58,11 +66,14 @@ void JobQueue1::exec_loop() {
 }
 
 /// Motivating Example ///
-int add(int a, int b) {
-  return a+b;
+int add(int a, int b) 
+{
+	boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
+	return a+b;
 }
 
-void f1() {
+void f1() 
+{
   JobQueue1 q;
   boost::thread t(boost::bind(&JobQueue1::exec_loop, &q));
   future<int> fut = q.schedule<int>(boost::bind(add, 11, 13));
@@ -70,7 +81,8 @@ void f1() {
 }
 
 /// Promises, Promises Example ///
-void f2() {
+void f2() 
+{
   promise<int> prom; //create a promise
   future<int> fut(prom); //create the associated future
   assert(!fut.ready()); // future is not ready yet
@@ -80,7 +92,8 @@ void f2() {
 }
 
 /// Reference Semantics ///
-void f3() {
+void f3() 
+{
   promise<int> p1;
   promise<int> p2(p1); // p2 refers to same object as p1
   future<int> f1(p1); // refers to same future object as p1 and p2
@@ -91,32 +104,41 @@ void f3() {
 }
 
 /// Exception Handling and Transport ///
-void f4() {
+void f4() 
+{
   promise<long> p1;
   future<long> f1;
   p1.set_exception(std::runtime_error("Darn Error"));
-  try {
+  try 
+  {
     std::cout << f1.get() << "\n"; // print my future
     std::cout << "This will never print - exception thrown\n";
-  } catch (std::exception &e) {
+  } 
+  catch (std::exception &e) 
+  {
     std::cout << "Received Exception: " << e.what() << "\n";
     assert(f1.has_exception()); // I could have seen this coming before
   }
 }
 
-char GetChar(std::string const& s, unsigned int pos) {
+char GetChar(std::string const& s, unsigned int pos) 
+{
   return s.at(pos); // will throw std::out_of_range if pos > s.size()
 }
 
-void f5() {
+void f5() 
+{
   JobQueue1 q;
   boost::thread t(boost::bind(&JobQueue1::exec_loop, &q));
 
   std::string s("Hi!");
   future<char> f = q.schedule<char>(boost::bind(GetChar, s, 999)); //oops!
-  try {
+  try 
+  {
     std::cout << "GetChar = " << f.get() << "\n";
-  } catch (std::exception &e) {
+  } 
+  catch (std::exception &e) 
+  {
     std::cout << "Exception in remote GetChar(): " << e.what() << " [this is okay]\n";
   }
 }
