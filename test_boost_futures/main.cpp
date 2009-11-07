@@ -1,375 +1,1216 @@
-#include "future.hpp"
-#include "future_stream.hpp"
-#include <boost/thread/mutex.hpp>
-#include <boost/bind.hpp>
-#include <boost/thread.hpp>
-#include <boost/shared_ptr.hpp>
-#include <vector>
+//  (C) Copyright 2008 Anthony Williams 
+//
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
 
-using boost::future;
-using boost::promise;
-using boost::shared_ptr;
-using boost::future_wrapper;
+#include "boost/thread/thread.hpp"
+#include "boost/thread/mutex.hpp"
+#include "boost/thread/condition.hpp"
+#include "n2561_future.hpp"
+#include <assert.h>
+#include <utility>
+#include <memory>
+#include <string>
 
-class JobQueue1 {
-  public:
-    template <class T>
-      future<T> schedule(boost::function<T (void)> const& fn) 
-	  {
-        boost::mutex::scoped_lock lck(mutex_);
-        promise<T> prom; // create promise
-        q_.push_back(future_wrapper<T>(fn, prom)); //queue the job
-        condition_.notify_all(); // wake worker thread(s)
-        return future<T>(prom); // return a future created from the promise
-      }
-    
-	  void exec_loop();
-    
-	JobQueue1() : waiting_for_god_(false), active_threads_(0) {}
-    
-	~JobQueue1() 
-	{ // we must kill thread before we're dead
-      boost::mutex::scoped_lock lck(mutex_);
-      waiting_for_god_ = true; // flag to tell thread to die
-      condition_.notify_all();
-      while (active_threads_) // all threads must exit
-        condition_.wait(lck);
+#ifdef BOOST_HAS_RVALUE_REFS
+    template<typename T>
+    typename boost::remove_reference<T>::type&& move(T&& t)
+    {
+        return t;
     }
-  protected:
-    bool waiting_for_god_;
-    int active_threads_;
-    std::list<boost::function<void ()> > q_;
-    boost::mutex mutex_;
-    boost::condition condition_; // signal we wait for when queue is empty
-};
-
-void JobQueue1::exec_loop() 
-{
-  boost::mutex::scoped_lock lck(mutex_);
-  ++active_threads_;
-  while (true) 
-  {
-    while ((q_.size() == 0) && !waiting_for_god_)
-      condition_.wait(lck); // wait for a job to be added to queue
-    if (waiting_for_god_) 
-	{
-      --active_threads_;
-      condition_.notify_all();
-      return;
+#else
+    template<typename T>
+    boost::detail::thread_move_t<T> move(T& t)
+    {
+        return boost::move(t);
     }
-    boost::function<void ()> f = q_.front();
-    q_.pop_front();
-    lck.unlock(); // unlock the queue while we exec the job
-    f(); // call the future_wrapper functor
-    lck.lock();
-  }
-}
-
-/// Motivating Example ///
-int add(int a, int b) 
-{
-	boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
-	return a+b;
-}
-
-void f1() 
-{
-  JobQueue1 q;
-  boost::thread t(boost::bind(&JobQueue1::exec_loop, &q));
-  future<int> fut = q.schedule<int>(boost::bind(add, 11, 13));
-  std::cout << "add = " << fut.get() << "\n";
-}
-
-/// Promises, Promises Example ///
-void f2() 
-{
-  promise<int> prom; //create a promise
-  future<int> fut(prom); //create the associated future
-  assert(!fut.ready()); // future is not ready yet
-  prom.set(42); // set the future value
-  assert(fut.ready()); // the future is SET
-  std::cout << fut.get() << "\n"; // print the future value
-}
-
-/// Reference Semantics ///
-void f3() 
-{
-  promise<int> p1;
-  promise<int> p2(p1); // p2 refers to same object as p1
-  future<int> f1(p1); // refers to same future object as p1 and p2
-  future<int> f2(p2); // again, all these refer to the same objects
-  p2.set(99);
-  assert(f1.get() == f2.get()); // true
-  assert(f1.get() == 99); //see, I told you 
-}
-
-/// Exception Handling and Transport ///
-void f4() 
-{
-  promise<long> p1;
-  future<long> f1;
-  p1.set_exception(std::runtime_error("Darn Error"));
-  try 
-  {
-    std::cout << f1.get() << "\n"; // print my future
-    std::cout << "This will never print - exception thrown\n";
-  } 
-  catch (std::exception &e) 
-  {
-    std::cout << "Received Exception: " << e.what() << "\n";
-    assert(f1.has_exception()); // I could have seen this coming before
-  }
-}
-
-char GetChar(std::string const& s, unsigned int pos) 
-{
-  return s.at(pos); // will throw std::out_of_range if pos > s.size()
-}
-
-void f5() 
-{
-  JobQueue1 q;
-  boost::thread t(boost::bind(&JobQueue1::exec_loop, &q));
-
-  std::string s("Hi!");
-  future<char> f = q.schedule<char>(boost::bind(GetChar, s, 999)); //oops!
-  try 
-  {
-    std::cout << "GetChar = " << f.get() << "\n";
-  } 
-  catch (std::exception &e) 
-  {
-    std::cout << "Exception in remote GetChar(): " << e.what() << " [this is okay]\n";
-  }
-}
-
-/// Broken Promises ///
-future<int> make_future() {
-  promise<int> prom;
-  return future<int>(prom);
-} //oops, future created but promise goes out of scope here!
-
-void f6() {
-  future<int> f = make_future();
-  try {
-    std::cout << f.get() << "\n"; // wait for future to be ready and print value
-    assert(0x0); // Will never get here because the promise was broken
-  } catch (boost::broken_promise &e) {
-    // Here I am.  Silly me, my logic was flawed.
-  }
-}
-
-///Future Type Conversion ///
-void f7() {
-  promise<long> plong;
-  future<long> flong(plong);
-  future<int> fint = flong;
-  plong.set(27L);
-  assert(fint.get() == 27); //automatically converted to int
-}
-
-/// future<void> ///
-void f8() {
-  promise<int> pi;
-  future<int> fi;
-  future<void> fv = fi;
-}
-
-/// Callbacks ///
-void callfunc(future<int> f) {
-  std::cout << "Future is ready with value = " << f.get() << "\n";
-}
-
-void f9() {
-  promise<int> pi;
-  future<int> f(pi);
-  boost::callback_reference cb_ref1 = f.add_callback(boost::bind(callfunc, f));
-  pi.set(33); // my callback will print "Future is ready" now
-}
-
-#if 0
-/// Cancel Handlers ///
-class JobQueue2 : public JobQueue1 {
-  template <class T>
-    future<T> schedule(boost::function<T (void)> const& fn) {
-      boost::mutex::scoped_lock lck(mutex_);
-      promise<T> prom; // create promise
-      q_.push_back(future_wrapper<T>(fn, prom)); //queue the job
-      prom.set_cancel_handler(boost::bind(&JobQueue2::cancelJob,this,q_.begin()+(q_.size()-1)));
-      condition_.notify_all(); // wake worker thread(s)
-      return future<T>(prom); // return a future created from the promise
-    }
-  protected:
-  void cancelJob(std::list<boost::function<void ()> >::iterator list_iter) {
-    q_.erase(list_iter);
-  }
-};
 #endif
 
-/// Guards ///
-class JobQueue3 : public JobQueue1 {
-  public:
-    template <class T>
-      void queueWrapped(boost::function<void (void)> fn, promise<T> prom) {
-        boost::mutex::scoped_lock lck(mutex_);
-        q_.push_back(fn);
-        condition_.notify_all();
-      }
-
-    template <class T>
-      future<T> schedule(boost::function<T (void)> const& fn, future<void> guard = future<void>()) {
-        promise<T> prom; // create promise
-        future_wrapper<T> wrap(fn,prom); 
-        guard.add_callback(boost::bind(&JobQueue3::queueWrapped<T>, this, wrap, prom));
-        return future<T>(prom); // return a future created from the promise
-      }
-};
-
-int Add(int a, int b) {
-  return a+b;
-}
-
-void f10() {
-  JobQueue3 q;
-  boost::thread t1(boost::bind(&JobQueue3::exec_loop, &q));
-  boost::thread t2(boost::bind(&JobQueue3::exec_loop, &q));
-
-  promise<int> p9;
-  future<int> f9(p9);
-  future<int> f8 = q.schedule<int>(boost::bind(Add, f9, 3), f9); 
-  p9.set(99);
-  assert(f8.get() == 102);
-
-  future<int> fa = q.schedule<int>(boost::bind(Add, 1, 2));
-  future<int> fb = q.schedule<int>(boost::bind(Add, fa, 3), fa); // fa + 3, Guarded on completion of a
-  future<int> fc = q.schedule<int>(boost::bind(Add, fb, 4), fb); // fb + 4, Guarded on completion of b
-  std::cout << "1 + 2 + 3 + 4 = " << fc.get() << "\n";
-}
-
-/// Lazy Futures ///
-class JobQueue4 : public JobQueue3 {
-  public:
-    template<class T>
-      future<T> lazy_schedule(boost::function<T (void)> const& fn) {
-        promise<T> prom; // create promise
-        future<void> guard = prom.get_needed_future(); // we treat this as the guard
-        future_wrapper<T> wrap(fn,prom); 
-        guard.add_callback(boost::bind(&JobQueue3::queueWrapped<T>, this, wrap, prom));
-        return future<T>(prom); // return a future created from the promise
-      }
-};
-
-int Mult(int a, int b) {
-  return a*b;
-}
-
-void f11() {
-  JobQueue4 q;
-  boost::thread t1(boost::bind(&JobQueue4::exec_loop, &q));
-  future<float> squares[100];
-  for (int i=0; i<100; ++i)
-    squares[i] = q.lazy_schedule<float>(boost::bind(Mult, i, i)); // this won't execute until we need the result
-
-  // print just a few select squares, which will be computed as we go
-  for (int i=0; i<100; i+=7)
-    std::cout << i << "^2 = " << squares[i].get() << "\n";
-  // anything we didn't ask for was not computed, like squares[5]
-  assert(!squares[5].ready());
-}
-
-/// Future Streams ///
-
-// Hand Rolled Streams
-template<class T>
-struct item {
-  typedef shared_ptr<item<T> > item_p;
-  item(const T & val, const future<item_p> nxt) : value(val), next(nxt) {}
-  T value;
-  future<item_p> next;
-};
-
-void producer1(promise<shared_ptr<item<int> > > head) {
-  for (int i=0; i<24; ++i) {
-    promise<shared_ptr<item<int> > > p;
-    head.set(shared_ptr<item<int> >(new item<int>(i, p)));
-    head = p;
-  }
-}
-
-void f12() {
-  promise<shared_ptr<item<int> > > head;
-  future<shared_ptr<item<int> > > next(head);
-  producer1(head);
-  head.reset(); // break the promise of any more
-  // Consume the results and add them together
-  int accum=0;
-  try { // stream is closed when next promise is broken.
-    while (true) {
-      accum += next.get()->value; // will block
-      next = next.get()->next; // move on to next item
-    }
-  } catch (boost::broken_promise &) {}  
-  std::cout << "DEBUG: Sum of Stream Contents = " << accum << "\n";
-}
-
-// future_stream
-
-// produces 23 int values
-void producer(boost::promise_stream<int> pstream) {
-  for (int i=0; i<24; ++i)
-    pstream.send(i);
-  pstream.close();
-}
-
-void f13() {
-  boost::promise_stream<int> pstream;
-  boost::future_stream<int> fstream(pstream); // construct future_stream from promise_stream
-  // get pointer to head of stream BEFORE producer starts
-  boost::future_stream<int>::iterator iter = fstream.begin();
-  // Launch producer in another thread
-  boost::thread t1(boost::bind(producer, pstream));
-  // Consume the results and add them together
-  int accum=0;
-  for (; (iter != fstream.end()); ++iter)
-    accum += *iter;
-  std::cout << "FINAL Sum of Stream Contents = " << accum << "\n";
-  t1.join();
-}
-
-void f14() { }
-
-int main(int argc, char **argv) 
+struct X
 {
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f1();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f2();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f3();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f4();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f5();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f6();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f7();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f8();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f9();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f10();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f11();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f12();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f13();
-	std::cout << "--------------------------------------------------------" << std::endl;
-	f14();
-	std::cout << "--------------------------------------------------------" << std::endl;
+private:
+    
+    X(X& other);
+    
+public:
+    
+    int i;
+    
+    X():
+        i(42)
+    {}
+#ifdef BOOST_HAS_RVALUE_REFS
+    X(X&& other):
+        i(other.i)
+    {
+        other.i=0;
+    }
+#else
+    X(boost::detail::thread_move_t<X> other):
+        i(other->i)
+    {
+        other->i=0;
+    }
+    operator boost::detail::thread_move_t<X>()
+    {
+        return boost::detail::thread_move_t<X>(*this);
+    }
+#endif
+    ~X()
+    {}
+};
+
+int make_int()
+{
+    return 42;
+}
+
+int throw_runtime_error()
+{
+    throw std::runtime_error("42");
+}
+
+void set_promise_thread(jss::promise<int>* p)
+{
+    p->set_value(42);
+}
+
+struct my_exception
+{};
+
+void set_promise_exception_thread(jss::promise<int>* p)
+{
+    p->set_exception(boost::copy_exception(my_exception()));
+}
+
+
+void test_store_value_from_thread()
+{
+    jss::promise<int> pi2;
+    jss::unique_future<int> fi2=pi2.get_future();
+    boost::thread(set_promise_thread,&pi2);
+    int j=fi2.get();
+    assert(j==42);
+    assert(fi2.is_ready());
+    assert(fi2.has_value());
+    assert(!fi2.has_exception());
+    assert(fi2.get_state()==jss::future_state::ready);
+}
+
+
+void test_store_exception()
+{
+    jss::promise<int> pi3;
+    jss::unique_future<int> fi3=pi3.get_future();
+    boost::thread(set_promise_exception_thread,&pi3);
+    try
+    {
+        fi3.get();
+        assert(false);
+    }
+    catch(my_exception)
+    {
+        assert(true);
+    }
+    
+    assert(fi3.is_ready());
+    assert(!fi3.has_value());
+    assert(fi3.has_exception());
+    assert(fi3.get_state()==jss::future_state::ready);
+}
+
+void test_initial_state()
+{
+    jss::unique_future<int> fi;
+    assert(!fi.is_ready());
+    assert(!fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::uninitialized);
+    int i;
+    try
+    {
+        i=fi.get();
+        assert(false);
+    }
+    catch(jss::future_uninitialized)
+    {
+        assert(true);
+    }
+}
+
+void test_waiting_future()
+{
+    jss::promise<int> pi;
+    jss::unique_future<int> fi;
+    fi=pi.get_future();
+
+    int i=0;
+    assert(!fi.is_ready());
+    assert(!fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::waiting);
+    assert(i==0);
+}
+
+void test_cannot_get_future_twice()
+{
+    jss::promise<int> pi;
+    pi.get_future();
+
+    try
+    {
+        pi.get_future();
+        assert(false);
+    }
+    catch(jss::future_already_retrieved&)
+    {
+        assert(true);
+    }
+}
+
+void test_set_value_updates_future_state()
+{
+    jss::promise<int> pi;
+    jss::unique_future<int> fi;
+    fi=pi.get_future();
+
+    pi.set_value(42);
+    
+    assert(fi.is_ready());
+    assert(fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::ready);
+}
+
+void test_set_value_can_be_retrieved()
+{
+    jss::promise<int> pi;
+    jss::unique_future<int> fi;
+    fi=pi.get_future();
+
+    pi.set_value(42);
+    
+    int i=0;
+    assert(i=fi.get());
+    assert(i==42);
+    assert(fi.is_ready());
+    assert(fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::ready);
+}
+
+void test_set_value_can_be_moved()
+{
+//     jss::promise<int> pi;
+//     jss::unique_future<int> fi;
+//     fi=pi.get_future();
+
+//     pi.set_value(42);
+    
+//     int i=0;
+//     assert(i=fi.get());
+//     assert(i==42);
+//     assert(fi.is_ready());
+//     assert(fi.has_value());
+//     assert(!fi.has_exception());
+//     assert(fi.get_state()==jss::future_state::ready);
+}
+
+void test_future_from_packaged_task_is_waiting()
+{
+    jss::packaged_task<int> pt(make_int);
+    jss::unique_future<int> fi=pt.get_future();
+    int i=0;
+    assert(!fi.is_ready());
+    assert(!fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::waiting);
+    assert(i==0);
+}
+
+void test_invoking_a_packaged_task_populates_future()
+{
+    jss::packaged_task<int> pt(make_int);
+    jss::unique_future<int> fi=pt.get_future();
+
+    pt();
+
+    int i=0;
+    assert(fi.is_ready());
+    assert(fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::ready);
+    assert(i=fi.get());
+    assert(i==42);
+}
+
+void test_invoking_a_packaged_task_twice_throws()
+{
+    jss::packaged_task<int> pt(make_int);
+
+    pt();
+    try
+    {
+        pt();
+        assert(false);
+    }
+    catch(jss::task_already_started)
+    {
+        assert(true);
+    }
+}
+
+
+void test_cannot_get_future_twice_from_task()
+{
+    jss::packaged_task<int> pt(make_int);
+    pt.get_future();
+    try
+    {
+        pt.get_future();
+        assert(false);
+    }
+    catch(jss::future_already_retrieved)
+    {
+        assert(true);
+    }
+}
+
+void test_task_stores_exception_if_function_throws()
+{
+    jss::packaged_task<int> pt(throw_runtime_error);
+    jss::unique_future<int> fi=pt.get_future();
+
+    pt();
+
+    int i=0;
+    assert(fi.is_ready());
+    assert(!fi.has_value());
+    assert(fi.has_exception());
+    assert(fi.get_state()==jss::future_state::ready);
+    try
+    {
+        fi.get();
+        assert(false);
+    }
+    catch(std::exception&)
+    {
+        assert(true);
+    }
+    catch(...)
+    {
+        assert(!"Unknown exception thrown");
+    }
+    
+}
+
+void test_void_promise()
+{
+    jss::promise<void> p;
+    jss::unique_future<void> f=p.get_future();
+    p.set_value();
+    assert(f.is_ready());
+    assert(f.has_value());
+    assert(!f.has_exception());
+    assert(f.get_state()==jss::future_state::ready);
+    f.get();
+}
+
+void test_reference_promise()
+{
+    jss::promise<int&> p;
+    jss::unique_future<int&> f=p.get_future();
+    int i=42;
+    p.set_value(i);
+    assert(f.is_ready());
+    assert(f.has_value());
+    assert(!f.has_exception());
+    assert(f.get_state()==jss::future_state::ready);
+    assert(&f.get()==&i);
+}
+
+void do_nothing()
+{}
+
+void test_task_returning_void()
+{
+    jss::packaged_task<void> pt(do_nothing);
+    jss::unique_future<void> fi=pt.get_future();
+
+    pt();
+
+    assert(fi.is_ready());
+    assert(fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::ready);
+}
+
+int global_ref_target=0;
+
+int& return_ref()
+{
+    return global_ref_target;
+}
+
+void test_task_returning_reference()
+{
+    jss::packaged_task<int&> pt(return_ref);
+    jss::unique_future<int&> fi=pt.get_future();
+
+    pt();
+
+    assert(fi.is_ready());
+    assert(fi.has_value());
+    assert(!fi.has_exception());
+    assert(fi.get_state()==jss::future_state::ready);
+    int& i=fi.get();
+    assert(&i==&global_ref_target);
+}
+
+void test_shared_future()
+{
+    jss::packaged_task<int> pt(make_int);
+    jss::unique_future<int> fi=pt.get_future();
+
+    jss::shared_future<int> sf(::move(fi));
+    assert(fi.get_state()==jss::future_state::uninitialized);
+
+    pt();
+
+    int i=0;
+    assert(sf.is_ready());
+    assert(sf.has_value());
+    assert(!sf.has_exception());
+    assert(sf.get_state()==jss::future_state::ready);
+    assert(i=sf.get());
+    assert(i==42);
+}
+
+void test_copies_of_shared_future_become_ready_together()
+{
+    jss::packaged_task<int> pt(make_int);
+    jss::unique_future<int> fi=pt.get_future();
+
+    jss::shared_future<int> sf(::move(fi));
+    jss::shared_future<int> sf2(sf);
+    jss::shared_future<int> sf3;
+    sf3=sf;
+    assert(sf.get_state()==jss::future_state::waiting);
+    assert(sf2.get_state()==jss::future_state::waiting);
+    assert(sf3.get_state()==jss::future_state::waiting);
+
+    pt();
+
+    int i=0;
+    assert(sf.is_ready());
+    assert(sf.has_value());
+    assert(!sf.has_exception());
+    assert(sf.get_state()==jss::future_state::ready);
+    assert(i=sf.get());
+    assert(i==42);
+    i=0;
+    assert(sf2.is_ready());
+    assert(sf2.has_value());
+    assert(!sf2.has_exception());
+    assert(sf2.get_state()==jss::future_state::ready);
+    assert(i=sf2.get());
+    assert(i==42);
+    i=0;
+    assert(sf3.is_ready());
+    assert(sf3.has_value());
+    assert(!sf3.has_exception());
+    assert(sf3.get_state()==jss::future_state::ready);
+    assert(i=sf3.get());
+    assert(i==42);
+}
+
+void test_shared_future_can_be_move_assigned_from_unique_future()
+{
+    jss::packaged_task<int> pt(make_int);
+    jss::unique_future<int> fi=pt.get_future();
+
+    jss::shared_future<int> sf;
+    sf=::move(fi);
+    assert(fi.get_state()==jss::future_state::uninitialized);
+
+    int i=0;
+    assert(!sf.is_ready());
+    assert(!sf.has_value());
+    assert(!sf.has_exception());
+    assert(sf.get_state()==jss::future_state::waiting);
+}
+
+void test_shared_future_void()
+{
+    jss::packaged_task<void> pt(do_nothing);
+    jss::unique_future<void> fi=pt.get_future();
+
+    jss::shared_future<void> sf(::move(fi));
+    assert(fi.get_state()==jss::future_state::uninitialized);
+
+    pt();
+
+    assert(sf.is_ready());
+    assert(sf.has_value());
+    assert(!sf.has_exception());
+    assert(sf.get_state()==jss::future_state::ready);
+    sf.get();
+}
+
+void test_shared_future_ref()
+{
+    jss::promise<int&> p;
+    jss::shared_future<int&> f(p.get_future());
+    int i=42;
+    p.set_value(i);
+    assert(f.is_ready());
+    assert(f.has_value());
+    assert(!f.has_exception());
+    assert(f.get_state()==jss::future_state::ready);
+    assert(&f.get()==&i);
+}
+
+void test_can_get_a_second_future_from_a_moved_promise()
+{
+    jss::promise<int> pi;
+    jss::unique_future<int> fi=pi.get_future();
+    
+    jss::promise<int> pi2(::move(pi));
+    jss::unique_future<int> fi2=pi.get_future();
+
+    pi2.set_value(3);
+    assert(fi.is_ready());
+    assert(!fi2.is_ready());
+    assert(fi.get()==3);
+    pi.set_value(42);
+    assert(fi2.is_ready());
+    assert(fi2.get()==42);
+}
+
+void test_can_get_a_second_future_from_a_moved_void_promise()
+{
+    jss::promise<void> pi;
+    jss::unique_future<void> fi=pi.get_future();
+    
+    jss::promise<void> pi2(::move(pi));
+    jss::unique_future<void> fi2=pi.get_future();
+
+    pi2.set_value();
+    assert(fi.is_ready());
+    assert(!fi2.is_ready());
+    pi.set_value();
+    assert(fi2.is_ready());
+}
+
+void test_unique_future_for_move_only_udt()
+{
+    jss::promise<X> pt;
+    jss::unique_future<X> fi=pt.get_future();
+
+    pt.set_value(X());
+    X res(fi.get());
+    assert(res.i==42);
+}
+
+void test_unique_future_for_string()
+{
+    jss::promise<std::string> pt;
+    jss::unique_future<std::string> fi=pt.get_future();
+
+    pt.set_value(std::string("hello"));
+    std::string res(fi.get());
+    assert(res=="hello");
+
+    jss::promise<std::string> pt2;
+    fi=pt2.get_future();
+
+    std::string const s="goodbye";
+    
+    pt2.set_value(s);
+    res=fi.get();
+    assert(res=="goodbye");
+
+    jss::promise<std::string> pt3;
+    fi=pt3.get_future();
+
+    std::string s2="foo";
+    
+    pt3.set_value(s2);
+    res=fi.get();
+    assert(res=="foo");
+}
+
+boost::mutex callback_mutex;
+unsigned callback_called=0;
+
+void wait_callback(jss::promise<int>& pi)
+{
+    boost::lock_guard<boost::mutex> lk(callback_mutex);
+    ++callback_called;
+    try
+    {
+        pi.set_value(42);
+    }
+    catch(...)
+    {
+    }
+}
+
+void do_nothing_callback(jss::promise<int>& pi)
+{
+    boost::lock_guard<boost::mutex> lk(callback_mutex);
+    ++callback_called;
+}
+
+void test_wait_callback()
+{
+    callback_called=0;
+    jss::promise<int> pi;
+    jss::unique_future<int> fi=pi.get_future();
+    pi.set_wait_callback(wait_callback);
+    fi.wait();
+    assert(callback_called);
+    assert(fi.get()==42);
+    fi.wait();
+    fi.wait();
+    assert(callback_called==1);
+}
+
+void test_wait_callback_with_timed_wait()
+{
+    callback_called=0;
+    jss::promise<int> pi;
+    jss::unique_future<int> fi=pi.get_future();
+    pi.set_wait_callback(do_nothing_callback);
+    bool success=fi.timed_wait(boost::posix_time::milliseconds(10));
+    assert(callback_called);
+    assert(!success);
+    success=fi.timed_wait(boost::posix_time::milliseconds(10));
+    assert(!success);
+    success=fi.timed_wait(boost::posix_time::milliseconds(10));
+    assert(!success);
+    assert(callback_called==3);
+    pi.set_value(42);
+    success=fi.timed_wait(boost::posix_time::milliseconds(10));
+    assert(success);
+    assert(callback_called==3);
+    assert(fi.get()==42);
+    assert(callback_called==3);
+}
+
+
+void wait_callback_for_task(jss::packaged_task<int>& pt)
+{
+    boost::lock_guard<boost::mutex> lk(callback_mutex);
+    ++callback_called;
+    try
+    {
+        pt();
+    }
+    catch(...)
+    {
+    }
+}
+
+
+void test_wait_callback_for_packaged_task()
+{
+    callback_called=0;
+    jss::packaged_task<int> pt(make_int);
+    jss::unique_future<int> fi=pt.get_future();
+    pt.set_wait_callback(wait_callback_for_task);
+    fi.wait();
+    assert(callback_called);
+    assert(fi.get()==42);
+    fi.wait();
+    fi.wait();
+    assert(callback_called==1);
+}
+
+void test_packaged_task_can_be_moved()
+{
+    jss::packaged_task<int> pt(make_int);
+
+    jss::unique_future<int> fi=pt.get_future();
+
+    assert(!fi.is_ready());
+    
+    jss::packaged_task<int> pt2=::move(pt);
+
+    assert(!fi.is_ready());
+    try
+    {
+        pt();
+        assert(!"Can invoke moved task!");
+    }
+    catch(jss::task_moved&)
+    {
+    }
+
+    assert(!fi.is_ready());
+
+    pt2();
+    
+    assert(fi.is_ready());
+}
+
+void test_destroying_a_promise_stores_broken_promise()
+{
+    jss::unique_future<int> f;
+    
+    {
+        jss::promise<int> p;
+        f=p.get_future();
+    }
+    assert(f.is_ready());
+    assert(f.has_exception());
+    try
+    {
+        f.get();
+    }
+    catch(jss::broken_promise&)
+    {
+    }
+}
+
+void test_destroying_a_packaged_task_stores_broken_promise()
+{
+    jss::unique_future<int> f;
+    
+    {
+        jss::packaged_task<int> p(make_int);
+        f=p.get_future();
+    }
+    assert(f.is_ready());
+    assert(f.has_exception());
+    try
+    {
+        f.get();
+    }
+    catch(jss::broken_promise&)
+    {
+    }
+}
+
+int make_int_slowly()
+{
+    boost::this_thread::sleep(boost::posix_time::seconds(1));
+    return 42;
+}
+
+void test_wait_for_either_of_two_futures_1()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    
+    boost::thread(::move(pt));
+    
+    unsigned const future=jss::wait_for_any(f1,f2);
+    
+    assert(future==0);
+    assert(f1.is_ready());
+    assert(!f2.is_ready());
+    assert(f1.get()==42);
+}
+
+void test_wait_for_either_of_two_futures_2()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    
+    boost::thread(::move(pt2));
+    
+    unsigned const future=jss::wait_for_any(f1,f2);
+    
+    assert(future==1);
+    assert(!f1.is_ready());
+    assert(f2.is_ready());
+    assert(f2.get()==42);
+}
+
+void test_wait_for_either_of_three_futures_1()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    
+    boost::thread(::move(pt));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3);
+    
+    assert(future==0);
+    assert(f1.is_ready());
+    assert(!f2.is_ready());
+    assert(!f3.is_ready());
+    assert(f1.get()==42);
+}
+
+void test_wait_for_either_of_three_futures_2()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    
+    boost::thread(::move(pt2));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3);
+    
+    assert(future==1);
+    assert(!f1.is_ready());
+    assert(f2.is_ready());
+    assert(!f3.is_ready());
+    assert(f2.get()==42);
+}
+
+void test_wait_for_either_of_three_futures_3()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    
+    boost::thread(::move(pt3));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3);
+    
+    assert(future==2);
+    assert(!f1.is_ready());
+    assert(!f2.is_ready());
+    assert(f3.is_ready());
+    assert(f3.get()==42);
+}
+
+void test_wait_for_either_of_four_futures_1()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    
+    boost::thread(::move(pt));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4);
+    
+    assert(future==0);
+    assert(f1.is_ready());
+    assert(!f2.is_ready());
+    assert(!f3.is_ready());
+    assert(!f4.is_ready());
+    assert(f1.get()==42);
+}
+
+void test_wait_for_either_of_four_futures_2()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    
+    boost::thread(::move(pt2));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4);
+    
+    assert(future==1);
+    assert(!f1.is_ready());
+    assert(f2.is_ready());
+    assert(!f3.is_ready());
+    assert(!f4.is_ready());
+    assert(f2.get()==42);
+}
+
+void test_wait_for_either_of_four_futures_3()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    
+    boost::thread(::move(pt3));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4);
+    
+    assert(future==2);
+    assert(!f1.is_ready());
+    assert(!f2.is_ready());
+    assert(f3.is_ready());
+    assert(!f4.is_ready());
+    assert(f3.get()==42);
+}
+
+void test_wait_for_either_of_four_futures_4()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    
+    boost::thread(::move(pt4));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4);
+    
+    assert(future==3);
+    assert(!f1.is_ready());
+    assert(!f2.is_ready());
+    assert(!f3.is_ready());
+    assert(f4.is_ready());
+    assert(f4.get()==42);
+}
+
+void test_wait_for_either_of_five_futures_1()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    jss::packaged_task<int> pt5(make_int_slowly);
+    jss::unique_future<int> f5(pt5.get_future());
+    
+    boost::thread(::move(pt));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4,f5);
+    
+    assert(future==0);
+    assert(f1.is_ready());
+    assert(!f2.is_ready());
+    assert(!f3.is_ready());
+    assert(!f4.is_ready());
+    assert(!f5.is_ready());
+    assert(f1.get()==42);
+}
+
+void test_wait_for_either_of_five_futures_2()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    jss::packaged_task<int> pt5(make_int_slowly);
+    jss::unique_future<int> f5(pt5.get_future());
+    
+    boost::thread(::move(pt2));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4,f5);
+    
+    assert(future==1);
+    assert(!f1.is_ready());
+    assert(f2.is_ready());
+    assert(!f3.is_ready());
+    assert(!f4.is_ready());
+    assert(!f5.is_ready());
+    assert(f2.get()==42);
+}
+void test_wait_for_either_of_five_futures_3()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    jss::packaged_task<int> pt5(make_int_slowly);
+    jss::unique_future<int> f5(pt5.get_future());
+    
+    boost::thread(::move(pt3));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4,f5);
+    
+    assert(future==2);
+    assert(!f1.is_ready());
+    assert(!f2.is_ready());
+    assert(f3.is_ready());
+    assert(!f4.is_ready());
+    assert(!f5.is_ready());
+    assert(f3.get()==42);
+}
+void test_wait_for_either_of_five_futures_4()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    jss::packaged_task<int> pt5(make_int_slowly);
+    jss::unique_future<int> f5(pt5.get_future());
+    
+    boost::thread(::move(pt4));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4,f5);
+    
+    assert(future==3);
+    assert(!f1.is_ready());
+    assert(!f2.is_ready());
+    assert(!f3.is_ready());
+    assert(f4.is_ready());
+    assert(!f5.is_ready());
+    assert(f4.get()==42);
+}
+void test_wait_for_either_of_five_futures_5()
+{
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> f1(pt.get_future());
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> f2(pt2.get_future());
+    jss::packaged_task<int> pt3(make_int_slowly);
+    jss::unique_future<int> f3(pt3.get_future());
+    jss::packaged_task<int> pt4(make_int_slowly);
+    jss::unique_future<int> f4(pt4.get_future());
+    jss::packaged_task<int> pt5(make_int_slowly);
+    jss::unique_future<int> f5(pt5.get_future());
+    
+    boost::thread(::move(pt5));
+    
+    unsigned const future=jss::wait_for_any(f1,f2,f3,f4,f5);
+    
+    assert(future==4);
+    assert(!f1.is_ready());
+    assert(!f2.is_ready());
+    assert(!f3.is_ready());
+    assert(!f4.is_ready());
+    assert(f5.is_ready());
+    assert(f5.get()==42);
+}
+
+void test_wait_for_either_invokes_callbacks()
+{
+    callback_called=0;
+    jss::packaged_task<int> pt(make_int_slowly);
+    jss::unique_future<int> fi=pt.get_future();
+    jss::packaged_task<int> pt2(make_int_slowly);
+    jss::unique_future<int> fi2=pt2.get_future();
+    pt.set_wait_callback(wait_callback_for_task);
+
+    boost::thread(::move(pt));
+    
+    jss::wait_for_any(fi,fi2);
+    assert(callback_called==1);
+    assert(fi.get()==42);
+}
+
+void test_wait_for_any_from_range()
+{
+    unsigned const count=10;
+    for(unsigned i=0;i<count;++i)
+    {
+        jss::packaged_task<int> tasks[count];
+        jss::unique_future<int> futures[count];
+        for(unsigned j=0;j<count;++j)
+        {
+            tasks[j]=jss::packaged_task<int>(make_int_slowly);
+            futures[j]=tasks[j].get_future();
+        }
+        boost::thread(::move(tasks[i]));
+    
+        jss::unique_future<int>* const future=jss::wait_for_any(futures,futures+count);
+    
+        assert(future==(futures+i));
+        for(unsigned j=0;j<count;++j)
+        {
+            if(j!=i)
+            {
+                assert(!futures[j].is_ready());
+            }
+            else
+            {
+                assert(futures[j].is_ready());
+            }
+        }
+        assert(futures[i].get()==42);
+    }
+}
+
+void test_wait_for_all_from_range()
+{
+    unsigned const count=10;
+    jss::unique_future<int> futures[count];
+    for(unsigned j=0;j<count;++j)
+    {
+        jss::packaged_task<int> task(make_int_slowly);
+        futures[j]=task.get_future();
+        boost::thread(::move(task));
+    }
+    
+    jss::wait_for_all(futures,futures+count);
+    
+    for(unsigned j=0;j<count;++j)
+    {
+        assert(futures[j].is_ready());
+    }
+}
+
+void test_wait_for_all_two_futures()
+{
+    unsigned const count=2;
+    jss::unique_future<int> futures[count];
+    for(unsigned j=0;j<count;++j)
+    {
+        jss::packaged_task<int> task(make_int_slowly);
+        futures[j]=task.get_future();
+        boost::thread(::move(task));
+    }
+    
+    jss::wait_for_all(futures[0],futures[1]);
+    
+    for(unsigned j=0;j<count;++j)
+    {
+        assert(futures[j].is_ready());
+    }
+}
+
+void test_wait_for_all_three_futures()
+{
+    unsigned const count=3;
+    jss::unique_future<int> futures[count];
+    for(unsigned j=0;j<count;++j)
+    {
+        jss::packaged_task<int> task(make_int_slowly);
+        futures[j]=task.get_future();
+        boost::thread(::move(task));
+    }
+    
+    jss::wait_for_all(futures[0],futures[1],futures[2]);
+    
+    for(unsigned j=0;j<count;++j)
+    {
+        assert(futures[j].is_ready());
+    }
+}
+
+void test_wait_for_all_four_futures()
+{
+    unsigned const count=4;
+    jss::unique_future<int> futures[count];
+    for(unsigned j=0;j<count;++j)
+    {
+        jss::packaged_task<int> task(make_int_slowly);
+        futures[j]=task.get_future();
+        boost::thread(::move(task));
+    }
+    
+    jss::wait_for_all(futures[0],futures[1],futures[2],futures[3]);
+    
+    for(unsigned j=0;j<count;++j)
+    {
+        assert(futures[j].is_ready());
+    }
+}
+
+void test_wait_for_all_five_futures()
+{
+    unsigned const count=5;
+    jss::unique_future<int> futures[count];
+    for(unsigned j=0;j<count;++j)
+    {
+        jss::packaged_task<int> task(make_int_slowly);
+        futures[j]=task.get_future();
+        boost::thread(::move(task));
+    }
+    
+    jss::wait_for_all(futures[0],futures[1],futures[2],futures[3],futures[4]);
+    
+    for(unsigned j=0;j<count;++j)
+    {
+        assert(futures[j].is_ready());
+    }
+}
+
+
+int main()
+{
+    test_initial_state();
+    //test_waiting_future();
+    //test_cannot_get_future_twice();
+    //test_set_value_updates_future_state();
+    //test_set_value_can_be_retrieved();
+    //test_set_value_can_be_moved();
+    //test_store_value_from_thread();
+    //test_store_exception();
+    //test_future_from_packaged_task_is_waiting();
+    //test_invoking_a_packaged_task_populates_future();
+    //test_invoking_a_packaged_task_twice_throws();
+    //test_cannot_get_future_twice_from_task();
+    //test_task_stores_exception_if_function_throws();
+    //test_void_promise();
+    //test_reference_promise();
+    //test_task_returning_void();
+    //test_task_returning_reference();
+    //test_shared_future();
+    //test_copies_of_shared_future_become_ready_together();
+    //test_shared_future_can_be_move_assigned_from_unique_future();
+    //test_shared_future_void();
+    //test_shared_future_ref();
+    //test_can_get_a_second_future_from_a_moved_promise();
+    //test_can_get_a_second_future_from_a_moved_void_promise();
+    //test_unique_future_for_move_only_udt();
+    //test_unique_future_for_string();
+    //test_wait_callback();
+    //test_wait_callback_with_timed_wait();
+    //test_wait_callback_for_packaged_task();
+    //test_packaged_task_can_be_moved();
+    //test_destroying_a_promise_stores_broken_promise();
+    //test_destroying_a_packaged_task_stores_broken_promise();
+    //test_wait_for_either_of_two_futures_1();
+    //test_wait_for_either_of_two_futures_2();
+    //test_wait_for_either_of_three_futures_1();
+    //test_wait_for_either_of_three_futures_2();
+    //test_wait_for_either_of_three_futures_3();
+    //test_wait_for_either_of_four_futures_1();
+    //test_wait_for_either_of_four_futures_2();
+    //test_wait_for_either_of_four_futures_3();
+    //test_wait_for_either_of_four_futures_4();
+    //test_wait_for_either_of_five_futures_1();
+    //test_wait_for_either_of_five_futures_2();
+    //test_wait_for_either_of_five_futures_3();
+    //test_wait_for_either_of_five_futures_4();
+    //test_wait_for_either_of_five_futures_5();
+    //test_wait_for_either_invokes_callbacks();
+    //test_wait_for_any_from_range();
+    //test_wait_for_all_from_range();
+    //test_wait_for_all_two_futures();
+    //test_wait_for_all_three_futures();
+    //test_wait_for_all_four_futures();
+    //test_wait_for_all_five_futures();
 
 	std::cin.get();
-	return 0;
 }

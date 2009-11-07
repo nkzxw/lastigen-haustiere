@@ -174,31 +174,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\exception_ptr.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\exception_ptr_impl.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\future.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\future_detail.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\future_exceptions.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\future_group.hpp"
-				>
-			</File>
-			<File
-				RelativePath=".\future_stream.hpp"
+				RelativePath=".\n2561_future.hpp"
 				>
 			</File>
 		</Filter>
