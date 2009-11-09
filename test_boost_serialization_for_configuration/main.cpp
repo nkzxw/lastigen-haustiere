@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <boost/smart_ptr/shared_ptr.hpp>
+
 #include "AppSettings.hpp"
 #include "ConfigManager.hpp"
 #include "Router.hpp"
@@ -11,7 +13,7 @@
 
 int main(int argc, char** argv)
 {
-
+	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
 	CONFIG->initialize( argv[0] );
 
 	AppSettings *settings = CONFIG->getCustomSettings();
