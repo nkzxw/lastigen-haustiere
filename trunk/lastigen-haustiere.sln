@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_active_object", "test_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_futures", "test_boost_futures\test_boost_futures.vcproj", "{EF95D36F-82C2-4976-8AA2-A8F8A13BB476}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_dynamic_ptr", "test_dynamic_ptr\test_dynamic_ptr.vcproj", "{32F22FD0-D519-43E8-93FF-196F05A2EDDA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,16 @@ Global
 		{EF95D36F-82C2-4976-8AA2-A8F8A13BB476}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{EF95D36F-82C2-4976-8AA2-A8F8A13BB476}.Release|Win32.ActiveCfg = Release|Win32
 		{EF95D36F-82C2-4976-8AA2-A8F8A13BB476}.Release|Win32.Build.0 = Release|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Debug|Win32.ActiveCfg = Debug|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Debug|Win32.Build.0 = Debug|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Any CPU.ActiveCfg = Release|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Win32.ActiveCfg = Release|Win32
+		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

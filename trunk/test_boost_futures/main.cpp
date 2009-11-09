@@ -12,6 +12,7 @@
 #include <utility>
 #include <memory>
 #include <string>
+#include <iostream>
 
 #ifdef BOOST_HAS_RVALUE_REFS
     template<typename T>
@@ -372,6 +373,12 @@ void test_shared_future()
 {
     jss::packaged_task<int> pt(make_int);
     jss::unique_future<int> fi=pt.get_future();
+
+    //pt();
+    //assert(fi.is_ready());
+    //assert(fi.has_value());
+    //assert(!fi.has_exception());
+    //assert(fi.get_state()==jss::future_state::ready);
 
     jss::shared_future<int> sf(::move(fi));
     assert(fi.get_state()==jss::future_state::uninitialized);
@@ -1156,61 +1163,205 @@ void test_wait_for_all_five_futures()
 }
 
 
+
+// ----------------------------------------------------------------------------------------------------------------
+
+
+struct config 
+{
+	//TODO: evitar copias...
+
+	//config()
+	//{
+	//	std::cout << "config()" << std::endl;
+	//}
+	//config(const config& cfg)
+	//{
+	//	this->data_ = cfg.data_;
+	//	std::cout << "config(const config& cfg)" << std::endl;
+	//	//std::cout << "this->data_: " << this->data_ << std::endl;
+	//	//std::cout << "cfg.data_: " << cfg.data_ << std::endl;
+	//}
+	//~config()
+	//{
+	//	std::cout << "~config()" << std::endl;
+	//}
+	int data_;
+};
+
+static int a = 0;
+config global_config;
+
+
+config re_read_configuration()
+{
+	global_config.data_ = a++;
+	return global_config;
+}
+
+// funcion llamada en otro thread que relee y actualiza la configuracion
+// el "XML" lo pone como valor del objeto "promesa"
+void refresh_configuration_async ( jss::promise<config>* p )
+{
+	while (true)
+	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(5000));
+		//p.set_value( re_read_configuration() ) ;
+		p->set_value( re_read_configuration() ) ;
+	}
+
+
+}
+
+
+void use_configuration()
+{
+	jss::promise<config> refresh_config_promise ;
+
+	// Esto obtiene la configuracion "futura"
+	jss::unique_future<config> cfg = refresh_config_promise.get_future();
+
+	// Esto lanza el thread que va a refrescar la configuracion
+	//boost::thread t( refresh_configuration_async, std::move(refresh_config_promise) ) ;
+	//boost::thread t( refresh_configuration_async, ::move(refresh_config_promise) ) ;
+	boost::thread t( refresh_configuration_async, &refresh_config_promise ) ;
+
+	//  y aqui.... me fijo si ya la tengo disponible
+	//if ( cfg.is_ready() )
+	//{
+	//	std::cout << cfg.get().data_ << std::endl ;
+	//}
+
+	while(true)
+	{
+		cfg.wait();
+		std::cout << cfg.get().data_ << std::endl ;
+		boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
+	}
+	//  Si quisiera podria hacer:  cfg.wait()
+
+}
+
+void test_propuesta_fcacciola()
+{
+	use_configuration();
+}
+
+// ----------------------------------------------------------------------------------------------------------------
+
+
 int main()
 {
-    test_initial_state();
-    //test_waiting_future();
-    //test_cannot_get_future_twice();
-    //test_set_value_updates_future_state();
-    //test_set_value_can_be_retrieved();
-    //test_set_value_can_be_moved();
-    //test_store_value_from_thread();
-    //test_store_exception();
-    //test_future_from_packaged_task_is_waiting();
-    //test_invoking_a_packaged_task_populates_future();
-    //test_invoking_a_packaged_task_twice_throws();
-    //test_cannot_get_future_twice_from_task();
-    //test_task_stores_exception_if_function_throws();
-    //test_void_promise();
-    //test_reference_promise();
-    //test_task_returning_void();
-    //test_task_returning_reference();
-    //test_shared_future();
-    //test_copies_of_shared_future_become_ready_together();
-    //test_shared_future_can_be_move_assigned_from_unique_future();
-    //test_shared_future_void();
-    //test_shared_future_ref();
-    //test_can_get_a_second_future_from_a_moved_promise();
-    //test_can_get_a_second_future_from_a_moved_void_promise();
-    //test_unique_future_for_move_only_udt();
-    //test_unique_future_for_string();
-    //test_wait_callback();
-    //test_wait_callback_with_timed_wait();
-    //test_wait_callback_for_packaged_task();
-    //test_packaged_task_can_be_moved();
-    //test_destroying_a_promise_stores_broken_promise();
-    //test_destroying_a_packaged_task_stores_broken_promise();
-    //test_wait_for_either_of_two_futures_1();
-    //test_wait_for_either_of_two_futures_2();
-    //test_wait_for_either_of_three_futures_1();
-    //test_wait_for_either_of_three_futures_2();
-    //test_wait_for_either_of_three_futures_3();
-    //test_wait_for_either_of_four_futures_1();
-    //test_wait_for_either_of_four_futures_2();
-    //test_wait_for_either_of_four_futures_3();
-    //test_wait_for_either_of_four_futures_4();
-    //test_wait_for_either_of_five_futures_1();
-    //test_wait_for_either_of_five_futures_2();
-    //test_wait_for_either_of_five_futures_3();
-    //test_wait_for_either_of_five_futures_4();
-    //test_wait_for_either_of_five_futures_5();
-    //test_wait_for_either_invokes_callbacks();
-    //test_wait_for_any_from_range();
-    //test_wait_for_all_from_range();
-    //test_wait_for_all_two_futures();
-    //test_wait_for_all_three_futures();
-    //test_wait_for_all_four_futures();
-    //test_wait_for_all_five_futures();
+	test_propuesta_fcacciola();
+
+	//std::cout << __cplusplus << std::endl;
+	//std::cout << "01--------------------------------------------------------------" << std::endl;
+	//test_initial_state();
+	//std::cout << "02--------------------------------------------------------------" << std::endl;
+ //   test_waiting_future();
+	//std::cout << "03--------------------------------------------------------------" << std::endl;
+ //   test_cannot_get_future_twice();
+	//std::cout << "04--------------------------------------------------------------" << std::endl;
+ //   test_set_value_updates_future_state();
+	//std::cout << "05--------------------------------------------------------------" << std::endl;
+ //   test_set_value_can_be_retrieved();
+	//std::cout << "06--------------------------------------------------------------" << std::endl;
+ //   test_set_value_can_be_moved();
+	//std::cout << "07--------------------------------------------------------------" << std::endl;
+ //   test_store_value_from_thread();
+	//std::cout << "08--------------------------------------------------------------" << std::endl;
+ //   test_store_exception();
+	//std::cout << "09--------------------------------------------------------------" << std::endl;
+ //   test_future_from_packaged_task_is_waiting();
+	//std::cout << "10--------------------------------------------------------------" << std::endl;
+ //   test_invoking_a_packaged_task_populates_future();
+	//std::cout << "11--------------------------------------------------------------" << std::endl;
+ //   test_invoking_a_packaged_task_twice_throws();
+	//std::cout << "12--------------------------------------------------------------" << std::endl;
+ //   test_cannot_get_future_twice_from_task();
+	//std::cout << "13--------------------------------------------------------------" << std::endl;
+ //   test_task_stores_exception_if_function_throws();
+	//std::cout << "14--------------------------------------------------------------" << std::endl;
+ //   test_void_promise();
+	//std::cout << "15--------------------------------------------------------------" << std::endl;
+ //   test_reference_promise();
+	//std::cout << "16--------------------------------------------------------------" << std::endl;
+ //   test_task_returning_void();
+	//std::cout << "17--------------------------------------------------------------" << std::endl;
+ //   test_task_returning_reference();
+	//std::cout << "18--------------------------------------------------------------" << std::endl;
+ ////   test_shared_future();
+	//std::cout << "19--------------------------------------------------------------" << std::endl;
+ ////   test_copies_of_shared_future_become_ready_together();
+	//std::cout << "20--------------------------------------------------------------" << std::endl;
+ ////   test_shared_future_can_be_move_assigned_from_unique_future();
+	//std::cout << "21--------------------------------------------------------------" << std::endl;
+ ////   test_shared_future_void();
+	//std::cout << "22--------------------------------------------------------------" << std::endl;
+ //   test_shared_future_ref();
+	//std::cout << "23--------------------------------------------------------------" << std::endl;
+ ////   test_can_get_a_second_future_from_a_moved_promise();
+	//std::cout << "24--------------------------------------------------------------" << std::endl;
+ ////   test_can_get_a_second_future_from_a_moved_void_promise();
+	//std::cout << "25--------------------------------------------------------------" << std::endl;
+ //   test_unique_future_for_move_only_udt();
+	//std::cout << "26--------------------------------------------------------------" << std::endl;
+ //   test_unique_future_for_string();
+	//std::cout << "27--------------------------------------------------------------" << std::endl;
+ //   test_wait_callback();
+	//std::cout << "28--------------------------------------------------------------" << std::endl;
+ //   test_wait_callback_with_timed_wait();
+	//std::cout << "29--------------------------------------------------------------" << std::endl;
+ //   test_wait_callback_for_packaged_task();
+	//std::cout << "30--------------------------------------------------------------" << std::endl;
+ //   //test_packaged_task_can_be_moved();
+	//std::cout << "31--------------------------------------------------------------" << std::endl;
+ //   test_destroying_a_promise_stores_broken_promise();
+	//std::cout << "32--------------------------------------------------------------" << std::endl;
+ //   test_destroying_a_packaged_task_stores_broken_promise();
+	//std::cout << "33--------------------------------------------------------------" << std::endl;
+ //   //test_wait_for_either_of_two_futures_1();
+	//std::cout << "34--------------------------------------------------------------" << std::endl;
+ //   //test_wait_for_either_of_two_futures_2();
+	//std::cout << "35--------------------------------------------------------------" << std::endl;
+ //   //test_wait_for_either_of_three_futures_1();
+	//std::cout << "36--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_three_futures_2();
+	//std::cout << "37--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_three_futures_3();
+	//std::cout << "38--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_four_futures_1();
+	//std::cout << "39--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_four_futures_2();
+	//std::cout << "40--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_four_futures_3();
+	//std::cout << "41--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_four_futures_4();
+	//std::cout << "42--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_five_futures_1();
+	//std::cout << "43--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_five_futures_2();
+	//std::cout << "44--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_five_futures_3();
+	//std::cout << "45--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_five_futures_4();
+	//std::cout << "46--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_of_five_futures_5();
+	//std::cout << "47--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_either_invokes_callbacks();
+	//std::cout << "48--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_any_from_range();
+	//std::cout << "49--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_all_from_range();
+	//std::cout << "50--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_all_two_futures();
+	//std::cout << "51--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_all_three_futures();
+	//std::cout << "52--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_all_four_futures();
+	//std::cout << "53--------------------------------------------------------------" << std::endl;
+ //   //FALLA POR ASSERT //test_wait_for_all_five_futures();
+	//std::cout << "54--------------------------------------------------------------" << std::endl;
 
 	std::cin.get();
 }
