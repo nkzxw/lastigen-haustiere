@@ -1,35 +1,99 @@
 #include <iostream>
-//#include <boost/smart_ptr/shared_ptr.hpp>
 #include <boost/shared_ptr.hpp>
-#include "dynamic_ptr.hpp"
+#include <boost/thread.hpp>
 
-typedef changer<custom_class> ch;
+#include "slave_ptr.hpp"
+
+
+struct custom_class
+{
+	int data_;
+};
+
+int global_int = 0;
+
+template <typename T>
+class changer
+{
+public:
+
+	changer()
+	{
+		load();
+
+		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&changer<T>::refreshMethod, this)));
+	}
+
+	void load()
+	{
+		ptr_.reset(new T);
+		ptr_->data_ = global_int++;
+	}
+
+	void refreshMethod()
+	{
+		while (true)
+		{
+			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
+
+			//TODO: ver de aplicar conditional variables
+			{
+	  //      boost::mutex::scoped_lock lk(mutex_);
+			//std::cout << "updating ... (locked)" << std::endl;
+			//boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
+			
+
+			boost::master_ptr<T> newData(new T);
+			newData->data_ = global_int++;
+			ptr_.atomic_exchange(&newData);
+
+			}
+			//std::cout << "updated ... (unlocked)" << std::endl;
+		}
+
+	}
+
+	boost::slave_ptr<T> get()
+	{
+        boost::mutex::scoped_lock lk(mutex_);
+		return ptr_.get();
+	}
+
+private:
+    boost::shared_ptr<boost::thread> refreshThread_;
+	boost::master_ptr<T> ptr_;
+	boost::mutex mutex_; //mutable 
+};
+
+//typedef changer<custom_class> ch;
 
 int main(int argc, char** argv)
 {
 	changer<custom_class> c;
 	c.load();
 
-	changer<custom_class> c2;
-	c2.load();
+	//changer<custom_class> c2;
+	//c2.load();
 
 
-	boost::dynamic_ptr< changer<custom_class> > ptr = c.get();
-	boost::dynamic_ptr< changer<custom_class> > ptr2 = c2.get();
-	boost::dynamic_ptr< changer<custom_class> > ptr3= ptr;
-	ptr3 = ptr2;
-	//boost::dynamic_ptr< ch > ptr = c.get();
+	boost::slave_ptr<custom_class> ptr = c.get();
+	//boost::slave_ptr<custom_class> ptr2 = c2.get();
+	//boost::slave_ptr<custom_class> ptr3= ptr;
+	//ptr3 = ptr2;
 
 
+	while (true)
+	{
+		std::cout << ptr->data_ << std::endl;
+		//std::cout << c.get()->data_ << std::endl;
 
-	std::cout << ptr->data_ << std::endl;
-	//std::cout << c.ptr_->data_ << std::endl;
-	std::cout << c.get()->data_ << std::endl;
+		boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
+	}
+
 	
 
-	c.reload();
+	//c.reload();
 	std::cout << ptr->data_ << std::endl;
-	//std::cout << c.ptr_->data_ << std::endl;
 	std::cout << c.get()->data_ << std::endl;
 
 	std::cin.sync();
@@ -45,27 +109,3 @@ int main(int argc, char** argv)
 
 
 
-//
-//template <class Base, class Arg> 
-//struct rebind; 
-//
-//template <template <class> class Base, class T, class Arg> 
-//struct rebind<Base<T>, Arg> 
-//{ 
-//	typedef Base<Arg> type; 
-//}; 
-//
-//template <class In> 
-//void foo() 
-//{
-//	// d is of type container<double>. 
-//	typename rebind<In, double>::type d; 
-//} 
-//
-//template <class T>
-//struct container {}; 
-//
-//int main() 
-//{ 
-//	foo<container<int> >(); 
-//} 
