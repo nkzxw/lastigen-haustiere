@@ -54,10 +54,21 @@ class ReferenceConfigAccess
 
 public:
 	ReferenceConfigAccess(config<T>* config) 
-		: config_(config), lock_(config_->mutex_) 
+		: config_(config), lock_(config->mutex_) 
 	{ 
 	}
+
+	ReferenceConfigAccess(const ReferenceConfigAccess& other) 
+	{ 
+		std::cout << std::endl;
+	}
 	
+	~ReferenceConfigAccess() 
+	{ 
+		std::cout << std::endl;
+	}
+	
+
 	//T* getSettings() 
 	boost::slave_ptr<T> getSettings() 
 	{ 
@@ -107,17 +118,17 @@ public:
 
 			//TODO: ver de aplicar conditional variables
 			{
-	  //      boost::mutex::scoped_lock lk(mutex_);
-			//std::cout << "updating ... (locked)" << std::endl;
-			//boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
-			
+			std::cout << "waiting to lock ... " << std::endl;
+	        boost::mutex::scoped_lock lk(mutex_);
+			std::cout << "updating ... (locked)" << std::endl;
+			boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
 
 			boost::master_ptr<T> newData(new T);
 			newData->data_ = global_int++;
 			ptr_.atomic_exchange(&newData);
 
 			}
-			//std::cout << "updated ... (unlocked)" << std::endl;
+			std::cout << "updated ... (unlocked)" << std::endl;
 		}
 
 	}
@@ -164,11 +175,28 @@ int main(int argc, char** argv)
 
 	//boost::slave_ptr<custom_class> ptr = c.getReference();
 	
-	{
-	ReferenceConfigAccess<custom_class> configAccess = c.getAccesor();
-	configAccess.getSettings();
+	boost::slave_ptr<custom_class> outScopePtr;
 
+	while (true)
+	{
+		boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
+		{
+		std::cout << "trying to access to data..." << std::endl;
+		ReferenceConfigAccess<custom_class> configAccess = c.getAccesor();
+		std::cout << "begin data accessing ... (locked)" << std::endl;
+		boost::slave_ptr<custom_class> tempPtr = configAccess.getSettings();
+		outScopePtr = configAccess.getSettings();
+
+		boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
+
+		std::cout << tempPtr->data_ << std::endl;
+		}
+		std::cout << "end data accessing ... (unlocked)" << std::endl;
+
+		std::cout << "********* WARNING UNSECURED DATA (no-lock): "  << outScopePtr->data_ << std::endl;
 	}
+
+
 
 	//config<custom_class> c2;
 	//c2.load();
