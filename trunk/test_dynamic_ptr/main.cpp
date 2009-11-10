@@ -13,15 +13,84 @@ struct custom_class
 int global_int = 0;
 
 template <typename T>
-class changer
+class config;
+
+template <typename T>
+class value_config_accesor
+{
+};
+
+
+//template <typename T>
+//class reference_config_accesor
+//{
+//public:
+//	reference_config_accesor(config<T>* config)
+//		: config_(config)
+//	{
+//		//LOCK
+//		config_->mutex_.lock();
+//	}
+//	
+//	reference_config_accesor(const reference_config_accesor& r)
+//	{
+//		//LOCK ????
+//		// Cuidado con...
+//	}
+//
+//	~reference_config_accesor()
+//	{
+//		//UNLOCK
+//		config_->mutex_.unlock();
+//	}
+//
+//private:
+//	config<T>* config_;
+//};
+
+template<class T>
+class ReferenceConfigAccess
+{
+
+public:
+	ReferenceConfigAccess(config<T>* config) 
+		: config_(config), lock_(config_->mutex_) 
+	{ 
+	}
+	
+	//T* getSettings() 
+	boost::slave_ptr<T> getSettings() 
+	{ 
+		//return config<T>::ptr_; 
+		//return config_->ptr_;
+		return config_->ptr_.get();
+	}
+
+	//
+	//T* operator->()  
+	//{ 
+	//	return getSettings(); 
+	//}
+
+private:
+	//ScopedLock lock;
+	boost::mutex::scoped_lock lock_;
+	config<T>* config_;
+};
+
+
+template <typename T>
+class config
 {
 public:
 
-	changer()
+	friend class ReferenceConfigAccess<T>;
+
+	config()
 	{
 		load();
 
-		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&changer<T>::refreshMethod, this)));
+		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&config<T>::refreshMethod, this)));
 	}
 
 	void load()
@@ -53,11 +122,29 @@ public:
 
 	}
 
-	boost::slave_ptr<T> get()
+
+
+
+
+	//Retorna referencia haciendo Lock por bloque
+	ReferenceConfigAccess<T> getAccesor()
 	{
-        boost::mutex::scoped_lock lk(mutex_);
+		return ReferenceConfigAccess<T>(this);
+	}
+
+	//Retorna referencia y no hace Lock por bloque
+	boost::slave_ptr<T> getReference()
+	{
+        //boost::mutex::scoped_lock lk(mutex_);
 		return ptr_.get();
 	}
+
+	T getValue()
+	{
+        //boost::mutex::scoped_lock lk(mutex_);
+		return ptr_.get();
+	}
+
 
 private:
     boost::shared_ptr<boost::thread> refreshThread_;
@@ -65,36 +152,45 @@ private:
 	boost::mutex mutex_; //mutable 
 };
 
-//typedef changer<custom_class> ch;
+//typedef config<custom_class> ch;
 
 int main(int argc, char** argv)
 {
-	changer<custom_class> c;
+	config<custom_class> c;
 	c.load();
 
-	//changer<custom_class> c2;
+
+
+
+	//boost::slave_ptr<custom_class> ptr = c.getReference();
+	
+	{
+	ReferenceConfigAccess<custom_class> configAccess = c.getAccesor();
+	configAccess.getSettings();
+
+	}
+
+	//config<custom_class> c2;
 	//c2.load();
-
-
-	boost::slave_ptr<custom_class> ptr = c.get();
 	//boost::slave_ptr<custom_class> ptr2 = c2.get();
 	//boost::slave_ptr<custom_class> ptr3= ptr;
 	//ptr3 = ptr2;
 
 
-	while (true)
-	{
-		std::cout << ptr->data_ << std::endl;
-		//std::cout << c.get()->data_ << std::endl;
+	//while (true)
+	//{
+	//	//std::cout << ptr->data_ << std::endl;
+	//	////std::cout << c.get()->data_ << std::endl;
+	//	configAccess.getSettings();
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
-	}
+	//	boost::this_thread::sleep(boost::posix_time::milliseconds(3000));
+	//}
 
 	
 
-	//c.reload();
-	std::cout << ptr->data_ << std::endl;
-	std::cout << c.get()->data_ << std::endl;
+	////c.reload();
+	//std::cout << ptr->data_ << std::endl;
+	//std::cout << c.get()->data_ << std::endl;
 
 	std::cin.sync();
 	std::cin.get();
