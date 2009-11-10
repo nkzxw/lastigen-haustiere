@@ -1,5 +1,5 @@
-#ifndef SMARTNETWORKMANAGER_HPP_
-#define SMARTNETWORKMANAGER_HPP_
+#ifndef SMARTNETWORKMANAGER_HPP_INCLUDED
+#define SMARTNETWORKMANAGER_HPP_INCLUDED
 
 //#include <boost/ptr_container/ptr_vector.hpp>
 //#include <boost/ptr_container/ptr_map.hpp>
@@ -200,5 +200,4 @@ protected:
 
 };
 
-#endif // SMARTNETWORKMANAGER_HPP_
-
+#endif // SMARTNETWORKMANAGER_HPP_INCLUDED
