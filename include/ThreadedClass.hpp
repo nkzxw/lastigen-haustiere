@@ -2,8 +2,8 @@
 // http://en.wikibooks.org/wiki/More_C%2B%2B_Idioms/Calling_Virtuals_During_Initialization
 
 
-#ifndef THREADEDCLASS_HPP_
-#define THREADEDCLASS_HPP_
+#ifndef THREADEDCLASS_HPP_INCLUDED
+#define THREADEDCLASS_HPP_INCLUDED
 
 //#include <vector>
 
@@ -78,4 +78,4 @@ private:
 
 };
 
-#endif // THREADEDCLASS_HPP_
+#endif // THREADEDCLASS_HPP_INCLUDED
