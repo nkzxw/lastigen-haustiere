@@ -13,11 +13,12 @@
 
 int main(int argc, char** argv)
 {
+
 	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
 	CONFIG->initialize( argv[0] );
 
-	AppSettings *settings = CONFIG->getCustomSettings();
-
+	AppSettings *settingsPointer = CONFIG->getCustomSettings();
+	ReferenceConfigAccess<AppSettings> settings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
 
 	while (true) 
 	{
@@ -25,15 +26,50 @@ int main(int argc, char** argv)
 		//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
 		int wait = 0;
 		std::string dll = settings->typeMapping_["Otro"];
+		std::string dll2 = settingsPointer->typeMapping_["Otro"];
 
 
-		std::cout << "settings: " << settings << std::endl;
+		//std::cout << "settings: " << settings << std::endl;
 		std::cout << "wait: " << wait << std::endl;
 		std::cout << "dll: " << dll << std::endl;
+		std::cout << "dll2: " << dll2 << std::endl;
 
 		boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
 	}
 
+
+
+
+
+		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+		//{
+		//std::cout << "trying to access to data..." << std::endl;
+		//ReferenceConfigAccess<custom_class> configAccess = c.getAccesor();
+
+		//std::cout << "begin data accessing ... (locked)" << std::endl;
+		//outScopePtr = configAccess.operator ->();
+
+		////boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+
+		//std::cout << "Refresh: " << configAccess->data_ << std::endl;
+		//}
+		//std::cout << "end data accessing ... (unlocked)" << std::endl;
+
+
+		//std::cout << "********* WARNING UNSECURED DATA (no-lock): "  << outScopePtr->data_ << std::endl;
+
+
+		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+		//{
+		//std::cout << "trying to access to data..." << std::endl;
+		//std::cout << "begin data accessing ... (locked)" << std::endl;
+		//custom_class tempValue = c.getValue();
+		//std::cout << "end data accessing ... (unlocked)" << std::endl;
+
+		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+
+		//std::cout << "Value: " << tempValue.data_ << std::endl;
+		//}
 
 
 
@@ -60,10 +96,12 @@ int main(int argc, char** argv)
 
 
 	////ConfigManager<AppSettings>::instance->initialize( argv[0], false );
-	//CONFIG->initialize( argv[0], false );
+	//CONFIG->initialize( argv[0], false, false);
 
 	////AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
 	//AppSettings *settings = CONFIG->getCustomSettings();
+	////ReferenceConfigAccess<AppSettings> settings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
+
 
 	////ConfigManager<AppSettings>::CommonSettingsType *commonSettings = CONFIG->getCommonSettings();
 	////commonSettings ->set("APManagerState.APConnected.MillisecondsToWait", "15000");

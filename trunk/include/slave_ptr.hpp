@@ -1,3 +1,5 @@
+//TODO: nombre: Dependent Pointers
+
 #ifndef SLAVE_HPP_INCLUDED
 #define SLAVE_HPP_INCLUDED
 
@@ -94,8 +96,16 @@ public:
 
 	typename pointer operator->() const
 	{
-		return master_->ptr_.get();
+		//return master_->ptr_.get();
+		return master_->get();
 	}
+
+    reference operator* () const // never throws
+    {
+        //BOOST_ASSERT(px != 0);
+        return *master_->ptr_.get();
+    }
+
 
 	master_ptr<T>* master_;
 };
@@ -127,9 +137,20 @@ public:
 	{
 	}
 
-	slave_ptr<T> get()
+	slave_ptr<T> getSlave()
 	{
 		return slave_ptr<T>(this);
+	}
+
+	//TODO: ver si se puede hacer otro método que sea const.
+	T* get()
+	{
+		return ptr_.get();
+	}
+
+	T* get() const
+	{
+		return ptr_.get();
 	}
 
 	typename pointer operator->() const
