@@ -17,6 +17,8 @@ int main(int argc, char** argv)
 	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
 	CONFIG->initialize( argv[0] );
 
+	//CONFIG->Policy_Method();
+
 	AppSettings *settingsPointer = CONFIG->getCustomSettings();
 	ReferenceConfigAccess<AppSettings> settings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
 
