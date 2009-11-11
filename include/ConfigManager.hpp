@@ -16,6 +16,7 @@
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 
+#include "ReferenceConfigAccess.hpp"
 
 //TODO: implementar un mecanismo para refrescar la información
 //TODO: evaluar Straightforward Settings de Torjo
@@ -34,26 +35,32 @@ class CommonSettings
 {
 public:
 
+	CommonSettings()
+		: customSettings_(new T)
+	{
+		//customSettings_ = new T;
+	}
 
 protected:
-
 	friend class boost::serialization::access;
 
-	//TODO: poner estos métodos fuera de la clase como friend...
+	//TODO: poner estos métodos fuera de la clase como friend... (non-intrusive)
 	template < typename Archive >
-	void save(Archive & ar, const unsigned int version) const
+	void save(Archive & ar, const unsigned int version) const //TODO: no puede ser const, porque estoy obteniendo un puntero.
 	{
+		T* temp = customSettings_.get();
+
 		ar	& make_nvp("CommonSettings", keyValueSettings_)
-		    & make_nvp("CustomSettings", customSettings_)
+		    & make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
 			;
 	}
 
 	template < typename Archive >
 	void load(Archive & ar, const unsigned int version)
 	{
-		
+		T* temp = customSettings_.get();
 		ar	& make_nvp("CommonSettings", keyValueSettings_)
-			& make_nvp("CustomSettings", customSettings_)
+			& make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
 			;
 
 		//isDefault_ = version < 2;
@@ -64,7 +71,10 @@ protected:
 
 public: //protected:
 	KeyValueType keyValueSettings_;
-	T customSettings_;
+	//T customSettings_;
+	//T* customSettings_;
+	boost::master_ptr<T> customSettings_;
+
 };
 
 
@@ -84,10 +94,12 @@ public:
 
 	//TODO: probar si es posible instanciar esta clase manualmente
 	ConfigManager(boost::restricted)
-	{}
+	{
+	}
 
 	//TODO: hacer el "save" automaticamente en el destructor de la clase, o tambien un saver que sea automatico dentro de un thread
 
+	//TODO: implementar estas características como Policies
 	void initialize( const std::string& exePath, bool loadAutomatically = true, bool automaticRefresh = true )
 	{
 		boost::filesystem::path path( exePath );
@@ -116,11 +128,11 @@ public:
 			//TODO: ver de aplicar conditional variables
 			{
 	        lock lk(mutex_);
-			std::cout << "updating ... (locked)" << std::endl;
-			boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
+			std::cout << "updating ... (locked)" << std::endl;					//TODO: sacar
+			boost::this_thread::sleep(boost::posix_time::milliseconds(12000)); //TODO: sacar
 			load();
 			}
-			std::cout << "updated ... (unlocked)" << std::endl;
+			std::cout << "updated ... (unlocked)" << std::endl;					//TODO: sacar
 		}
 	}
 
@@ -135,7 +147,7 @@ public:
 		ia >> boost::serialization::make_nvp("Settings", settings_);
 	}
 
-	void save()
+	void save() //const
 	{
 		//lock lk(mutex_);
 
@@ -146,35 +158,19 @@ public:
 		oa << boost::serialization::make_nvp("Settings", settings_);
 	}
 
-	//T& getConfigClass()
-	//{
-	//	return configurationClass_; //TODO: ?????????????????????????
-	//}
 
+	//---------------------------------------------------------------
+	//TODO: ver todas las veriantes de "entrega" de datos que ConfigManager va a presentar
+	// raw pointers, Locks por bloque, Locks por Get, etc...
+	//---------------------------------------------------------------
 
-
-	//TODO: ver de retornar un ProxyObject. http://www.informit.com/articles/article.aspx?p=31529&seqNum=13
-	//TODO: ver de retornar una referencia en vez de un puntero.
-	T* getSettings() 
-	{ 
-		lock lk(mutex_);
-
-		//return &settings_;
-		return &settings_.customSettings_;
-	}
-
-	////TODO: directamente podria llamarse get y set... que estos apunten directamente a CommonSettings
-	//CommonSettings<T>* getCommonSettings() 
-	//{ 
-	//	return &settings_;
-	//}
-
-
+	//TODO: no me gusta la forma de acceder directamente con get y set, ver de hacer un getCommonSettings, o algo parecido...
 	//TODO: std::string deberia ser paramétrizable ya que podemos estar requiriendo un int, wstring, double, etc...
 	//TODO: ver de retornar un puntero, referencia o bien pasar por parámetro para evitar copias innecesarias
 	template <typename E>
 	E get(const std::string& key) const
 	{
+		//TODO: para que lockear si no hay refrescoAutomatico?
 		lock lk(mutex_);
 
 		//return keyValueSettings_.at(key);
@@ -186,26 +182,53 @@ public:
 	template <typename E>
 	void set(const std::string& key, const E& value)
 	{
+		//TODO: para que lockear si no hay refrescoAutomatico?
 		lock lk(mutex_);
 
 		//settings_.keyValueSettings_[key] = value;
 		settings_.keyValueSettings_[key] = boost::lexical_cast<std::string>(value);
 	}
 
+	//TODO: slave_ptr
 	T* getCustomSettings() 
 	{ 
+		//TODO: para que lockear si no hay refrescoAutomatico?
 		lock lk(mutex_);
 
-		return &settings_.customSettings_;
+		//return &settings_.customSettings_;
+		return settings_.customSettings_.get();
+	}
+
+	//TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
+	//Retorna referencia haciendo Lock por bloque
+	//void getCustomSettingsLock()
+	ReferenceConfigAccess<T> getCustomSettingsLock()
+	{
+		//TODO: para que lockear si no hay refrescoAutomatico?
+		//TODO: el constructor recibe un puntero a mutex
+		return ReferenceConfigAccess<T>(this, &mutex_);
+	}
+
+	//Retorna referencia y no hace Lock por bloque
+	boost::slave_ptr<T> getCustomSettingsReference()
+	{
+        //boost::mutex::scoped_lock lk(mutex_);
+		return settings_.customSettings_.getSlave();
 	}
 
 protected:
 	std::string configFile_;
+
+
+	//TODO: los customSettings están dentro de la clase CommonSettings solo porque necesito serializarla. Deberían estar fuera
 	//T settings_;
 	CommonSettings<T> settings_;
 
     boost::shared_ptr<boost::thread> refreshThread_;
-    mutable boost::mutex mutex_;
+    
+	//TODO: mutable o no?
+	mutable boost::mutex mutex_;
+	//boost::mutex mutex_;
 
 };
 
