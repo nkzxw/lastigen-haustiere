@@ -5,6 +5,7 @@
 
 //#include <boost/any.hpp>
 #include <boost/filesystem/path.hpp>
+#include <boost/function.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/nvp.hpp>
 
@@ -82,12 +83,92 @@ public: //protected:
 
 typedef boost::mutex::scoped_lock lock;
 
+class NoLock
+{
+public:
+	void Policy_Method()
+	{
+		std::cout << "void NoLock::Policy_Method()" << std::endl;
+	}
+
+	void lock()
+	{}
+	void unlock()
+	{}
+};
+
+class Locking
+{
+public:
+	void Policy_Method()
+	{
+		std::cout << "void Locking::Policy_Method()" << std::endl;
+	}
+	
+	void lock()
+	{
+		mutex_.lock();
+	}
+	void unlock()
+	{
+		mutex_.unlock();
+	}
+
+	mutable boost::mutex mutex_;
+
+};
+
+class NoRefresh
+{
+public:
+	void refreshMethod()
+	{
+	}
+};
+
+class Refreshing
+{
+public:
+
+	//void refreshMethod( /*Boost function del método Load() */ )
+	void refreshMethod( /*Boost function del método Load() */ )
+	{
+		while (true)
+		{
+			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
+			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
+
+			//TODO: ver de aplicar conditional variables
+			{
+	        lock lk(mutex_);
+			//Lock();
+			std::cout << "updating ... (locked)" << std::endl;					//TODO: sacar
+			boost::this_thread::sleep(boost::posix_time::milliseconds(12000)); //TODO: sacar
+			//load();
+			//Unlock();
+			}
+			std::cout << "updated ... (unlocked)" << std::endl;					//TODO: sacar
+		}
+	}
+
+	mutable boost::mutex mutex_;
+};
+
+
 //TODO: ver de cambiar por el singleton mutexed, ya que este que estamos usando no debe ser thread-safe/
 //TODO: poner un atributo "autoRefresh". En caso de ser TRUE, levantar un hilo que se encargue de refrescar la configuración.
 //TODO: podria ponerse un callback para notificar al usuario de esta clase que la configuracion ha cambiado
 //TODO: mantener una cantidad X de configuraciones previas. El X lo puede definir el usuario cuando levanta la clase (initialize)
-template <typename T>
+
+//	typename LockingPolicy = Locking
+//					 , public LockingPolicy
+
+template <
+	typename T, 
+	typename RefreshPolicy = Refreshing
+>
 class ConfigManager : public boost::singleton< ConfigManager<T> >
+					 , public RefreshPolicy
 {
 public:
 	//typedef CommonSettings<T> CommonSettingsType;
@@ -118,23 +199,7 @@ public:
 
 	}
 
-	void refreshMethod()
-	{
-		while (true)
-		{
-			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
-			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
 
-			//TODO: ver de aplicar conditional variables
-			{
-	        lock lk(mutex_);
-			std::cout << "updating ... (locked)" << std::endl;					//TODO: sacar
-			boost::this_thread::sleep(boost::posix_time::milliseconds(12000)); //TODO: sacar
-			load();
-			}
-			std::cout << "updated ... (unlocked)" << std::endl;					//TODO: sacar
-		}
-	}
 
 	void load()
 	{
@@ -227,7 +292,7 @@ protected:
     boost::shared_ptr<boost::thread> refreshThread_;
     
 	//TODO: mutable o no?
-	mutable boost::mutex mutex_;
+	//mutable boost::mutex mutex_;
 	//boost::mutex mutex_;
 
 };
