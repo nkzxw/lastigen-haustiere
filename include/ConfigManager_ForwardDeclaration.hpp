@@ -7,6 +7,7 @@ class NoLock;
 class Locking;
 
 // Refresing Policies
+template <typename T>
 class NoRefresh;
 
 template <typename T>
