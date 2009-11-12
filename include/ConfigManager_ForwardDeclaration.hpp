@@ -14,8 +14,10 @@ template <typename T>
 class NoRefresh;
 
 template <typename T>
-class Refreshing;
+class StaticRefresh;
 
+template <typename T>
+class DynamicRefresh;
 
 
 //template <

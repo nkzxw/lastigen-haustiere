@@ -10,91 +10,79 @@
 //typedef ConfigManager<AppSettings>::instance CfgMgr;
 #define CONFIG ConfigManager<AppSettings>::instance 
 #define CONFIG_WRITER ConfigManager<AppSettings, NoRefresh>::instance 
+#define CONFIG_DYNAMIC_REFRESH ConfigManager<AppSettings, DynamicRefresh>::instance 
 
 
 int main(int argc, char** argv)
 {
-	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
-	CONFIG->initialize( argv[0] );
+	////TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
+	//CONFIG->initialize( argv[0] );
 
-	{
-		AppSettings *settingsPointer = CONFIG->getCustomSettings();
-
-		LockingProxy<AppSettings> lockingSettings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
-
-
-		for (int i=0; i<10; ++i) //while (true) 
-		{
-			std::cout << "accessing to the variables via pointer..." << std::endl;
-			//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
-			int wait = 0;
-			std::string dll = lockingSettings->typeMapping_["Otro"];
-			std::string dll2 = settingsPointer->typeMapping_["Otro"];
-
-
-			//std::cout << "settings: " << settings << std::endl;
-			std::cout << "wait: " << wait << std::endl;
-			std::cout << "dll: " << dll << std::endl;
-			std::cout << "dll2: " << dll2 << std::endl;
-
-			boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
-		}
-
-
-	}
-	std::cout << "fin del lock" << std::endl;
-
-
-		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
-		//{
-		//std::cout << "trying to access to data..." << std::endl;
-		//LockingProxy<custom_class> configAccess = c.getAccesor();
-
-		//std::cout << "begin data accessing ... (locked)" << std::endl;
-		//outScopePtr = configAccess.operator ->();
-
-		////boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
-
-		//std::cout << "Refresh: " << configAccess->data_ << std::endl;
-		//}
-		//std::cout << "end data accessing ... (unlocked)" << std::endl;
-
-
-		//std::cout << "********* WARNING UNSECURED DATA (no-lock): "  << outScopePtr->data_ << std::endl;
-
-
-		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
-		//{
-		//std::cout << "trying to access to data..." << std::endl;
-		//std::cout << "begin data accessing ... (locked)" << std::endl;
-		//custom_class tempValue = c.getValue();
-		//std::cout << "end data accessing ... (unlocked)" << std::endl;
-
-		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
-
-		//std::cout << "Value: " << tempValue.data_ << std::endl;
-		//}
-
-
-
-
-	//while (true) // check the internal state of the connection to make sure it's still running
 	//{
-	//	//boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+	//	AppSettings *settingsPointer = CONFIG->getCustomSettings();
 
-	//	char ch;
-	//	std::cin.get(ch); // blocking wait for standard input
-	//	//if (ch == 3) // ctrl-C to end program
-	//	if (ch == 'z') // ctrl-C to end program
+	//	LockingProxy<AppSettings> lockingSettings = CONFIG->getSafeConfigProxy(); //TODO: el nombre del metodo tiene que cambiar...
+
+
+	//	for (int i=0; i<10; ++i) //while (true) 
 	//	{
-	//		break;
+	//		std::cout << "accessing to the variables via pointer..." << std::endl;
+	//		//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
+	//		int wait = 0;
+	//		std::string dll = lockingSettings->typeMapping_["Otro"];
+	//		std::string dll2 = settingsPointer->typeMapping_["Otro"];
+
+
+	//		//std::cout << "settings: " << settings << std::endl;
+	//		std::cout << "wait: " << wait << std::endl;
+	//		std::cout << "dll: " << dll << std::endl;
+	//		std::cout << "dll2: " << dll2 << std::endl;
+
+	//		boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
 	//	}
 	//}
+	//std::cout << "fin del lock" << std::endl;
 
 
-	std::cin.sync();
-	std::cin.get();
-	return 0;
+	////boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+	////{
+	////std::cout << "trying to access to data..." << std::endl;
+	////LockingProxy<custom_class> configAccess = c.getAccesor();
+
+	////std::cout << "begin data accessing ... (locked)" << std::endl;
+	////outScopePtr = configAccess.operator ->();
+
+	//////boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+
+	////std::cout << "Refresh: " << configAccess->data_ << std::endl;
+	////}
+	////std::cout << "end data accessing ... (unlocked)" << std::endl;
+
+
+	////std::cout << "********* WARNING UNSECURED DATA (no-lock): "  << outScopePtr->data_ << std::endl;
+
+
+	////boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+	////{
+	////std::cout << "trying to access to data..." << std::endl;
+	////std::cout << "begin data accessing ... (locked)" << std::endl;
+	////custom_class tempValue = c.getValue();
+	////std::cout << "end data accessing ... (unlocked)" << std::endl;
+
+	////boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+
+	////std::cout << "Value: " << tempValue.data_ << std::endl;
+	////}
+
+
+
+
+
+
+	//------------------------------------------------------------------------------------------------------------
+
+	CONFIG_DYNAMIC_REFRESH->initialize( argv[0] );
+
 
 	//------------------------------------------------------------------------------------------------------------
 
@@ -105,7 +93,7 @@ int main(int argc, char** argv)
 
 	////AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
 	//AppSettings *settings = CONFIG_WRITER->getCustomSettings();
-	////LockingProxy<AppSettings> settings = CONFIG_WRITER->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
+	////LockingProxy<AppSettings> settings = CONFIG_WRITER->getSafeConfigProxy(); //TODO: el nombre del metodo tiene que cambiar...
 
 
 	////ConfigManager<AppSettings>::CommonSettingsType *commonSettings = CONFIG_WRITER->getCommonSettings();
@@ -133,6 +121,33 @@ int main(int argc, char** argv)
 	//CONFIG_WRITER->save();
 
 	//------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+	//while (true) // check the internal state of the connection to make sure it's still running
+	//{
+	//	//boost::this_thread::sleep(boost::posix_time::milliseconds(300));
+
+	//	char ch;
+	//	std::cin.get(ch); // blocking wait for standard input
+	//	//if (ch == 3) // ctrl-C to end program
+	//	if (ch == 'z') // ctrl-C to end program
+	//	{
+	//		break;
+	//	}
+	//}
+
+
+
+
+
+
+	std::cin.sync();
+	std::cin.get();
+	return 0;
 
 	return 0;
 }
