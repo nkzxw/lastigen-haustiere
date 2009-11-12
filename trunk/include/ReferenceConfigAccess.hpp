@@ -22,13 +22,16 @@ public:
 	////friend class ConfigManager<T, RefreshPolicy>;
 
 
-	ReferenceConfigAccess(const ReferenceConfigAccess& other) 
+	ReferenceConfigAccess(const ReferenceConfigAccess& other)
+		: ptr_(other.ptr_), mutex_(other.mutex_) //, lock_(*other.mutex_) 
 	{ 
+		//TODO: ver de usar recursive_mutex o shared_mutex para solicionar el problema de la copia...
+
 		//TODO:
 		std::cout << "WARNING: ReferenceConfigAccess(const ReferenceConfigAccess& other)" << std::endl;
 	}
 	
-	~ReferenceConfigAccess() 
+	~ReferenceConfigAccess()
 	{ 
 		//TODO:
 		std::cout << "WARNING: ~ReferenceConfigAccess()" << std::endl;

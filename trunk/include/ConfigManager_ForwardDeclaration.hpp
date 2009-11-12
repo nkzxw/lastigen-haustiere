@@ -8,22 +8,25 @@ class Locking;
 
 // Refresing Policies
 template <typename T>
+class RefresingPolicyBase;
+
+template <typename T>
 class NoRefresh;
 
 template <typename T>
 class Refreshing;
 
 
+
 //template <
 //	typename T, 
-//	typename RefreshPolicy = Refreshing
+//	template <typename> class RefreshPolicy = Refreshing
 //>
 //class ConfigManager;
 
-
 template <
 	typename T, 
-	template <typename> class RefreshPolicy = Refreshing
+	template <typename> class RefreshPolicy
 >
 class ConfigManager;
 

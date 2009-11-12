@@ -179,12 +179,24 @@ public:
 
 
 template <typename T>
-class NoRefresh
+class RefresingPolicyBase
 {
 protected:
-	//void refreshMethod()
-	//{
-	//}
+	RefresingPolicyBase()
+		: customSettings_(new T)
+	{}
+	CommonSettings commonSettings_; //TODO: implementar puntero...
+	boost::master_ptr<T> customSettings_;
+};
+
+
+
+
+
+template <typename T>
+class NoRefresh : public RefresingPolicyBase<T>
+{
+protected:
 
 	void refreshInitialize( boost::function<void()> loadFunction )
 	{
@@ -196,20 +208,24 @@ protected:
 
 //TODO: implementar una clase en la que permitamos determinar si queremos refresco automático o no, en runtime
 template <typename T>
-class Refreshing
+class Refreshing : public RefresingPolicyBase<T>
 {
 public:
 
 	//TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
 	//Retorna referencia haciendo Lock por bloque
 	//void getCustomSettingsLock()
-	ReferenceConfigAccess<T > getCustomSettingsLock()
+	ReferenceConfigAccess<T> getCustomSettingsLock()
 	{
 		//TODO: para que lockear si no hay refrescoAutomatico?
 		//TODO: el constructor recibe un puntero a mutex
 		//return ReferenceConfigAccess<T>(this, &mutex_);
-		boost::master_ptr<T> temp;
-		return ReferenceConfigAccess<T>( temp, &mutex_ );
+		//boost::master_ptr<T> temp;
+		//return ReferenceConfigAccess<T>( temp, &mutex_ );
+
+		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
+		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
+		return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
 	}
 
 
@@ -227,7 +243,8 @@ protected:
 	{
 		while (true)
 		{
-			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
+			//TODO: cambiar el tiempo de sleep
+			boost::this_thread::sleep(boost::posix_time::milliseconds(50000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
 			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
 
 			//TODO: ver de aplicar conditional variables
@@ -285,12 +302,25 @@ public:
 
 	//TODO: probar si es posible instanciar esta clase manualmente
 	ConfigManager(boost::restricted)
-		: customSettings_(new T)
+		/*: customSettings_(new T)*/
 	{
 	}
 
 	//TODO: hacer el "save" automaticamente en el destructor de la clase, o tambien un saver que sea automatico dentro de un thread
 
+
+	ReferenceConfigAccess<T> getCustomSettingsLock2()
+	{
+		//TODO: para que lockear si no hay refrescoAutomatico?
+		//TODO: el constructor recibe un puntero a mutex
+		//return ReferenceConfigAccess<T>(this, &mutex_);
+		//boost::master_ptr<T> temp;
+		//return ReferenceConfigAccess<T>( temp, &mutex_ );
+
+		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
+		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
+		return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
+	}
 
 	void initialize( const std::string& exePath, bool loadAutomatically = true )
 	{
@@ -409,10 +439,8 @@ public:
 protected:
 	std::string configFile_;
 
-	//TODO: los customSettings están dentro de la clase CommonSettings solo porque necesito serializarla. Deberían estar fuera
-	//CommonSettings<T> settings_;
-	CommonSettings commonSettings_; //TODO: implementar puntero...
-	boost::master_ptr<T> customSettings_;
+	//CommonSettings commonSettings_; //TODO: implementar puntero...
+	//boost::master_ptr<T> customSettings_;
 };
 
 
