@@ -3,8 +3,8 @@
 
 //TODO: cambiar nombre de archivo
 
-#ifndef APPSETTINGS_HPP
-#define APPSETTINGS_HPP
+#ifndef APPSETTINGS_HPP_INCLUDED
+#define APPSETTINGS_HPP_INCLUDED
 
 //#include <fstream>
 //#include <iostream>
@@ -166,4 +166,4 @@ public: //protected:
 BOOST_CLASS_VERSION(AppSettings, 0);
 BOOST_CLASS_VERSION(APInformation, 0);
 
-#endif // APPSETTINGS_HPP
+#endif // APPSETTINGS_HPP_INCLUDED
