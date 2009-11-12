@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include <boost/function.hpp>
 #include <boost/smart_ptr/shared_ptr.hpp>
 
 #include "AppSettings.hpp"
@@ -8,35 +9,31 @@
 
 //typedef ConfigManager<AppSettings>::instance CfgMgr;
 #define CONFIG ConfigManager<AppSettings>::instance 
-
-
+//#define CONFIG ConfigManager<AppSettings, NoRefresh>::instance 
 
 int main(int argc, char** argv)
 {
-
 	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
 	CONFIG->initialize( argv[0] );
 
-	//CONFIG->Policy_Method();
-
 	AppSettings *settingsPointer = CONFIG->getCustomSettings();
-	ReferenceConfigAccess<AppSettings> settings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
+	//ReferenceConfigAccess<AppSettings, ConfigManager<AppSettings> > lockingSettings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
 
 	while (true) 
 	{
 		std::cout << "accessing to the variables via pointer..." << std::endl;
 		//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
 		int wait = 0;
-		std::string dll = settings->typeMapping_["Otro"];
+		//std::string dll = lockingSettings->typeMapping_["Otro"];
 		std::string dll2 = settingsPointer->typeMapping_["Otro"];
 
 
 		//std::cout << "settings: " << settings << std::endl;
 		std::cout << "wait: " << wait << std::endl;
-		std::cout << "dll: " << dll << std::endl;
+		//std::cout << "dll: " << dll << std::endl;
 		std::cout << "dll2: " << dll2 << std::endl;
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(12000));
+		boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
 	}
 
 
