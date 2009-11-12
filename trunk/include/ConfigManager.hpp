@@ -208,7 +208,8 @@ public:
 		//TODO: para que lockear si no hay refrescoAutomatico?
 		//TODO: el constructor recibe un puntero a mutex
 		//return ReferenceConfigAccess<T>(this, &mutex_);
-		return ReferenceConfigAccess<T>( &mutex_ );
+		boost::master_ptr<T> temp;
+		return ReferenceConfigAccess<T>( temp, &mutex_ );
 	}
 
 
@@ -269,11 +270,6 @@ protected:
 
 //	typename LockingPolicy = Locking
 //					 , public LockingPolicy
-
-//template <
-//	typename T, 
-//	typename RefreshPolicy = Refreshing
-//>
 
 
 template <
