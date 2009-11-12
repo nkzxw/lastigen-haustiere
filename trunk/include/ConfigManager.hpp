@@ -10,7 +10,7 @@
 #include <boost/serialization/nvp.hpp>
 
 #include <boost/utility/singleton.hpp> //torjo
-//TODO: esta libreria no está soportada por boost, ver la posibilidad de implementar Singleton de Loki
+//TODO: esta libreria fue rechazada por Boost, ver la posibilidad de implementar Singleton de Loki
 
 
 //TODO: ver de usar ThreadedClass
@@ -140,42 +140,42 @@ public: //protected:
 //TODO: Policy: Access: ReadOnly, WriteOnly, ReadAndWrite
 
 
-typedef boost::mutex::scoped_lock lock;
+//typedef boost::mutex::scoped_lock lock;
 
-class NoLock
-{
-public:
-	void Policy_Method()
-	{
-		std::cout << "void NoLock::Policy_Method()" << std::endl;
-	}
-
-	void lock()
-	{}
-	void unlock()
-	{}
-};
-
-class Locking
-{
-public:
-	void Policy_Method()
-	{
-		std::cout << "void Locking::Policy_Method()" << std::endl;
-	}
-	
-	void lock()
-	{
-		mutex_.lock();
-	}
-	void unlock()
-	{
-		mutex_.unlock();
-	}
-
-	mutable boost::mutex mutex_;
-
-};
+//class NoLock
+//{
+//public:
+//	void Policy_Method()
+//	{
+//		std::cout << "void NoLock::Policy_Method()" << std::endl;
+//	}
+//
+//	void lock()
+//	{}
+//	void unlock()
+//	{}
+//};
+//
+//class Locking
+//{
+//public:
+//	void Policy_Method()
+//	{
+//		std::cout << "void Locking::Policy_Method()" << std::endl;
+//	}
+//	
+//	void lock()
+//	{
+//		mutex_.lock();
+//	}
+//	void unlock()
+//	{
+//		mutex_.unlock();
+//	}
+//
+//	mutable boost::mutex mutex_;
+//
+//};
 
 
 template <typename T>
@@ -191,6 +191,8 @@ protected:
 
 
 
+typedef boost::function<void()> LoadFunctionType;
+
 
 
 template <typename T>
@@ -198,12 +200,9 @@ class NoRefresh : public RefresingPolicyBase<T>
 {
 protected:
 
-	void refreshInitialize( boost::function<void()> loadFunction )
-	{
-	}
-
+	//void refreshInitialize( LoadFunctionType loadFunction )
+	void initialize( LoadFunctionType loadFunction ) {}
 };
-
 
 
 //TODO: implementar una clase en la que permitamos determinar si queremos refresco automático o no, en runtime
@@ -214,26 +213,25 @@ public:
 
 	//TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
 	//Retorna referencia haciendo Lock por bloque
-	//void getCustomSettingsLock()
 	ReferenceConfigAccess<T> getCustomSettingsLock()
 	{
-		//TODO: para que lockear si no hay refrescoAutomatico?
-		//TODO: el constructor recibe un puntero a mutex
-		//return ReferenceConfigAccess<T>(this, &mutex_);
-		//boost::master_ptr<T> temp;
-		//return ReferenceConfigAccess<T>( temp, &mutex_ );
-
 		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
 		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
-		return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
+		//return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
+
+		return ReferenceConfigAccess<T>::create( customSettings_, &mutex_ );
 	}
 
 
 protected:
 
-	typedef boost::function<void()> LoadFunctionType;
 
-	void refreshInitialize( LoadFunctionType loadFunction )
+
+	//virtual void load() = 0;
+
+
+	//void refreshInitialize( LoadFunctionType loadFunction )
+	void initialize( LoadFunctionType loadFunction )
 	{
 		loadFunction_ = loadFunction;
 		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&Refreshing::refreshMethod, this)));
@@ -241,30 +239,25 @@ protected:
 
 	void refreshMethod()
 	{
+		//TODO: implementar una clase tipo FileSystemWatcher. Esta clase es la que "contiene" al hilo que chequea cada X tiempo...
 		while (true)
 		{
-			//TODO: cambiar el tiempo de sleep
-			boost::this_thread::sleep(boost::posix_time::milliseconds(50000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
+			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
 			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
 
 			//TODO: ver de aplicar conditional variables
 			{
-	        lock lk(mutex_);
-			//Lock();
-			std::cout << "updating ... (locked)" << std::endl;					//TODO: sacar
-			boost::this_thread::sleep(boost::posix_time::milliseconds(12000)); //TODO: sacar
-			
+				boost::recursive_mutex::scoped_lock lk(mutex_);
 
-			if (loadFunction_)
-			{
-				loadFunction_();
-			}
+				std::cout << "updating ... (locked)" << std::endl;					//TODO: sacar
+				boost::this_thread::sleep(boost::posix_time::milliseconds(12000)); //TODO: sacar
+				
 
-			//load();
-			//loadFunction_();
-			//loadFunction();
-
-			//Unlock();
+				// load(); //TODO: podria llamar directamente a la funcion load() siendo este un metodo virtual puro de esta clase. Ver que es más performante, si usar boost::function encapsulanto un puntero a funcion o bien usar metodos virtuales.
+				if (loadFunction_)
+				{
+					loadFunction_();
+				}
 			}
 			std::cout << "updated ... (unlocked)" << std::endl;					//TODO: sacar
 		}
@@ -274,7 +267,9 @@ protected:
     boost::shared_ptr<boost::thread> refreshThread_;
 
 	//TODO: mutable o no?
-	mutable boost::mutex mutex_;
+	//mutable boost::mutex mutex_;
+	mutable boost::recursive_mutex mutex_;
+	
 	//boost::mutex mutex_;
 
 	LoadFunctionType loadFunction_;
@@ -308,17 +303,9 @@ public:
 
 	//TODO: hacer el "save" automaticamente en el destructor de la clase, o tambien un saver que sea automatico dentro de un thread
 
-
+	//TODO: borrar método
 	ReferenceConfigAccess<T> getCustomSettingsLock2()
 	{
-		//TODO: para que lockear si no hay refrescoAutomatico?
-		//TODO: el constructor recibe un puntero a mutex
-		//return ReferenceConfigAccess<T>(this, &mutex_);
-		//boost::master_ptr<T> temp;
-		//return ReferenceConfigAccess<T>( temp, &mutex_ );
-
-		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
-		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
 		return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
 	}
 
@@ -332,12 +319,14 @@ public:
 			load();
 		}
 
-		refreshInitialize( boost::bind(&thisType::load, this) );
+		//refreshInitialize( boost::bind(&thisType::load, this) );
+		RefreshPolicy<T>::initialize( boost::bind(&thisType::load, this) );
 	}
 
 
 
-	void load()
+	//TODO:
+	virtual void load()
 	{
 		//lock lk(mutex_); // El lock se va a hacer en la funcion que refresca, ya que load() debe ser lock-free
 
