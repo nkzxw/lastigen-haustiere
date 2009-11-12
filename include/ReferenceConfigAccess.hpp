@@ -39,7 +39,7 @@ public:
 	boost::slave_ptr<T> operator->()  
 	{
 		//return config_->getCustomSettingsReference();
-		ptr_.getSlave();
+		return ptr_.getSlave();
 	}
 
 public: //private:
