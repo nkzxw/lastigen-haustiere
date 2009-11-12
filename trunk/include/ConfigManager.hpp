@@ -17,7 +17,7 @@
 #include <boost/thread.hpp>
 #include <boost/shared_ptr.hpp>
 
-#include "ReferenceConfigAccess.hpp"
+#include "LockingProxy.hpp"
 
 // Forward declarations
 #include "ConfigManager_ForwardDeclaration.hpp"
@@ -213,13 +213,13 @@ public:
 
 	//TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
 	//Retorna referencia haciendo Lock por bloque
-	ReferenceConfigAccess<T> getCustomSettingsLock()
+	LockingProxy<T> getCustomSettingsLock()
 	{
 		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
 		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
-		//return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
+		//return LockingProxy<T>( customSettings_, &mutex_ );
 
-		return ReferenceConfigAccess<T>::create( customSettings_, &mutex_ );
+		return LockingProxy<T>::create( customSettings_.getSlave(), &mutex_ );
 	}
 
 
@@ -304,9 +304,9 @@ public:
 	//TODO: hacer el "save" automaticamente en el destructor de la clase, o tambien un saver que sea automatico dentro de un thread
 
 	//TODO: borrar método
-	ReferenceConfigAccess<T> getCustomSettingsLock2()
+	LockingProxy<T> getCustomSettingsLock2()
 	{
-		return ReferenceConfigAccess<T>( customSettings_, &mutex_ );
+		return LockingProxy<T>( customSettings_, &mutex_ );
 	}
 
 	void initialize( const std::string& exePath, bool loadAutomatically = true )
@@ -407,14 +407,20 @@ public:
 		return customSettings_.get();
 	}
 
+	void pepeTempBorrar()
+	{
+		//AppSettings* tempPointer = 0;
+		customSettings_.reset(new AppSettings);
+	}
+
 	////TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
 	////Retorna referencia haciendo Lock por bloque
 	////void getCustomSettingsLock()
-	//ReferenceConfigAccess<T> getCustomSettingsLock()
+	//LockingProxy<T> getCustomSettingsLock()
 	//{
 	//	//TODO: para que lockear si no hay refrescoAutomatico?
 	//	//TODO: el constructor recibe un puntero a mutex
-	//	return ReferenceConfigAccess<T>(this, &mutex_);
+	//	return LockingProxy<T>(this, &mutex_);
 	//}
 
 	//Retorna referencia y no hace Lock por bloque
