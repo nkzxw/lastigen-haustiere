@@ -5,6 +5,7 @@
 
 #include <boost/shared_ptr.hpp>
 //#include <boost/interprocess/detail/atomic.hpp>
+#include <boost/noncopyable.hpp>
 
 
 
@@ -111,9 +112,10 @@ public:
 };
 
 
-//Es un shared_ptr con habilidad de hacer un atomic_swap
+// No debería ser copiable, ya que si se copia, 
+// Es un shared_ptr con habilidad de hacer un atomic_swap
 template <typename T>
-class master_ptr //: shared_ptr<T>
+class master_ptr : boost::noncopyable //: shared_ptr<T>
 {
 private:
 

@@ -11,6 +11,7 @@
 #define CONFIG ConfigManager<AppSettings>::instance 
 #define CONFIG_WRITER ConfigManager<AppSettings, NoRefresh>::instance 
 
+
 int main(int argc, char** argv)
 {
 	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
@@ -20,11 +21,6 @@ int main(int argc, char** argv)
 		AppSettings *settingsPointer = CONFIG->getCustomSettings();
 
 		LockingProxy<AppSettings> lockingSettings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
-
-		CONFIG->pepeTempBorrar(); //TODO: borrar metodo de prueba
-
-		LockingProxy<AppSettings> lockingSettings2 = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
-
 
 
 		for (int i=0; i<10; ++i) //while (true) 
