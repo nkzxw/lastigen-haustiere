@@ -19,6 +19,11 @@
 
 #include "ReferenceConfigAccess.hpp"
 
+// Forward declarations
+#include "ConfigManager_ForwardDeclaration.hpp"
+
+
+
 //TODO: implementar un mecanismo para refrescar la información
 //TODO: evaluar Straightforward Settings de Torjo
 
@@ -48,8 +53,9 @@ protected:
 		//    & make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
 		//	;
 
-		ar	& keyValueSettings_
+		ar	& make_nvp("KeyValueSettings", keyValueSettings_)
 			;
+
 	}
 
 	template < typename Archive >
@@ -60,7 +66,7 @@ protected:
 		//	& make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
 		//	;
 
-		ar	& keyValueSettings_
+		ar	& make_nvp("KeyValueSettings", keyValueSettings_)
 			;
 
 		//isDefault_ = version < 2;
@@ -131,23 +137,7 @@ public: //protected:
 //};
 
 
-// Forward declarations
-#include "ConfigManager_ForwardDeclaration.hpp"
-
-
-//// Locking Policies
-//class NoLock;
-//class Locking;
-//
-//// Refresing Policies
-//class NoRefresh;
-//class Refreshing;
-//
-//template <
-//	typename T, 
-//	typename RefreshPolicy = Refreshing
-//>
-//class ConfigManager;
+//TODO: Policy: Access: ReadOnly, WriteOnly, ReadAndWrite
 
 
 typedef boost::mutex::scoped_lock lock;
@@ -187,6 +177,8 @@ public:
 
 };
 
+
+template <typename T>
 class NoRefresh
 {
 protected:
@@ -330,16 +322,11 @@ public:
 		//ia >> boost::serialization::make_nvp("Settings", settings_);
 		//ia & boost::serialization::make_nvp("Settings", settings_);
 
-		//T* temp = customSettings_.get();
-		ia	>> boost::serialization::make_nvp("CommonSettings", commonSettings_)
+		T* temp = customSettings_.get(); //TODO: esto no me gusta, solo está para solucionar temporalmente un error de compilacion...
+		ia	& boost::serialization::make_nvp("CommonSettings", commonSettings_)
+			& boost::serialization::make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
 			;
 
-		//& boost::serialization::make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-
-
-		//ar	& make_nvp("CommonSettings", keyValueSettings_)
-		//    & make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-		//	;
 	}
 
 	//TODO: implementar automatic save...
@@ -353,10 +340,10 @@ public:
 
 		//oa << boost::serialization::make_nvp("Settings", settings_);
 
-		//T* temp = customSettings_.get();
-		//oa	<< boost::serialization::make_nvp("CommonSettings", commonSettings_)
-		//    //& boost::serialization::make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-		//	;
+		T* temp = customSettings_.get(); //TODO: esto no me gusta, solo está para solucionar temporalmente un error de compilacion...
+		oa	<< boost::serialization::make_nvp("CommonSettings", commonSettings_)
+		    & boost::serialization::make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
+			;
 	}
 
 
@@ -372,7 +359,8 @@ public:
 	E get(const std::string& key) const
 	{
 		//TODO: para que lockear si no hay refrescoAutomatico?
-		lock lk(mutex_);
+		//TODO: no lockeamos aun porque el locking se hace desde la PolicyClass
+		//lock lk(mutex_);
 
 		//return keyValueSettings_.at(key);
 		//return boost::any_cast<E>(settings_.keyValueSettings_.at(key));
@@ -385,7 +373,8 @@ public:
 	void set(const std::string& key, const E& value)
 	{
 		//TODO: para que lockear si no hay refrescoAutomatico?
-		lock lk(mutex_);
+		//TODO: no lockeamos aun porque el locking se hace desde la PolicyClass
+		//lock lk(mutex_);
 
 		//settings_.keyValueSettings_[key] = value;
 		commonSettings_.keyValueSettings_[key] = boost::lexical_cast<std::string>(value);
@@ -395,6 +384,7 @@ public:
 	T* getCustomSettings() 
 	{ 
 		//TODO: para que lockear si no hay refrescoAutomatico?
+		//TODO: no lockeamos aun porque el locking se hace desde la PolicyClass
 		//lock lk(mutex_);
 
 		//return &settings_.customSettings_;
