@@ -9,7 +9,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/serialization/nvp.hpp>
 
-#include <boost/utility/singleton.hpp> //torjo
+#include <boost/utility/singleton.hpp> //torjo - tobias
 //TODO: esta libreria fue rechazada por Boost, ver la posibilidad de implementar Singleton de Loki
 
 
@@ -47,100 +47,30 @@ protected:
 	template < typename Archive >
 	void save(Archive & ar, const unsigned int version) const //TODO: no puede ser const, porque estoy obteniendo un puntero.
 	{
-		//T* temp = customSettings_.get();
-
-		//ar	& make_nvp("CommonSettings", keyValueSettings_)
-		//    & make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-		//	;
-
-		ar	& make_nvp("KeyValueSettings", keyValueSettings_)
-			;
-
+		ar	& make_nvp("KeyValueSettings", keyValueSettings_);
 	}
 
 	template < typename Archive >
 	void load(Archive & ar, const unsigned int version)
 	{
-		//T* temp = customSettings_.get();
-		//ar	& make_nvp("CommonSettings", keyValueSettings_)
-		//	& make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-		//	;
-
-		ar	& make_nvp("KeyValueSettings", keyValueSettings_)
-			;
-
-		//isDefault_ = version < 2;
+		ar	& make_nvp("KeyValueSettings", keyValueSettings_);
 	}
 
 
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 
-public: //protected:
+protected: //public: //
 	KeyValueType keyValueSettings_;
-	//T customSettings_;
-	//T* customSettings_;
-	//boost::master_ptr<T> customSettings_;
-
 };
 
-//template <typename T>
-//class CommonSettings
-//{
-//public:
-//
-//	//CommonSettings()
-//	//	: customSettings_(new T)
-//	//{
-//	//	//customSettings_ = new T;
-//	//}
-//
-//protected:
-//	friend class boost::serialization::access;
-//
-//	//TODO: poner estos métodos fuera de la clase como friend... (non-intrusive)
-//	template < typename Archive >
-//	void save(Archive & ar, const unsigned int version) const //TODO: no puede ser const, porque estoy obteniendo un puntero.
-//	{
-//		//T* temp = customSettings_.get();
-//
-//		//ar	& make_nvp("CommonSettings", keyValueSettings_)
-//		//    & make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-//		//	;
-//
-//		ar	& keyValueSettings_
-//			;
-//	}
-//
-//	template < typename Archive >
-//	void load(Archive & ar, const unsigned int version)
-//	{
-//		//T* temp = customSettings_.get();
-//		//ar	& make_nvp("CommonSettings", keyValueSettings_)
-//		//	& make_nvp("CustomSettings", *temp ) //TODO: ver de usar operator*
-//		//	;
-//
-//		ar	& keyValueSettings_
-//			;
-//
-//		//isDefault_ = version < 2;
-//	}
-//
-//
-//	BOOST_SERIALIZATION_SPLIT_MEMBER()
-//
-//public: //protected:
-//	KeyValueType keyValueSettings_;
-//	//T customSettings_;
-//	//T* customSettings_;
-//	//boost::master_ptr<T> customSettings_;
-//
-//};
 
 
-//TODO: Policy: Access: ReadOnly, WriteOnly, ReadAndWrite
+
+//TODO: Policy: AccessPolicy: ReadOnly, WriteOnly, ReadAndWrite
+//TODO: Policy: RefreshPolicy: NoRefresh, ManualRefresh, AutomaticStaticRefresh, AutomaticDynamicRefresh
+//TODO: DynamicRefresh: implementar una clase en la que permitamos determinar si queremos refresco automático o no, en runtime
 
 
-//typedef boost::mutex::scoped_lock lock;
 
 //class NoLock
 //{
@@ -178,16 +108,16 @@ public: //protected:
 //};
 
 
-template <typename T>
-class RefresingPolicyBase
-{
-protected:
-	RefresingPolicyBase()
-		: customSettings_(new T)
-	{}
-	CommonSettings commonSettings_; //TODO: implementar puntero...
-	boost::master_ptr<T> customSettings_;
-};
+//template <typename T>
+//class RefreshingPolicyBase
+//{
+//protected:
+//	RefreshingPolicyBase()
+//		: customSettings_(new T)
+//	{}
+//	CommonSettings commonSettings_; //TODO: implementar puntero...
+//	boost::master_ptr<T> customSettings_;
+//};
 
 
 
@@ -196,45 +126,42 @@ typedef boost::function<void()> LoadFunctionType;
 
 
 template <typename T>
-class NoRefresh : public RefresingPolicyBase<T>
+class NoRefresh //: public RefreshingPolicyBase<T>
 {
 protected:
 
 	//void refreshInitialize( LoadFunctionType loadFunction )
-	void initialize( LoadFunctionType loadFunction ) {}
+	void initialize( LoadFunctionType loadFunction, boost::slave_ptr<T> customSettings ) {}
 };
 
 
-//TODO: implementar una clase en la que permitamos determinar si queremos refresco automático o no, en runtime
+
 template <typename T>
-class Refreshing : public RefresingPolicyBase<T>
+class StaticRefresh //: public RefreshingPolicyBase<T>
 {
 public:
 
 	//TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
 	//Retorna referencia haciendo Lock por bloque
-	LockingProxy<T> getCustomSettingsLock()
+	LockingProxy<T> getSafeConfigProxy()
 	{
 		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
 		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
-		//return LockingProxy<T>( customSettings_, &mutex_ );
 
-		return LockingProxy<T>::create( customSettings_.getSlave(), &mutex_ );
+		//return LockingProxy<T>::create( customSettings_.getSlave(), &mutex_ );
+		return LockingProxy<T>::create( customSettings_, &mutex_ );
 	}
 
 
 protected:
 
-
-
 	//virtual void load() = 0;
 
-
-	//void refreshInitialize( LoadFunctionType loadFunction )
-	void initialize( LoadFunctionType loadFunction )
+	void initialize( LoadFunctionType loadFunction, boost::slave_ptr<T> customSettings )
 	{
 		loadFunction_ = loadFunction;
-		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&Refreshing::refreshMethod, this)));
+		customSettings_ = customSettings;
+		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&StaticRefresh::refreshMethod, this)));
 	}
 
 	void refreshMethod()
@@ -242,7 +169,7 @@ protected:
 		//TODO: implementar una clase tipo FileSystemWatcher. Esta clase es la que "contiene" al hilo que chequea cada X tiempo...
 		while (true)
 		{
-			boost::this_thread::sleep(boost::posix_time::milliseconds(5000)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
+			boost::this_thread::sleep(boost::posix_time::milliseconds(fileWatcherWaitTime_)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
 			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
 
 			//TODO: ver de aplicar conditional variables
@@ -263,17 +190,94 @@ protected:
 		}
 	}
 
+private:
+	static const boost::posix_time::milliseconds fileWatcherWaitTime_; //(5000);
 
     boost::shared_ptr<boost::thread> refreshThread_;
-
-	//TODO: mutable o no?
-	//mutable boost::mutex mutex_;
-	mutable boost::recursive_mutex mutex_;
-	
-	//boost::mutex mutex_;
-
+	boost::recursive_mutex mutex_; //mutable //TODO: mutable o no?
 	LoadFunctionType loadFunction_;
+
+	boost::slave_ptr<T> customSettings_;
+	//TODO: agregar CommonSettings
+
+
 };
+// static variables init
+template<typename T> const boost::posix_time::milliseconds StaticRefresh<T>::fileWatcherWaitTime_(5000);
+
+
+
+
+template <typename T>
+class DynamicRefresh //: public RefreshingPolicyBase<T>
+{
+public:
+
+	//TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
+	//Retorna referencia haciendo Lock por bloque
+	LockingProxy<T> getSafeConfigProxy()
+	{
+		//TODO: esta solucion no me gusta, ya que quedamos atados al common y customSettings por medio de la clase base.
+		// es una solucion rapida, pero tiene que haber una mejor forma de implementarla.
+
+		//return LockingProxy<T>::create( customSettings_.getSlave(), &mutex_ );
+		return LockingProxy<T>::create( customSettings_, &mutex_ );
+	}
+
+
+protected:
+
+	void initialize( LoadFunctionType loadFunction, boost::slave_ptr<T> customSettings )
+	{
+		loadFunction_ = loadFunction;
+		customSettings_ = customSettings;
+		refreshThread_ = boost::shared_ptr<boost::thread>(new boost::thread(boost::bind(&DynamicRefresh::refreshMethod, this)));
+	}
+
+	void refreshMethod()
+	{
+		//TODO: implementar una clase tipo FileSystemWatcher. Esta clase es la que "contiene" al hilo que chequea cada X tiempo...
+		while (true)
+		{
+			boost::this_thread::sleep(boost::posix_time::milliseconds(fileWatcherWaitTime_)); //TODO: especificar el tiempo por configuracion... Aunque... esta es la clase de configuracion, deberia ser por parametro en el constructor. Usando un DEFAULT-VALUE
+			//TODO: chequear si cambio el archivo de configuracion con algun algoritmo de hash, md5, sha.. (md5sum, shasum, etc)
+
+			//TODO: ver de aplicar conditional variables
+			{
+				boost::recursive_mutex::scoped_lock lk(mutex_);
+
+				std::cout << "updating ... (locked)" << std::endl;					//TODO: sacar
+				boost::this_thread::sleep(boost::posix_time::milliseconds(12000)); //TODO: sacar
+				
+
+				// load(); //TODO: podria llamar directamente a la funcion load() siendo este un metodo virtual puro de esta clase. Ver que es más performante, si usar boost::function encapsulanto un puntero a funcion o bien usar metodos virtuales.
+				if (loadFunction_)
+				{
+					loadFunction_();
+				}
+			}
+			std::cout << "updated ... (unlocked)" << std::endl;					//TODO: sacar
+		}
+	}
+
+private:
+	static const boost::posix_time::milliseconds fileWatcherWaitTime_; //(5000);
+
+    boost::shared_ptr<boost::thread> refreshThread_;
+	boost::recursive_mutex mutex_; //mutable //TODO: mutable o no?
+	LoadFunctionType loadFunction_;
+
+	boost::slave_ptr<T> customSettings_;
+	//TODO: agregar CommonSettings
+
+
+};
+// static variables init
+template<typename T> const boost::posix_time::milliseconds DynamicRefresh<T>::fileWatcherWaitTime_(5000);
+
+
+
+
 
 
 //TODO: ver de cambiar por el singleton mutexed, ya que este que estamos usando no debe ser thread-safe/
@@ -286,7 +290,7 @@ protected:
 
 template <
 	typename T, 
-	template <typename> class RefreshPolicy = Refreshing
+	template <typename> class RefreshPolicy = StaticRefresh
 >
 class ConfigManager : public boost::singleton< ConfigManager<T, RefreshPolicy> >
 					 , public RefreshPolicy<T>
@@ -303,11 +307,6 @@ public:
 
 	//TODO: hacer el "save" automaticamente en el destructor de la clase, o tambien un saver que sea automatico dentro de un thread
 
-	//TODO: borrar método
-	LockingProxy<T> getCustomSettingsLock2()
-	{
-		return LockingProxy<T>( customSettings_, &mutex_ );
-	}
 
 	void initialize( const std::string& exePath, bool loadAutomatically = true )
 	{
@@ -318,9 +317,8 @@ public:
 		{
 			load();
 		}
-
-		//refreshInitialize( boost::bind(&thisType::load, this) );
-		RefreshPolicy<T>::initialize( boost::bind(&thisType::load, this) );
+		
+		RefreshPolicy<T>::initialize( boost::bind(&thisType::load, this), customSettings_.getSlave() );
 	}
 
 
@@ -333,9 +331,6 @@ public:
 		std::ifstream ifs(configFile_.c_str());
 		assert(ifs.good());
 		boost::archive::xml_iarchive ia(ifs);
-
-		//ia >> boost::serialization::make_nvp("Settings", settings_);
-		//ia & boost::serialization::make_nvp("Settings", settings_);
 
 		T* temp = customSettings_.get(); //TODO: esto no me gusta, solo está para solucionar temporalmente un error de compilacion...
 		ia	& boost::serialization::make_nvp("CommonSettings", commonSettings_)
@@ -407,17 +402,6 @@ public:
 		return customSettings_.get();
 	}
 
-
-	////TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
-	////Retorna referencia haciendo Lock por bloque
-	////void getCustomSettingsLock()
-	//LockingProxy<T> getCustomSettingsLock()
-	//{
-	//	//TODO: para que lockear si no hay refrescoAutomatico?
-	//	//TODO: el constructor recibe un puntero a mutex
-	//	return LockingProxy<T>(this, &mutex_);
-	//}
-
 	//Retorna referencia y no hace Lock por bloque
 	boost::slave_ptr<T> getCustomSettingsReference()
 	{
@@ -429,8 +413,8 @@ public:
 protected:
 	std::string configFile_;
 
-	//CommonSettings commonSettings_; //TODO: implementar puntero...
-	//boost::master_ptr<T> customSettings_;
+	CommonSettings commonSettings_; //TODO: implementar puntero...
+	boost::master_ptr<T> customSettings_;
 };
 
 
