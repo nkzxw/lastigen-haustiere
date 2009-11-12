@@ -14,14 +14,12 @@ class LockingProxy
 public:
 
 	typedef LockingProxy<T> ThisType;
-	
-	//static ThisType create( boost::master_ptr<T> ptr, boost::recursive_mutex* mutex )
+
 	static ThisType create( boost::slave_ptr<T> ptr, boost::recursive_mutex* mutex )
 	{
 		return ThisType( ptr, mutex );
 	}
 
-	//LockingProxy(const LockingProxy& other)
 	LockingProxy(const ThisType& other)
 		: ptr_(other.ptr_), lock_(*other.mutex_), mutex_(other.mutex_)
 	{ 
@@ -43,8 +41,7 @@ public:
 		return ptr_; //.getSlave();
 	}
 
-public: //private:
-	//LockingProxy( boost::master_ptr<T> ptr, boost::recursive_mutex* mutex )
+private: //public: 
 	LockingProxy( boost::slave_ptr<T> ptr, boost::recursive_mutex* mutex )
 		: ptr_(ptr), lock_(*mutex), mutex_(mutex)
 	{ 
@@ -53,8 +50,7 @@ public: //private:
 
 	boost::recursive_mutex::scoped_lock lock_;
 	boost::recursive_mutex* mutex_;
-	//boost::master_ptr<T> ptr_; //TODO: probar como se interconectan los master_ptr entre ellos. Si se produce la copia entre master_ptr, luego se cambia el puntero de uno de ellos. El segundo debería seguir apuntando al nuevo lugar de la memoria...
-	boost::slave_ptr<T> ptr_; //TODO: probar como se interconectan los master_ptr entre ellos. Si se produce la copia entre master_ptr, luego se cambia el puntero de uno de ellos. El segundo debería seguir apuntando al nuevo lugar de la memoria...
+	boost::slave_ptr<T> ptr_;
 };
 
 #endif //LOCKINGPROXY_HPP_INCLUDED

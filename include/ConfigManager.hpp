@@ -407,11 +407,6 @@ public:
 		return customSettings_.get();
 	}
 
-	void pepeTempBorrar()
-	{
-		//AppSettings* tempPointer = 0;
-		customSettings_.reset(new AppSettings);
-	}
 
 	////TODO: poner un nombre mejor al metodo, indicando que es seguro, que se hace LOCK
 	////Retorna referencia haciendo Lock por bloque
