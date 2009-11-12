@@ -16,34 +16,43 @@ int main(int argc, char** argv)
 	//TODO: crear clase BaseApplication, toda aplicacion que quiera contar con caracteristicas de Config, Logger, etc, deberá heredar de ella.
 	CONFIG->initialize( argv[0] );
 
-	AppSettings *settingsPointer = CONFIG->getCustomSettings();
-	ReferenceConfigAccess<AppSettings> lockingSettings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
-
-	while (true) 
 	{
-		std::cout << "accessing to the variables via pointer..." << std::endl;
-		//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
-		int wait = 0;
-		std::string dll = lockingSettings->typeMapping_["Otro"];
-		std::string dll2 = settingsPointer->typeMapping_["Otro"];
+		AppSettings *settingsPointer = CONFIG->getCustomSettings();
+
+		LockingProxy<AppSettings> lockingSettings = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
+
+		CONFIG->pepeTempBorrar(); //TODO: borrar metodo de prueba
+
+		LockingProxy<AppSettings> lockingSettings2 = CONFIG->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
 
 
-		//std::cout << "settings: " << settings << std::endl;
-		std::cout << "wait: " << wait << std::endl;
-		std::cout << "dll: " << dll << std::endl;
-		std::cout << "dll2: " << dll2 << std::endl;
 
-		boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+		for (int i=0; i<10; ++i) //while (true) 
+		{
+			std::cout << "accessing to the variables via pointer..." << std::endl;
+			//int wait = CONFIG->get<int>("APManagerState.APConnected.MillisecondsToWait");
+			int wait = 0;
+			std::string dll = lockingSettings->typeMapping_["Otro"];
+			std::string dll2 = settingsPointer->typeMapping_["Otro"];
+
+
+			//std::cout << "settings: " << settings << std::endl;
+			std::cout << "wait: " << wait << std::endl;
+			std::cout << "dll: " << dll << std::endl;
+			std::cout << "dll2: " << dll2 << std::endl;
+
+			boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
+		}
+
+
 	}
-
-
-
+	std::cout << "fin del lock" << std::endl;
 
 
 		//boost::this_thread::sleep(boost::posix_time::milliseconds(2000));
 		//{
 		//std::cout << "trying to access to data..." << std::endl;
-		//ReferenceConfigAccess<custom_class> configAccess = c.getAccesor();
+		//LockingProxy<custom_class> configAccess = c.getAccesor();
 
 		//std::cout << "begin data accessing ... (locked)" << std::endl;
 		//outScopePtr = configAccess.operator ->();
@@ -100,7 +109,7 @@ int main(int argc, char** argv)
 
 	////AppSettings *settings = ConfigManager<AppSettings>::instance->getSettings();
 	//AppSettings *settings = CONFIG_WRITER->getCustomSettings();
-	////ReferenceConfigAccess<AppSettings> settings = CONFIG_WRITER->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
+	////LockingProxy<AppSettings> settings = CONFIG_WRITER->getCustomSettingsLock(); //TODO: el nombre del metodo tiene que cambiar...
 
 
 	////ConfigManager<AppSettings>::CommonSettingsType *commonSettings = CONFIG_WRITER->getCommonSettings();
