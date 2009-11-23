@@ -33,6 +33,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_futures", "test_
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_dynamic_ptr", "test_dynamic_ptr\test_dynamic_ptr.vcproj", "{32F22FD0-D519-43E8-93FF-196F05A2EDDA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test_boost_property_tree", "test_boost_property_tree\test_boost_property_tree.vcproj", "{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +205,16 @@ Global
 		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Mixed Platforms.Build.0 = Release|Win32
 		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Win32.ActiveCfg = Release|Win32
 		{32F22FD0-D519-43E8-93FF-196F05A2EDDA}.Release|Win32.Build.0 = Release|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Debug|Win32.ActiveCfg = Debug|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Debug|Win32.Build.0 = Debug|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Release|Any CPU.ActiveCfg = Release|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Release|Win32.ActiveCfg = Release|Win32
+		{1A838B99-3E27-485E-AA00-8BDA76C0A1C3}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
