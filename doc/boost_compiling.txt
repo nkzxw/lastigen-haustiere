@@ -4,6 +4,22 @@ http://www.boost.org/doc/libs/1_40_0/more/getting_started/windows.html
 - VC++ 9.0
 
 
+	- 1.41
+	   
+	  cd C:\Program Files\boost\boost_1_41_0
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete stage
+		REM bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=minimal stage
+	
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-serialization stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-system stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-date_time stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-regex stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-thread stage
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-filesystem stage
+
+		bjam --build-dir="C:\Program Files\boost\boost_1_41_0" --toolset=msvc-9.0 --build-type=complete --with-program_options stage
+
+
 
 	- 1.40
 	   
