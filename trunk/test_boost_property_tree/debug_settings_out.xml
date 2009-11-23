@@ -1,3 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<debug><filename/>
-<level>-858993460</level></debug>
+<debug><filename>debug.log</filename><level>2</level></debug>
