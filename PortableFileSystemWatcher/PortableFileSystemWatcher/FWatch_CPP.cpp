@@ -12,9 +12,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
+//#include <conio.h>
 #include <windows.h>
-#include <tchar.h>
 
 #include "Win32ApiWrapper.hpp"
 
@@ -58,8 +57,7 @@ DWORD           numDirs;
 CheckChangedFile()
 
 Purpose:
-This function prints out information when one of the files we
-are watching is changed.
+This function prints out information when one of the files we are watching is changed.
 
 Parameters:
 
@@ -134,13 +132,11 @@ void WINAPI CheckChangedFile( LPDIRECTORY_INFO lpdi, PFILE_NOTIFY_INFORMATION lp
 
 
 /**********************************************************************
-HandleDirectoryChanges()
+HandleDirectoryChange()
 
 Purpose:
-This function receives notification of directory changes and
-calls CheckChangedFile() to display the actual changes. After
-notification and processing, this function calls
-ReadDirectoryChangesW to reestablish the watch.
+This function receives notification of directory changes and calls CheckChangedFile() to display the actual changes. After
+notification and processing, this function calls ReadDirectoryChangesW to reestablish the watch.
 
 Parameters:
 
@@ -153,31 +149,30 @@ None
 Comments:
 
 ********************************************************************/
-void WINAPI HandleDirectoryChange( DWORD dwCompletionPort )
+//void WINAPI HandleDirectoryChange( DWORD completionPort )
+void WINAPI HandleDirectoryChange( unsigned long completionPort )
 {
       DWORD numBytes;
       DWORD cbOffset;
       LPDIRECTORY_INFO di;
       LPOVERLAPPED lpOverlapped;
       PFILE_NOTIFY_INFORMATION fni;
-      //WCHAR FileName[1000];
-	  //CHAR FileName[1000];
 
       do
       {
-            // Retrieve the directory info for this directory
-            // through the completion key
-            GetQueuedCompletionStatus( (HANDLE) dwCompletionPort,
+            // Retrieve the directory info for this directory through the completion key
+            GetQueuedCompletionStatus
+				( 
+				  (HANDLE) completionPort,
                   &numBytes,
                   (LPDWORD) &di,      // This is the DIRECTORY_INFO structure that was passed in the call to CreateIoCompletionPort below.
                   &lpOverlapped,
-                  INFINITE);
+                  INFINITE
+				 );
 
             if ( di )
             {
-				//wprintf ( _T("Notify...\n") );
 				std::cout << "Notify..." << std::endl;
-				  
 
                   fni = (PFILE_NOTIFY_INFORMATION)di->lpBuffer;
 
@@ -191,35 +186,31 @@ void WINAPI HandleDirectoryChange( DWORD dwCompletionPort )
                         //
                         switch ( fni->Action )
                         {
-                        case FILE_ACTION_ADDED:
-                              //wprintf(L"file added: ");
-							std::cout << "file added: ";
-							break;
-                        case FILE_ACTION_REMOVED:
-							//wprintf(L"file deleted: ");
-							std::cout << "file deleted: ";
-							break;
-                        case FILE_ACTION_MODIFIED:
-							//wprintf(L"time stamp or attribute changed: ");
-							std::cout << "time stamp or attribute changed: ";
-							break;
-                        case FILE_ACTION_RENAMED_OLD_NAME:
-							//wprintf(L"file name changed - old name: ");
-							std::cout << "file name changed - old name: ";
-							break;
-                        case FILE_ACTION_RENAMED_NEW_NAME:
-							//wprintf(L"file name changed - new name: ");
-							std::cout << "file name changed - new name: ";
-							break;
-                        default: 
-							//wprintf(L"unknown event: ");
-							std::cout << "unknown event: ";
-							break;
+							case FILE_ACTION_ADDED:
+								  //wprintf(L"file added: ");
+								std::cout << "file added: ";
+								break;
+							case FILE_ACTION_REMOVED:
+								//wprintf(L"file deleted: ");
+								std::cout << "file deleted: ";
+								break;
+							case FILE_ACTION_MODIFIED:
+								std::cout << "time stamp or attribute changed: ";
+								break;
+							case FILE_ACTION_RENAMED_OLD_NAME:
+								//wprintf(L"file name changed - old name: ");
+								std::cout << "file name changed - old name: ";
+								break;
+							case FILE_ACTION_RENAMED_NEW_NAME:
+								//wprintf(L"file name changed - new name: ");
+								std::cout << "file name changed - new name: ";
+								break;
+							default: 
+								std::cout << "unknown event: ";
+								break;
                         }
 
 						std::string fileName(fni->FileName, fni->FileName + (fni->FileNameLength/sizeof(WCHAR)) ); 
-
-
 						std::cout << fileName << std::endl;
 
                         fni = (PFILE_NOTIFY_INFORMATION)((LPBYTE) fni + cbOffset);
@@ -293,7 +284,14 @@ void WINAPI WatchDirectories( HANDLE hCompPort )
 
       // Just loop and wait for the user to quit
 
-      while (getch() != 'q');
+	  char chr;
+      /*while (getch() != 'q');*/
+
+		do
+		{
+			std::cin.sync();
+			std::cin.get( chr );
+		} while (chr != 'q' );
 
       // The user has quit - clean up
 
