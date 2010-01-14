@@ -9,10 +9,28 @@
 namespace Win32ApiWrapper
 {
 	//WINBASEAPI BOOL WINAPI CreateDirectoryA(__in     LPCSTR lpPathName, /*__in_opt*/ LPSECURITY_ATTRIBUTES lpSecurityAttributes );
-	int CreateDirectory ( std::string pathName, LPSECURITY_ATTRIBUTES securityAttributes )
+	int CreateDirectory ( const std::string& pathName, LPSECURITY_ATTRIBUTES securityAttributes )
 	{
 		return ::CreateDirectoryA(pathName.c_str(), securityAttributes);
 	}
+
+
+	
+		
+	void* CreateFile ( const std::string& lpFileName, unsigned long dwDesiredAccess, unsigned long dwShareMode, LPSECURITY_ATTRIBUTES lpSecurityAttributes, unsigned long dwCreationDisposition, unsigned long dwFlagsAndAttributes, void* hTemplateFile )
+	{
+		
+		#ifdef UNICODE
+		//#define CreateFile  CreateFileW
+			return ::CreateFileW( lpFileName.c_str(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile );
+		#else
+			return ::CreateFileA( lpFileName.c_str(), dwDesiredAccess, dwShareMode, lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile );
+		#endif // !UNICODE
+	}
+
+
+
+
 
 }
 
