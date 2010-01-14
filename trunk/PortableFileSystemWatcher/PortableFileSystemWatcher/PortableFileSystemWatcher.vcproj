@@ -182,11 +182,19 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FWatch_CPP.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\inotify-cxx.cpp"
 				>
 			</File>
 			<File
 				RelativePath=".\simple_test_win32.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Win32ApiWrapper.hpp"
 				>
 			</File>
 		</Filter>
