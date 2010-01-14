@@ -178,7 +178,15 @@
 				>
 			</File>
 			<File
+				RelativePath=".\FWatch.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\inotify-cxx.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\simple_test_win32.cpp"
 				>
 			</File>
 		</Filter>
