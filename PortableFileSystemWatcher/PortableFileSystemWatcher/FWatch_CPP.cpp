@@ -36,22 +36,37 @@
 #define MAX_FILES   255
 #define MAX_BUFFER  4096
 
+
 // this is the all purpose structure that contains  
-// the interesting directory information and provides
-// the input buffer that is filled with file change data
-typedef struct _DIRECTORY_INFO 
+//// the interesting directory information and provides
+//// the input buffer that is filled with file change data
+//typedef struct _DIRECTORY_INFO 
+//{
+//      HANDLE      directoryHandle;
+//      TCHAR       directoryName[MAX_PATH];
+//      CHAR        buffer[MAX_BUFFER];
+//      DWORD       bufferLength;
+//      OVERLAPPED  overlapped;
+//} DIRECTORY_INFO, *PDIRECTORY_INFO, *LPDIRECTORY_INFO;
+//DIRECTORY_INFO  directoryInfo[MAX_DIRS];        // Buffer for all of the directories
+////TCHAR           FileList[MAX_FILES*MAX_PATH];   // Buffer for all of the files
+
+DWORD           numDirs;	// TODO: global... hay que sacarla...
+
+
+
+
+
+struct DirectoryInfo
 {
-      HANDLE      hDir;
-      TCHAR       lpszDirName[MAX_PATH];
-      CHAR        lpBuffer[MAX_BUFFER];
-      DWORD       dwBufLength;
-      OVERLAPPED  Overlapped;
-} DIRECTORY_INFO, *PDIRECTORY_INFO, *LPDIRECTORY_INFO;
-
-DIRECTORY_INFO  DirInfo[MAX_DIRS];        // Buffer for all of the directories
-TCHAR           FileList[MAX_FILES*MAX_PATH];   // Buffer for all of the files
-DWORD           numDirs;
-
+	void* directoryHandle;				//      hDir;
+	std::string directoryName;			// TCHAR       lpszDirName[MAX_PATH];
+	char buffer[MAX_BUFFER];			//CHAR        lpBuffer[MAX_BUFFER];
+	unsigned long bufferLength;			//DWORD       dwBufLength;
+	OVERLAPPED  overlapped;				//OVERLAPPED  Overlapped;
+};
+//std::vector<DirectoryInfo> directoryInfo;
+std::vector<DirectoryInfo*> directoryInfo;
 
 /**********************************************************************
 CheckChangedFile()
@@ -71,64 +86,64 @@ None
 Comments:
 
 ********************************************************************/
-void WINAPI CheckChangedFile( LPDIRECTORY_INFO lpdi, PFILE_NOTIFY_INFORMATION lpfni)
-{
-      TCHAR      szFullPathName[MAX_PATH];
-      TCHAR      *p;
-      HANDLE     hFile;
-      FILETIME   LocalFileTime;
-      SYSTEMTIME SystemTime;
-      BY_HANDLE_FILE_INFORMATION FileInfo;
-
-      p = FileList;
-
-      while(*p && lstrcmpi(p, (char*)lpfni->FileName))
-	  {
-            p+=(lstrlen(p)+1);
-	  }
-
-      if (*p)
-      {
-            lstrcpy( szFullPathName, lpdi->lpszDirName );
-			lstrcat( szFullPathName, "\\" );
-            lstrcat( szFullPathName, (LPSTR)lpfni->FileName );
-
-            // we assume that the file was changed, since  that is the only thing we look for in this sample
-            //wprintf( L"%s changed,", szFullPathName );
-			std::cout << szFullPathName << " changed,";
-
-            hFile=CreateFile( szFullPathName,
-                  GENERIC_READ,
-                  FILE_SHARE_READ,
-                  NULL,
-                  OPEN_EXISTING,
-                  FILE_FLAG_SEQUENTIAL_SCAN,
-                  0);
-
-            GetFileInformationByHandle( hFile, &FileInfo );
-
-            FileTimeToLocalFileTime( &(FileInfo.ftLastWriteTime), &LocalFileTime );
-
-            FileTimeToSystemTime( &LocalFileTime, &SystemTime );
-
-            //wprintf( L" Size = %d bytes,", FileInfo.nFileSizeLow );
-			std::cout << " Size = " << FileInfo.nFileSizeLow << " bytes,";
-
-			//TODO:
-            wprintf( L" Last Access = %02d/%02d/%02d %02d:%02d:%02d",
-                  SystemTime.wMonth,
-                  SystemTime.wDay,
-                  SystemTime.wYear,
-                  SystemTime.wHour,
-                  SystemTime.wMinute,
-                  SystemTime.wSecond );
-
-            CloseHandle( hFile );
-
-            //wprintf( L"\n" );
-			std::cout << std::endl;
-      }
-}
+//void WINAPI CheckChangedFile( LPDIRECTORY_INFO lpdi, PFILE_NOTIFY_INFORMATION lpfni)
+//{
+//      TCHAR      szFullPathName[MAX_PATH];
+//      TCHAR      *p;
+//      HANDLE     hFile;
+//      FILETIME   LocalFileTime;
+//      SYSTEMTIME SystemTime;
+//      BY_HANDLE_FILE_INFORMATION FileInfo;
+//
+//      p = FileList;
+//
+//      while(*p && lstrcmpi(p, (char*)lpfni->FileName))
+//	  {
+//            p+=(lstrlen(p)+1);
+//	  }
+//
+//      if (*p)
+//      {
+//            lstrcpy( szFullPathName, lpdi->lpszDirName );
+//			lstrcat( szFullPathName, "\\" );
+//            lstrcat( szFullPathName, (LPSTR)lpfni->FileName );
+//
+//            // we assume that the file was changed, since  that is the only thing we look for in this sample
+//            //wprintf( L"%s changed,", szFullPathName );
+//			std::cout << szFullPathName << " changed,";
+//
+//            hFile=CreateFile( szFullPathName,
+//                  GENERIC_READ,
+//                  FILE_SHARE_READ,
+//                  NULL,
+//                  OPEN_EXISTING,
+//                  FILE_FLAG_SEQUENTIAL_SCAN,
+//                  0);
+//
+//            GetFileInformationByHandle( hFile, &FileInfo );
+//
+//            FileTimeToLocalFileTime( &(FileInfo.ftLastWriteTime), &LocalFileTime );
+//
+//            FileTimeToSystemTime( &LocalFileTime, &SystemTime );
+//
+//            //wprintf( L" Size = %d bytes,", FileInfo.nFileSizeLow );
+//			std::cout << " Size = " << FileInfo.nFileSizeLow << " bytes,";
+//
+//			//TODO:
+//            wprintf( L" Last Access = %02d/%02d/%02d %02d:%02d:%02d",
+//                  SystemTime.wMonth,
+//                  SystemTime.wDay,
+//                  SystemTime.wYear,
+//                  SystemTime.wHour,
+//                  SystemTime.wMinute,
+//                  SystemTime.wSecond );
+//
+//            CloseHandle( hFile );
+//
+//            //wprintf( L"\n" );
+//			std::cout << std::endl;
+//      }
+//}
 
 
 /**********************************************************************
@@ -140,7 +155,7 @@ notification and processing, this function calls ReadDirectoryChangesW to reesta
 
 Parameters:
 
-HANDLE hCompPort - Handle for completion port
+HANDLE completionPortHandle - Handle for completion port
 
 
 Return Value:
@@ -149,12 +164,12 @@ None
 Comments:
 
 ********************************************************************/
-//void WINAPI HandleDirectoryChange( DWORD completionPort )
 void WINAPI HandleDirectoryChange( unsigned long completionPort )
 {
       DWORD numBytes;
       DWORD cbOffset;
-      LPDIRECTORY_INFO di;
+      //LPDIRECTORY_INFO di;
+	  DirectoryInfo* di;
       LPOVERLAPPED lpOverlapped;
       PFILE_NOTIFY_INFORMATION fni;
 
@@ -174,7 +189,8 @@ void WINAPI HandleDirectoryChange( unsigned long completionPort )
             {
 				std::cout << "Notify..." << std::endl;
 
-                  fni = (PFILE_NOTIFY_INFORMATION)di->lpBuffer;
+                  //fni = (PFILE_NOTIFY_INFORMATION)di->lpBuffer;
+				  fni = (PFILE_NOTIFY_INFORMATION)di->buffer;
 
                   do
                   {
@@ -218,13 +234,28 @@ void WINAPI HandleDirectoryChange( unsigned long completionPort )
                   } while( cbOffset );
 
                   // Reissue the watch command
-                  ReadDirectoryChangesW( di->hDir,di->lpBuffer,
-                        MAX_BUFFER,
-                        TRUE,
-                        FILE_NOTIFY_CHANGE_LAST_WRITE,
-                        &di->dwBufLength,
-                        &di->Overlapped,
-                        NULL);
+      //            ReadDirectoryChangesW
+					 // ( 
+						//di->hDir,
+						//di->lpBuffer,
+      //                  MAX_BUFFER,
+      //                  TRUE,
+      //                  FILE_NOTIFY_CHANGE_LAST_WRITE,
+      //                  &di->dwBufLength,
+      //                  &di->Overlapped,
+      //                  NULL);
+
+				  ReadDirectoryChangesW
+					  ( 
+					  di->directoryHandle,						
+					  di->buffer,                                
+					  MAX_BUFFER,                               
+					  TRUE,                                     
+					  FILE_NOTIFY_CHANGE_LAST_WRITE,            
+					  &di->bufferLength,                        
+					  &di->overlapped,                          
+					  NULL);                                    
+
             }
 
       } while( di );
@@ -245,14 +276,14 @@ quits.
 
 Parameters:
 
-HANDLE hCompPort - Handle for completion port
+HANDLE completionPortHandle - Handle for completion port
 
 
 Return Value:
 None
 
 ********************************************************************/
-void WINAPI WatchDirectories( HANDLE hCompPort )
+void WINAPI WatchDirectories( HANDLE completionPortHandle )
 {
       //DWORD   i;
       DWORD   tid;
@@ -263,13 +294,19 @@ void WINAPI WatchDirectories( HANDLE hCompPort )
 
       for ( int i=0; i<numDirs; ++i )
       {
-            ReadDirectoryChangesW( DirInfo[i].hDir,            // HANDLE TO DIRECTORY
-                  DirInfo[i].lpBuffer,                                                      // Formatted buffer into which read results are returned.  This is a
+		  //DirInfo[i].hDir,						 // HANDLE TO DIRECTORY
+			
+		  
+
+            ReadDirectoryChangesW
+				( 
+					directoryInfo[i]->directoryHandle,						 // HANDLE TO DIRECTORY
+					directoryInfo[i]->buffer,                                                      // Formatted buffer into which read results are returned.  This is a
                   MAX_BUFFER,                                                            // Length of previous parameter, in bytes
                   TRUE,                                                                              // Monitor sub trees?
                   FILE_NOTIFY_CHANGE_LAST_WRITE,            // What we are watching for
-                  &DirInfo[i].dwBufLength,                                    // Number of bytes returned into second parameter
-                  &DirInfo[i].Overlapped,                                          // OVERLAPPED structure that supplies data to be used during an asynchronous operation.  If this is NULL, ReadDirectoryChangesW does not return immediately.
+                  &directoryInfo[i]->bufferLength,                                    // Number of bytes returned into second parameter
+                  &directoryInfo[i]->overlapped,                                          // OVERLAPPED structure that supplies data to be used during an asynchronous operation.  If this is NULL, ReadDirectoryChangesW does not return immediately.
                   NULL);                                                                        // Completion routine
       }
 
@@ -278,7 +315,7 @@ void WINAPI WatchDirectories( HANDLE hCompPort )
       hThread = CreateThread( NULL,
             0,
             (LPTHREAD_START_ROUTINE) HandleDirectoryChange,
-            hCompPort,
+            completionPortHandle,
             0,
             &tid);
 
@@ -295,7 +332,7 @@ void WINAPI WatchDirectories( HANDLE hCompPort )
 
       // The user has quit - clean up
 
-      PostQueuedCompletionStatus( hCompPort, 0, 0, NULL );
+      PostQueuedCompletionStatus( completionPortHandle, 0, 0, NULL );
 
       // Wait for the Directory thread to finish before exiting
 
@@ -320,22 +357,19 @@ None
 Comments:
 
 ********************************************************************/
-void main(int argc, char *argv[])
+int main(int argc, char** argv)
 {
-   //   TCHAR   *p;							  // Temporary String Pointer
-	  //TCHAR   *q;							  // Temporary String Pointer
-      HANDLE  hCompPort=NULL;                 // Handle To a Completion Port
-      //DWORD   i;                              // You always need an I.
-      //TCHAR   DirList[MAX_DIRS*MAX_PATH];     // Buffer for all of the directories
-	  std::vector<std::string> dirList;
-
-      TCHAR   IniFile[MAX_PATH];
-      TCHAR   FilePath[MAX_PATH];
-      HANDLE  hFile;
-
+	//HANDLE  hCompPort=NULL;                 // Handle To a Completion Port
+	void* completionPortHandle = 0;
+	std::vector<std::string> dirList;
 
 	  //----------------------------------------------------------------------------------------
-   //   GetCurrentDirectory( MAX_PATH, IniFile );
+
+	  //TCHAR   IniFile[MAX_PATH];
+	  //TCHAR   FilePath[MAX_PATH];
+	  //HANDLE  hFile;
+
+	  //   GetCurrentDirectory( MAX_PATH, IniFile );
 
 	  //lstrcat( IniFile, "\\fwatch.ini" );
 
@@ -428,8 +462,8 @@ void main(int argc, char *argv[])
    //         lstrcpy( DirInfo[numDirs].lpszDirName, p );
 
    //         // Set up a key(directory info) for each directory
-   //         hCompPort=CreateIoCompletionPort( DirInfo[numDirs].hDir,
-   //               hCompPort,
+   //         completionPortHandle=CreateIoCompletionPort( DirInfo[numDirs].hDir,
+   //               completionPortHandle,
    //               (DWORD) &DirInfo[numDirs],
    //               0);
 
@@ -449,42 +483,65 @@ void main(int argc, char *argv[])
 		  }
 
 		  // Get a handle to the directory
-		  //DirInfo[numDirs].hDir = CreateFile
-		  DirInfo[i].hDir = CreateFile
+
+		//DirectoryInfo tempDi;
+		DirectoryInfo* tempDi = new DirectoryInfo;
+		  directoryInfo.push_back(tempDi);
+
+
+
+		//tempDi.directoryHandle =  Win32ApiWrapper::CreateFile
+		directoryInfo[i]->directoryHandle = Win32ApiWrapper::CreateFile
 			  ( 
-			  (*it).c_str(),
+			  *it,
 			  FILE_LIST_DIRECTORY,
-			  FILE_SHARE_READ |
-			  FILE_SHARE_WRITE |
-			  FILE_SHARE_DELETE,
+			  FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 			  NULL,
 			  OPEN_EXISTING,
-			  FILE_FLAG_BACKUP_SEMANTICS |
-			  FILE_FLAG_OVERLAPPED,
+			  FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
 			  NULL
 			  );
 
-		  //if( DirInfo[numDirs].hDir == INVALID_HANDLE_VALUE )
-		  if( DirInfo[i].hDir == INVALID_HANDLE_VALUE )
-		  {
-			  //wprintf( L"Unable to open directory %s. GLE=%d. Terminating...\n", p, GetLastError() );
-			  std::cout << "Unable to open directory " << *it << ". GLE=" << GetLastError() << ". Terminating..." << std::endl; 
-			  exit( 0 );
-		  }
+		//if ( tempDi.directoryHandle == INVALID_HANDLE_VALUE )
+		if ( directoryInfo[i]->directoryHandle == INVALID_HANDLE_VALUE )
+		{
+			std::cout << "Unable to open directory " << *it << ". GLE=" << GetLastError() << ". Terminating..." << std::endl; 
+			return -1; //exit( 0 );
+		}
 
-		  //lstrcpy( DirInfo[numDirs].lpszDirName, (*it).c_str() );
-		  lstrcpy( DirInfo[i].lpszDirName, (*it).c_str() );
+		  tempDi->directoryName = *it;
+		  //lstrcpy( directoryInfo[i].directoryName, (*it).c_str() );
+
+
+
+		  //unsigned long addr = (unsigned long) &directoryInfo[i];
+		  unsigned long addr = (unsigned long) directoryInfo[i];
+		  addr = (unsigned long) tempDi;
+
+
 
 		  // Set up a key(directory info) for each directory
-		  //DirInfo[numDirs].hDir,
-		  hCompPort=CreateIoCompletionPort
+		  completionPortHandle=CreateIoCompletionPort
 			  ( 
-			  DirInfo[i].hDir,
-			  hCompPort,
-			  (DWORD) &DirInfo[i],
+			  directoryInfo[i]->directoryHandle,
+			  completionPortHandle,
+			  (unsigned long) addr,
 			  0
 			  );
-		  //(DWORD) &DirInfo[numDirs],
+
+		  //(unsigned long) addr,
+
+		  
+
+		  //completionPortHandle=CreateIoCompletionPort
+			 // ( 
+			 // DirInfo[i].hDir,
+			 // completionPortHandle,
+			 // (DWORD) &DirInfo[i],
+			 // 0
+			 // );
+
+
 
 	  }
 
@@ -494,13 +551,20 @@ void main(int argc, char *argv[])
 	  std::cout << std::endl << std::endl << "Press <q> to exit" << std::endl;
 
       // Start watching
-      WatchDirectories( hCompPort );
+	WatchDirectories( completionPortHandle );
 
-      for (int i=0; i<numDirs; ++i)
-	  {
-			CloseHandle( DirInfo[i].hDir );
-	  }
+	//for (int i=0; i<numDirs; ++i)
+	//{
+	//	CloseHandle( directoryInfo[i].directoryHandle );
+	//}
 
-      CloseHandle( hCompPort );
+	for ( std::vector<DirectoryInfo*>::const_iterator it = directoryInfo.begin(); it != directoryInfo.end(); ++it )
+	{
+		::CloseHandle( (*it)->directoryHandle );
+		// delete (*it);
+		//::CloseHandle( it->directoryHandle );
+	}
+
+	CloseHandle( completionPortHandle );
 
 }
