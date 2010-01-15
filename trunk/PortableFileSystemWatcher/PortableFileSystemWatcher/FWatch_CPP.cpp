@@ -41,19 +41,19 @@
 //#define MAX_BUFFER  4096
 //
 //
-//// this is the all purpose structure that contains  
-////// the interesting directory information and provides
-////// the input buffer that is filled with file change data
-////typedef struct _DIRECTORY_INFO 
-////{
-////      HANDLE      directoryHandle;
-////      TCHAR       directoryName[MAX_PATH];
-////      CHAR        buffer[MAX_BUFFER];
-////      DWORD       bufferLength;
-////      OVERLAPPED  overlapped;
-////} DIRECTORY_INFO, *PDIRECTORY_INFO, *LPDIRECTORY_INFO;
-////DIRECTORY_INFO  directoryInfo[MAX_DIRS];        // Buffer for all of the directories
-//////TCHAR           FileList[MAX_FILES*MAX_PATH];   // Buffer for all of the files
+// //this is the all purpose structure that contains  
+//// the interesting directory information and provides
+//// the input buffer that is filled with file change data
+//typedef struct _DIRECTORY_INFO 
+//{
+//      HANDLE      directoryHandle;
+//      TCHAR       directoryName[MAX_PATH];
+//      CHAR        buffer[MAX_BUFFER];
+//      DWORD       bufferLength;
+//      OVERLAPPED  overlapped;
+//} DIRECTORY_INFO, *PDIRECTORY_INFO, *LPDIRECTORY_INFO;
+//DIRECTORY_INFO  directoryInfo[MAX_DIRS];        // Buffer for all of the directories
+////TCHAR           FileList[MAX_FILES*MAX_PATH];   // Buffer for all of the files
 //
 //DWORD           numDirs;	// TODO: global... hay que sacarla...
 //
@@ -61,16 +61,16 @@
 //
 //
 //
-//struct DirectoryInfo
-//{
-//	void* directoryHandle;				//      hDir;
-//	std::string directoryName;			// TCHAR       lpszDirName[MAX_PATH];
-//	char buffer[MAX_BUFFER];			//CHAR        lpBuffer[MAX_BUFFER];
-//	unsigned long bufferLength;			//DWORD       dwBufLength;
-//	OVERLAPPED  overlapped;				//OVERLAPPED  Overlapped;
-//};
-////std::vector<DirectoryInfo> directoryInfo;
-//std::vector<DirectoryInfo*> directoryInfo;
+////struct DirectoryInfo
+////{
+////	void* directoryHandle;				//      hDir;
+////	std::string directoryName;			// TCHAR       lpszDirName[MAX_PATH];
+////	char buffer[MAX_BUFFER];			//CHAR        lpBuffer[MAX_BUFFER];
+////	unsigned long bufferLength;			//DWORD       dwBufLength;
+////	OVERLAPPED  overlapped;				//OVERLAPPED  Overlapped;
+////};
+//////std::vector<DirectoryInfo> directoryInfo;
+////std::vector<DirectoryInfo*> directoryInfo;
 //
 ///**********************************************************************
 //CheckChangedFile()
@@ -172,8 +172,8 @@
 //{
 //      DWORD numBytes;
 //      DWORD cbOffset;
-//      //LPDIRECTORY_INFO di;
-//	  DirectoryInfo* di;
+//      LPDIRECTORY_INFO di;
+//	  //DirectoryInfo* di;
 //      LPOVERLAPPED lpOverlapped;
 //      PFILE_NOTIFY_INFORMATION fni;
 //
@@ -238,7 +238,8 @@
 //                  } while( cbOffset );
 //
 //                  // Reissue the watch command
-//      //            ReadDirectoryChangesW
+//
+//				  //ReadDirectoryChangesW
 //					 // ( 
 //						//di->hDir,
 //						//di->lpBuffer,
@@ -304,13 +305,13 @@
 //
 //            ReadDirectoryChangesW
 //				( 
-//					directoryInfo[i]->directoryHandle,						 // HANDLE TO DIRECTORY
-//					directoryInfo[i]->buffer,                                                      // Formatted buffer into which read results are returned.  This is a
+//					directoryInfo[i].directoryHandle,						 // HANDLE TO DIRECTORY
+//					directoryInfo[i].buffer,                                                      // Formatted buffer into which read results are returned.  This is a
 //                  MAX_BUFFER,                                                            // Length of previous parameter, in bytes
 //                  TRUE,                                                                              // Monitor sub trees?
 //                  FILE_NOTIFY_CHANGE_LAST_WRITE,            // What we are watching for
-//                  &directoryInfo[i]->bufferLength,                                    // Number of bytes returned into second parameter
-//                  &directoryInfo[i]->overlapped,                                          // OVERLAPPED structure that supplies data to be used during an asynchronous operation.  If this is NULL, ReadDirectoryChangesW does not return immediately.
+//                  &directoryInfo[i].bufferLength,                                    // Number of bytes returned into second parameter
+//                  &directoryInfo[i].overlapped,                                          // OVERLAPPED structure that supplies data to be used during an asynchronous operation.  If this is NULL, ReadDirectoryChangesW does not return immediately.
 //                  NULL);                                                                        // Completion routine
 //      }
 //
@@ -489,13 +490,13 @@
 //		  // Get a handle to the directory
 //
 //		//DirectoryInfo tempDi;
-//		DirectoryInfo* tempDi = new DirectoryInfo;
-//		  directoryInfo.push_back(tempDi);
+//		//DirectoryInfo* tempDi = new DirectoryInfo;
+//		//  directoryInfo.push_back(tempDi);
 //
 //
 //
 //		//tempDi.directoryHandle =  Win32ApiWrapper::CreateFile
-//		directoryInfo[i]->directoryHandle = Win32ApiWrapper::CreateFile
+//		directoryInfo[i].directoryHandle = Win32ApiWrapper::CreateFile
 //			  ( 
 //			  *it,
 //			  FILE_LIST_DIRECTORY,
@@ -507,27 +508,27 @@
 //			  );
 //
 //		//if ( tempDi.directoryHandle == INVALID_HANDLE_VALUE )
-//		if ( directoryInfo[i]->directoryHandle == INVALID_HANDLE_VALUE )
+//		if ( directoryInfo[i].directoryHandle == INVALID_HANDLE_VALUE )
 //		{
 //			std::cout << "Unable to open directory " << *it << ". GLE=" << GetLastError() << ". Terminating..." << std::endl; 
 //			return -1; //exit( 0 );
 //		}
 //
-//		  tempDi->directoryName = *it;
-//		  //lstrcpy( directoryInfo[i].directoryName, (*it).c_str() );
+//		  //tempDi->directoryName = *it;
+//		  lstrcpy( directoryInfo[i].directoryName, (*it).c_str() );
 //
 //
 //
-//		  //unsigned long addr = (unsigned long) &directoryInfo[i];
-//		  unsigned long addr = (unsigned long) directoryInfo[i];
-//		  addr = (unsigned long) tempDi;
+//		  unsigned long addr = (unsigned long) &directoryInfo[i];
+//		  //unsigned long addr = (unsigned long) directoryInfo[i];
+//		  //addr = (unsigned long) tempDi;
 //
 //
 //
 //		  // Set up a key(directory info) for each directory
 //		  completionPortHandle=CreateIoCompletionPort
 //			  ( 
-//			  directoryInfo[i]->directoryHandle,
+//			  directoryInfo[i].directoryHandle,
 //			  completionPortHandle,
 //			  (unsigned long) addr,
 //			  0
@@ -557,17 +558,17 @@
 //      // Start watching
 //	WatchDirectories( completionPortHandle );
 //
-//	//for (int i=0; i<numDirs; ++i)
-//	//{
-//	//	CloseHandle( directoryInfo[i].directoryHandle );
-//	//}
-//
-//	for ( std::vector<DirectoryInfo*>::const_iterator it = directoryInfo.begin(); it != directoryInfo.end(); ++it )
+//	for (int i=0; i<numDirs; ++i)
 //	{
-//		::CloseHandle( (*it)->directoryHandle );
-//		// delete (*it);
-//		//::CloseHandle( it->directoryHandle );
+//		CloseHandle( directoryInfo[i].directoryHandle );
 //	}
+//
+//	//for ( std::vector<DirectoryInfo*>::const_iterator it = directoryInfo.begin(); it != directoryInfo.end(); ++it )
+//	//{
+//	//	::CloseHandle( (*it)->directoryHandle );
+//	//	// delete (*it);
+//	//	//::CloseHandle( it->directoryHandle );
+//	//}
 //
 //	CloseHandle( completionPortHandle );
 //
