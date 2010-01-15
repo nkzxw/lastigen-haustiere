@@ -349,7 +349,7 @@ private:
 
 	
 	
-				ReadDirectoryChangesW
+				::ReadDirectoryChangesW
 				( 
 					directoryInfo->directoryHandle,						
 					directoryInfo->buffer,                                
