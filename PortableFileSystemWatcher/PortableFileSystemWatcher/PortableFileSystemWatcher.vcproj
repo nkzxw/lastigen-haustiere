@@ -164,49 +164,45 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\example_dotnet_cs.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\example_freebsd.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\example_linux.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\example_win32.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\file_system_watcher.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FWatch.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\FWatch_CPP.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\inotify-cxx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\simple_test_win32.cpp"
-				>
-			</File>
-			<File
 				RelativePath=".\test_FileSystemMonitor.cpp"
 				>
 			</File>
-			<File
-				RelativePath=".\Win32ApiWrapper.hpp"
+			<Filter
+				Name="Olds"
 				>
-			</File>
+				<File
+					RelativePath=".\example_dotnet_cs.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\example_freebsd.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\example_linux.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\example_win32.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\file_system_watcher.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FWatch.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FWatch_CPP.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\inotify-cxx.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -214,13 +210,49 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\EventArgs.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\EventHandlers.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\FileSystemMonitor.hpp"
 				>
 			</File>
 			<File
-				RelativePath=".\inotify-cxx.h"
+				RelativePath=".\FileSystemMonitorImpl.hpp"
 				>
 			</File>
+			<File
+				RelativePath=".\NotifyFilters.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Utils.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Win32ApiWrapper.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Win32Legacy.hpp"
+				>
+			</File>
+			<Filter
+				Name="Olds"
+				>
+				<File
+					RelativePath=".\inotify-cxx.h"
+					>
+				</File>
+				<File
+					RelativePath=".\simple_test_win32.cpp"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Resource Files"

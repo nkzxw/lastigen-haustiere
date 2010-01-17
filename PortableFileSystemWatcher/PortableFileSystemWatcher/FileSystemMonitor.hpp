@@ -1,126 +1,198 @@
+//TODO: IMPORTANTE: LEER: Making Pimpl Easy http://www.ddj.com/cpp/205918714;jsessionid=ZHK0ZRNRQYCJHQE1GHOSKH4ATMY32JVN?pgno=2
+
 #ifndef FileSystemMonitor_h__ //TODO:cambiar
 #define FileSystemMonitor_h__
 
+#include <exception>
 #include <string>
 
+
 #include <boost/function.hpp>
+//TODO: boost::any
+//TODO: boost::config
 
-#include "Win32ApiWrapper.hpp"
-
-
-
-
-
-//enum NotifyFilters
-namespace NotifyFilters
-{
-	static const int FileName		= 0x00000001;  //1;
-	static const int DirectoryName	= 0x00000002;  //2;
-	static const int Attributes		= 0x00000004;  //4;
-	static const int Size			= 0x00000008;  //8;
-	static const int LastWrite		= 0x00000010;  //16;
-	static const int LastAccess		= 0x00000020;  //32;
-	static const int CreationTime	= 0x00000040;  //64;
-	static const int Security		= 0x00000100;  //256;
-}
+#include "EventArgs.hpp"
+#include "EventHandlers.hpp"
+#include "FileSystemMonitorImpl.hpp"
+#include "NotifyFilters.hpp"
+#include "Utils.hpp"
+//#include "Win32ApiWrapper.hpp"
+#include "Win32Legacy.hpp"
 
 
-//TODO;
-struct FileSystemEventArgs
-{
-	std::string Name;
-};
-
-
-//TODO;
-struct RenamedEventArgs
-{
-	std::string Name;
-};
-
-//Similar a un C# Delegate
-//TODO: falta el object sender que podría ser implementado mediante boost::any
-typedef boost::function<void (FileSystemEventArgs e)> FileSystemEventHandler;
-typedef boost::function<void (RenamedEventArgs e)> RenamedEventHandler;
-
-
-
-//----------------------------------------------------------------------------------------------------------------
-// TODO: Legacy-Code, me gustaría reemplazarlo por código C++
-// WIN32
-
-#define MAX_BUFFER  4096
-
-typedef struct _DIRECTORY_INFO 
-{
-	HANDLE      directoryHandle;
-	TCHAR       directoryName[MAX_PATH];
-	CHAR        buffer[MAX_BUFFER];
-	DWORD       bufferLength;
-	OVERLAPPED  overlapped;
-} DIRECTORY_INFO, *PDIRECTORY_INFO, *LPDIRECTORY_INFO;
-
-//DIRECTORY_INFO  directoryInfo[MAX_DIRS];        // Buffer for all of the directories
-DIRECTORY_INFO  directoryInfo;        // Buffer for all of the directories
-//TCHAR           FileList[MAX_FILES*MAX_PATH];   // Buffer for all of the files
-
-DWORD           numDirs;	// TODO: global... hay que sacarla...
-
-
-
-
-//----------------------------------------------------------------------------------------------------------------
-
-class FileSystemMonitor; //Forward declaration
-
-namespace internal
-{
-	struct ThreadObjectParameter
-	{
-		FileSystemMonitor* This;
-		void* CompletionPortHandle;
-	};
-}
-	
+//class FileSystemMonitor; //Forward declaration
 
 class FileSystemMonitor
 {
 public:
+
 	FileSystemMonitor()
-		: completionPortHandle_(0)
+		//: notifyFilters_(NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName)
+		//, directory_("")
+		//, filter_("*.*")
+		////, impl_(new detail::FileSystemMonitorImpl)
 	{
-		threadObject_ = new internal::ThreadObjectParameter;
+		//: completionPortHandle_(0)
+		//threadObject_ = new detail::ThreadObjectParameter;
+
+		initialize();
 	}
+
+	FileSystemMonitor(const std::string& path)
+		//: this(path, "*.*")
+	{
+		initialize(path, "*.*");
+	}
+
+
+	
+
+	//    public FSW(string path)
+	//        : this(path, "*.*")
+	//    {
+	//    }
+	//
+	//    public FSW(string path, string filter)
+	//    {
+	//        this.notifyFilters = NotifyFilters.LastWrite | NotifyFilters.DirectoryName | NotifyFilters.FileName;
+	//        this.internalBufferSize = 0x2000;
+	//        if (path == null)
+	//        {
+	//            throw new ArgumentNullException("path");
+	//        }
+	//        if (filter == null)
+	//        {
+	//            throw new ArgumentNullException("filter");
+	//        }
+	//        if ((path.Length == 0) || !Directory.Exists(path))
+	//        {
+	//            throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { path }));
+	//        }
+	//        this.directory = path;
+	//        this.filter = filter;
+	//    }
+
+	//    [DefaultValue("*.*"), IODescription("FSW_Filter"), TypeConverter("System.Diagnostics.Design.StringValueConverter, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"), RecommendedAsConfigurable(true)]
+	//    public string Filter
+	//    {
+	//        get
+	//        {
+	//            return this.filter;
+	//        }
+	//        set
+	//        {
+	//            if ((value == null) || (value == string.Empty))
+	//            {
+	//                value = "*.*";
+	//            }
+	//            if (string.Compare(this.filter, value, StringComparison.OrdinalIgnoreCase) != 0)
+	//            {
+	//                this.filter = value;
+	//            }
+	//        }
+	//    }
+
+	//    [IODescription("FSW_ChangedFilter"), DefaultValue(0x13)]
+	//    public NotifyFilters NotifyFilter
+	//    {
+	//        get
+	//        {
+	//            return this.notifyFilters;
+	//        }
+	//        set
+	//        {
+	//            if ((value & ~notifyFiltersValidMask) != 0)
+	//            {
+	//                throw new InvalidEnumArgumentException("value", (int)value, typeof(NotifyFilters));
+	//            }
+	//            if (this.notifyFilters != value)
+	//            {
+	//                this.notifyFilters = value;
+	//                this.Restart();
+	//            }
+	//        }
+	//    }
+
+	//    [TypeConverter("System.Diagnostics.Design.StringValueConverter, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"), IODescription("FSW_Path"), Editor("System.Diagnostics.Design.FSWPathEditor, System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", "System.Drawing.Design.UITypeEditor, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"), DefaultValue(""), RecommendedAsConfigurable(true)]
+	//    public string Path
+	//    {
+	//        get
+	//        {
+	//            return this.directory;
+	//        }
+	//        set
+	//        {
+	//            value = (value == null) ? string.Empty : value;
+	//            if (string.Compare(this.directory, value, StringComparison.OrdinalIgnoreCase) != 0)
+	//            {
+	//                if (base.DesignMode)
+	//                {
+	//                    if ((value.IndexOfAny(wildcards) != -1) || (value.IndexOfAny(Path.GetInvalidPathChars()) != -1))
+	//                    {
+	//                        throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { value }));
+	//                    }
+	//                }
+	//                else if (!Directory.Exists(value))
+	//                {
+	//                    throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { value }));
+	//                }
+	//                this.directory = value;
+	//                this.readGranted = false;
+	//                this.Restart();
+	//            }
+	//        }
+	//    }
+
+
+	//    private bool MatchPattern(string relativePath)
+	//    {
+	//        string fileName = System.IO.Path.GetFileName(relativePath);
+	//        return ((fileName != null) && System.IO.PatternMatcher.StrictMatchPattern(this.filter.ToUpper(CultureInfo.InvariantCulture), fileName.ToUpper(CultureInfo.InvariantCulture)));
+	//    }
+
+	//    private void NotifyFileSystemEventArgs(int action, string name)
+	//    {
+	//        if (this.MatchPattern(name))
+	//        {
+	//            switch (action)
+	//            {
+	//                case 1:
+	//                    this.OnCreated(new FileSystemEventArgs(WatcherChangeTypes.Created, this.directory, name));
+	//                    return;
+	//
+	//                case 2:
+	//                    this.OnDeleted(new FileSystemEventArgs(WatcherChangeTypes.Deleted, this.directory, name));
+	//                    return;
+	//
+	//                case 3:
+	//                    this.OnChanged(new FileSystemEventArgs(WatcherChangeTypes.Changed, this.directory, name));
+	//                    return;
+	//            }
+	//        }
+	//    }
+
+	//    private void NotifyRenameEventArgs(WatcherChangeTypes action, string name, string oldName)
+	//    {
+	//        if (this.MatchPattern(name) || this.MatchPattern(oldName))
+	//        {
+	//            RenamedEventArgs e = new RenamedEventArgs(action, this.directory, name, oldName);
+	//            this.OnRenamed(e);
+	//        }
+	//    }
+
 
 	virtual ~FileSystemMonitor()
 	{
-		PostQueuedCompletionStatus( completionPortHandle_, 0, 0, NULL );
-
-		// Wait for the Directory thread to finish before exiting
-		WaitForSingleObject( thread_, INFINITE );
-
-		CloseHandle( thread_ );
-
-		//for (int i=0; i<numDirs; ++i)
-		//{
-			CloseHandle( directoryInfo.directoryHandle );
-		//}
-	
-		CloseHandle( completionPortHandle_ );
-
-		delete threadObject_;
-		
-
 	}
 
 	std::string getPath() const //TODO: evitar copias
 	{ 
-		return path_; 
+		return this->directory_; 
 	}
 	void setPath (const std::string& val) 
 	{ 
 		//TODO: debe chequear el Path que exista en el FileSystem...
-		path_ = val; 
+		this->directory_ = val; 
 	}
 
 	int getNotifyFilters() const //TODO: evitar copias
@@ -148,83 +220,12 @@ public:
 	void setEnableRaisingEvents(bool val) 
 	{ 
 		enableRaisingEvents_ = val; 
-
-
 		//TODO: acá va el código
 	}
 
-
-
-
-
 	void startMonitoring()
 	{
-		DWORD   tid;			//TODO:
-
-		directoryInfo.directoryHandle = Win32ApiWrapper::CreateFile
-									( 
-										path_,
-										FILE_LIST_DIRECTORY,
-										FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
-										NULL,
-										OPEN_EXISTING,
-										FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
-										NULL
-									);
-
-		if ( directoryInfo.directoryHandle == INVALID_HANDLE_VALUE )
-		{
-			//TODO: manejo de excepciones
-			std::cout << "Unable to open directory " << path_ << ". GLE=" << GetLastError() << ". Terminating..." << std::endl; 
-			return;
-		}
-
-		lstrcpy( directoryInfo.directoryName, path_.c_str() );
-
-		unsigned long addr = (unsigned long) &directoryInfo;
-
-		// Set up a key(directory info) for each directory
-		completionPortHandle_ = CreateIoCompletionPort
-										( 
-											directoryInfo.directoryHandle,
-											completionPortHandle_,
-											(unsigned long) addr,
-											0
-										);
-
-
-		ReadDirectoryChangesW
-										( 
-											directoryInfo.directoryHandle,		// HANDLE TO DIRECTORY
-											directoryInfo.buffer,               // Formatted buffer into which read results are returned.  This is a
-											MAX_BUFFER,                         // Length of previous parameter, in bytes
-											this->includeSubdirectories_ ? 1 : 0,	//TRUE,  // Monitor sub trees?
-											notifyFilters_,						// FILE_NOTIFY_CHANGE_LAST_WRITE,      // What we are watching for
-											&directoryInfo.bufferLength,        // Number of bytes returned into second parameter
-											&directoryInfo.overlapped,          // OVERLAPPED structure that supplies data to be used during an asynchronous operation.  If this is NULL, ReadDirectoryChangesW does not return immediately.
-											NULL								// Completion routine
-											);      
-
-
-
-
-
-		//TODO: boost::threads
-
-		threadObject_->This = this;
-		threadObject_->CompletionPortHandle = completionPortHandle_; //TODO: dato redundante
-
-		thread_ = ::CreateThread
-			( 
-			NULL,
-			0,
-			(LPTHREAD_START_ROUTINE) HandleDirectoryChange,
-			threadObject_,
-			0,
-			&tid
-			);
-
-
+		impl_->startMonitoring(directory_, notifyFilters_, includeSubdirectories_);
 	}
 
 	// Event Handlers
@@ -234,154 +235,42 @@ public:
 	RenamedEventHandler Renamed;
 
 
-
-
-
-
-
-
 private:
 
-	//static void WINAPI HandleDirectoryChange( unsigned long completionPort )
-	//static void WINAPI HandleDirectoryChange( ThreadObjectParameter* threadObject )
-	static void WINAPI HandleDirectoryChange( void* tempObject )
+	inline void initialize()
 	{
+		initialize("", "*.*");
+	}
 
-		internal::ThreadObjectParameter* threadObject = static_cast<internal::ThreadObjectParameter*>(tempObject);
+	inline void initialize(const std::string& path, const std::string& filter)
+	{
+		this->notifyFilters_ = NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName;
+		this->impl_ = new detail::FileSystemMonitorImpl;  //TODO: heap o stack????
+		this->filter_ = filter;
 
-		unsigned long numBytes;
-		unsigned long cbOffset;
-		LPDIRECTORY_INFO directoryInfo;
-		//DirectoryInfo* di;
-		LPOVERLAPPED overlapped;
-		PFILE_NOTIFY_INFORMATION notifyInformation;
+		//std::runtime_error
 
-
-		
-		do
+		if ( path.size() == 0 || !utils::directoryExists(path) )
 		{
-			GetQueuedCompletionStatus
-				( 
-				threadObject->This->completionPortHandle_,
-				&numBytes,
-				(LPDWORD) &directoryInfo,      // This is the DIRECTORY_INFO structure that was passed in the call to CreateIoCompletionPort below.
-				&overlapped,
-				INFINITE
-				);
+			throw std::runtime_error("InvalidDirName");
+			//throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { path }));
+		}
 
-			if ( directoryInfo )
-			{
-				//fni = (PFILE_NOTIFY_INFORMATION)di->lpBuffer;
-				//notifyInformation = static_cast<PFILE_NOTIFY_INFORMATION>(directoryInfo->buffer);
-				notifyInformation = (PFILE_NOTIFY_INFORMATION)directoryInfo->buffer;
-
-				do
-				{
-					cbOffset = notifyInformation->NextEntryOffset;
-
-					//if( fni->Action == FILE_ACTION_MODIFIED )
-					//      CheckChangedFile( di, fni );
-
-					//
-					switch ( notifyInformation->Action )
-					{
-						case FILE_ACTION_ADDED:
-							if (threadObject->This->Created)
-							{
-								std::string fileName(notifyInformation->FileName, notifyInformation->FileName + (notifyInformation->FileNameLength/sizeof(WCHAR)) ); 
-								FileSystemEventArgs temp;
-								temp.Name = fileName;
-
-								threadObject->This->Created(temp);
-							}
-
-							break;
-						case FILE_ACTION_REMOVED:
-							//std::cout << "file deleted: ";
-							if (threadObject->This->Deleted)
-							{
-								std::string fileName(notifyInformation->FileName, notifyInformation->FileName + (notifyInformation->FileNameLength/sizeof(WCHAR)) ); 
-								FileSystemEventArgs temp;
-								temp.Name = fileName;
-
-								threadObject->This->Deleted(temp);
-							}
-
-							break;
-						case FILE_ACTION_MODIFIED:
-							if (threadObject->This->Changed)
-							{
-								std::string fileName(notifyInformation->FileName, notifyInformation->FileName + (notifyInformation->FileNameLength/sizeof(WCHAR)) ); 
-
-								FileSystemEventArgs temp;
-								temp.Name = fileName;
-
-								threadObject->This->Changed(temp);
-							}
-
-							break;
-						case FILE_ACTION_RENAMED_OLD_NAME:
-							
-							if (threadObject->This->Renamed)
-							{
-								std::string fileName(notifyInformation->FileName, notifyInformation->FileName + (notifyInformation->FileNameLength/sizeof(WCHAR)) ); 
-
-								RenamedEventArgs temp;
-								temp.Name = fileName;
-
-								threadObject->This->Renamed(temp);
-							}
-
-							break;
-						case FILE_ACTION_RENAMED_NEW_NAME:
-							break;
-						default: 
-							std::cout << "unknown event: ";
-							break;
-					}
-
-					//std::string fileName(notifyInformation->FileName, notifyInformation->FileName + (notifyInformation->FileNameLength/sizeof(WCHAR)) ); 
-					//std::cout << fileName << std::endl;
-
-					notifyInformation = (PFILE_NOTIFY_INFORMATION)((LPBYTE) notifyInformation + cbOffset);
-
-				} while( cbOffset );
-
-	
-	
-				::ReadDirectoryChangesW
-				( 
-					directoryInfo->directoryHandle,						
-					directoryInfo->buffer,                                
-					MAX_BUFFER,                               
-					threadObject->This->includeSubdirectories_ ? 1 : 0,		//TRUE,                                     
-					threadObject->This->notifyFilters_,						//FILE_NOTIFY_CHANGE_LAST_WRITE,            
-					&directoryInfo->bufferLength,                        
-					&directoryInfo->overlapped,                          
-					NULL
-				);      
-
-			}
-
-		} while( directoryInfo );
-
-
+		this->directory_ = path;
 	}
 
 
-
-	std::string path_;
+	std::string directory_;
 	int notifyFilters_;									//TODO: debería ser un enum
 	std::string filter_;
 	bool enableRaisingEvents_;
 	bool includeSubdirectories_;
 
-	void* completionPortHandle_;
-	HANDLE  thread_;									//TODO:
-	internal::ThreadObjectParameter* threadObject_;		//TODO: shared_ptr
+	//void* completionPortHandle_;
+	//HANDLE  thread_;									//TODO:
+	//detail::ThreadObjectParameter* threadObject_;		//TODO: shared_ptr
 
-
-
+	detail::FileSystemMonitorImpl* impl_;				//TODO:
 
 };
 

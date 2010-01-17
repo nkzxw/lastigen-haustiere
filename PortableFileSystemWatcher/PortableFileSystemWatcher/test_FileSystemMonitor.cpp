@@ -39,22 +39,33 @@ static void OnRenamed(RenamedEventArgs e) // object source,
 
 int main(int argc, char** argv)
 {
-	std::string path = "C:\\temp1";
+	std::string path = "D:\\temp1";
     
+	//TODO: implementar multiples paths????? O conviene que cada objeto FileSystemMonitor administre un path????
 
-    FileSystemMonitor watcher; // = new FileSystemMonitor;
-    watcher.setPath( path );
-	watcher.setNotifyFilters( NotifyFilters::LastAccess | NotifyFilters::LastWrite | NotifyFilters::FileName | NotifyFilters::DirectoryName );
-	watcher.setFilter("*.txt");
+	try
+	{
+		FileSystemMonitor watcher(path); // = new FileSystemMonitor;
 
-	watcher.Changed = OnChanged;
-	watcher.Created = OnCreated;
-	watcher.Deleted = OnDeleted;
-	watcher.Renamed = OnRenamed;
+		//FileSystemMonitor watcher; // = new FileSystemMonitor;
+		//watcher.setPath( path );
+		watcher.setNotifyFilters( NotifyFilters::LastAccess | NotifyFilters::LastWrite | NotifyFilters::FileName | NotifyFilters::DirectoryName );
+		watcher.setFilter("*.txt"); //TODO: implementar este filtro
 
-	watcher.setEnableRaisingEvents(true); //TODO: cambiar, no está bueno este diseño. Crear un método Start.
-	watcher.startMonitoring();
+		watcher.Changed = OnChanged;
+		watcher.Created = OnCreated;
+		watcher.Deleted = OnDeleted;
+		watcher.Renamed = OnRenamed;
 
+		//watcher.setEnableRaisingEvents(true); //TODO: cambiar, no está bueno este diseño. Crear un método Start.
+		watcher.startMonitoring();
+		//watcher.startMonitoring();	//TODO: esto crearia otro Thread... si lo implementamos como un Setter "EnableRaisingEvents" podemos manejarlo de otra manera...
+
+	}
+	catch (std::runtime_error re)
+	{
+		std::cout << re.what() << std::endl;
+	}
 
 	std::cin.get();
 
