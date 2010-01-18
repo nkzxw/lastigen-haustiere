@@ -1,0 +1,3 @@
+
+// http://msdn.microsoft.com/en-us/library/aa365261%28VS.85%29.aspx
+// http://www2.hawaii.edu/~qzhang/FileSystemWatcher/index.html
