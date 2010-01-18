@@ -8,8 +8,10 @@
 #include <exception>
 #include <string>
 
+#include <boost/config.hpp>
 #include <boost/function.hpp>
 #include <boost/smart_ptr.hpp>
+
 //TODO: boost::any
 //TODO: boost::config
 

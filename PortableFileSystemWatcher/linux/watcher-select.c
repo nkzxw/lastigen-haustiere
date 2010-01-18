@@ -2,6 +2,8 @@
 // http://www.ibm.com/developerworks/linux/library/l-ubuntu-inotify/index.html?ca=drs-
 
 
+// TODO: boost::asio::posix::stream_descriptor
+
 // watcher-select.c
 
 #include <stdio.h>
