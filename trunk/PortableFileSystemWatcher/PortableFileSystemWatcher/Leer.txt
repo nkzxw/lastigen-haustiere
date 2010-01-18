@@ -1,3 +1,12 @@
 
 // http://msdn.microsoft.com/en-us/library/aa365261%28VS.85%29.aspx
+
+
+// http://www2.hawaii.edu/~qzhang/FileSystemWatcher.html
 // http://www2.hawaii.edu/~qzhang/FileSystemWatcher/index.html
+// http://forums.java.net/jive/thread.jspa?threadID=171
+// http://www.teamdev.com/downloads/jniwrapper/winpack/javadoc/com/jniwrapper/win32/io/FileSystemWatcher.html
+
+
+
+// http://oss.sgi.com/projects/fam/faq.html#what_is_fam

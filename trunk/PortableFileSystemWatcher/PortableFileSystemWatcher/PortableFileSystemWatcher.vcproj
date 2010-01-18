@@ -234,6 +234,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Leer.txt"
+				>
+			</File>
+			<File
 				RelativePath=".\NotifyFilters.hpp"
 				>
 			</File>
