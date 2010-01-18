@@ -1,0 +1,4 @@
+COMPILAR:               gcc -o watcher watcher.c 
+COMPILAR (con pthread): gcc -lpthread -o watcher watcher.c 
+
+EJECUTAR: ./watcher
