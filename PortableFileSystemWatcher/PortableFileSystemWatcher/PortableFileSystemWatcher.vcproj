@@ -210,6 +210,10 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
+				RelativePath=".\Config.hpp"
+				>
+			</File>
+			<File
 				RelativePath=".\EventArgs.hpp"
 				>
 			</File>
@@ -223,6 +227,10 @@
 			</File>
 			<File
 				RelativePath=".\FileSystemMonitorImpl.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileSystemMonitorLinuxImpl.hpp"
 				>
 			</File>
 			<File
