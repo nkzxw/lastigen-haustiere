@@ -3,6 +3,7 @@
 // http://www.yolinux.com/TUTORIALS/LinuxTutorialPosixThreads.html
 // http://www.xgc.com/manuals/xgclib/x4709.html
 
+// TODO: boost::asio::posix::stream_descriptor
 
 #include <stdio.h>
 #include <stdlib.h>

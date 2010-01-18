@@ -1,6 +1,8 @@
 // http://www.linuxjournal.com/article/8478
 // http://www.ibm.com/developerworks/linux/library/l-ubuntu-inotify/index.html?ca=drs-
 
+// http://osdir.com/ml/lib.boost.asio.user/2008-08/msg00090.html
+// TODO: boost::asio::posix::stream_descriptor
 
 // watcher.c
 

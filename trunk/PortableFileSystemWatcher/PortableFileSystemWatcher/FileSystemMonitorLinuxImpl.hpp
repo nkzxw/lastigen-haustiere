@@ -1,5 +1,6 @@
-#ifndef FileSystemMonitorImpl_h__
-#define FileSystemMonitorImpl_h__
+#ifndef FileSystemMonitorLinuxImpl_h__
+#define FileSystemMonitorLinuxImpl_h__
+
 
 #include <boost/bind.hpp>
 #include <boost/smart_ptr.hpp>
@@ -16,30 +17,20 @@ class FileSystemMonitor; //Forward declaration
 
 namespace detail
 {
-	//class FileSystemMonitorImpl;
+	typedef boost::shared_ptr<boost::thread> HeapThread; //TODO: repetido
 
-	//struct ThreadObjectParameter
-	//{
-	//	FileSystemMonitorImpl* This;
-	//	void* CompletionPortHandle;
-	//};
-
-	typedef boost::shared_ptr<boost::thread> HeapThread;
-
-
-	class FileSystemMonitorImpl
+	class FileSystemMonitorLinuxImpl
 	{
 	public:
 
 		friend class ::FileSystemMonitor;
 
-		FileSystemMonitorImpl()
+		FileSystemMonitorLinuxImpl()
 			: completionPortHandle_(0)
 		{
-			//threadObject_ = new detail::ThreadObjectParameter;
 		}
 
-		virtual ~FileSystemMonitorImpl()
+		virtual ~FileSystemMonitorLinuxImpl()
 		{
 
 			// Si hubo algun error al tratar de monitorear el directorio, estos pasos no hay que hacerlos...
@@ -121,7 +112,7 @@ namespace detail
 			//threadObject_->CompletionPortHandle = completionPortHandle_; //TODO: dato redundante
 
 
-			thread_.reset( new boost::thread( boost::bind(&FileSystemMonitorImpl::HandleDirectoryChange, this) ) );
+			thread_.reset( new boost::thread( boost::bind(&FileSystemMonitorLinuxImpl::HandleDirectoryChange, this) ) );
 			//thread_ = ::CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE) HandleDirectoryChange, threadObject_, 0, &tid );
 
 
@@ -133,14 +124,9 @@ namespace detail
 		FileSystemEventHandler Deleted;
 		RenamedEventHandler Renamed;
 
-private:
-		//static void WINAPI HandleDirectoryChange( unsigned long completionPort )
-		//static void WINAPI HandleDirectoryChange( ThreadObjectParameter* threadObject )
-		//static void WINAPI HandleDirectoryChange( void* tempObject )
+	private:
 		void HandleDirectoryChange()
 		{
-			//detail::ThreadObjectParameter* threadObject = static_cast<detail::ThreadObjectParameter*>(tempObject);
-
 			unsigned long numBytes;
 			unsigned long cbOffset;
 			LPDIRECTORY_INFO directoryInfo;
@@ -274,9 +260,7 @@ private:
 		void* completionPortHandle_;
 
 		HeapThread thread_;
-		//HANDLE  thread_;									//TODO:
-		//detail::ThreadObjectParameter* threadObject_;		//TODO: shared_ptr
 	};
 
 }
-#endif // FileSystemMonitorImpl_h__
+#endif // FileSystemMonitorLinuxImpl_h__
