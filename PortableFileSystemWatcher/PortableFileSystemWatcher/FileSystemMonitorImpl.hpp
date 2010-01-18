@@ -12,7 +12,7 @@
 #include "Win32Legacy.hpp"
 
 
-//class FileSystemMonitor; //Forward declaration
+class FileSystemMonitor; //Forward declaration
 
 namespace detail
 {
@@ -36,7 +36,7 @@ namespace detail
 		FileSystemMonitorImpl()
 			: completionPortHandle_(0)
 		{
-			threadObject_ = new detail::ThreadObjectParameter;
+			//threadObject_ = new detail::ThreadObjectParameter;
 		}
 
 		virtual ~FileSystemMonitorImpl()
@@ -47,9 +47,9 @@ namespace detail
 			PostQueuedCompletionStatus( completionPortHandle_, 0, 0, NULL );
 
 			// Wait for the Directory thread to finish before exiting
-			WaitForSingleObject( thread_, INFINITE );
-
-			CloseHandle( thread_ );
+			//WaitForSingleObject( thread_, INFINITE );
+			//CloseHandle( thread_ );
+			thread_->join();
 
 			//for (int i=0; i<numDirs; ++i)
 			//{
@@ -58,18 +58,23 @@ namespace detail
 
 			CloseHandle( completionPortHandle_ );
 
-			delete threadObject_;
+			//delete threadObject_;
 
 
 		}
 
-		void startMonitoring(const std::string& path_, int notifyFilters_, bool includeSubdirectories_)
+		void startMonitoring(const std::string& path) //, int notifyFilters, bool includeSubdirectories, const std::string& filter)
 		{
-			DWORD   tid;			//TODO:
+			//this->path_ = 
+			//this->notifyFilters_ = notifyFilters;
+			//this->filter_ = filter;
+			//this->includeSubdirectories_ = includeSubdirectories;
+
+			//DWORD   tid;			//TODO:
 
 			directoryInfo.directoryHandle = Win32ApiWrapper::CreateFile
 				( 
-				path_,
+				path,
 				FILE_LIST_DIRECTORY,
 				FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
 				NULL,
@@ -81,11 +86,11 @@ namespace detail
 			if ( directoryInfo.directoryHandle == INVALID_HANDLE_VALUE )
 			{
 				//TODO: manejo de excepciones
-				std::cout << "Unable to open directory " << path_ << ". GLE=" << GetLastError() << ". Terminating..." << std::endl; 
+				std::cout << "Unable to open directory " << path << ". GLE=" << GetLastError() << ". Terminating..." << std::endl; 
 				return;
 			}
 
-			lstrcpy( directoryInfo.directoryName, path_.c_str() );
+			lstrcpy( directoryInfo.directoryName, path.c_str() );
 
 			unsigned long addr = (unsigned long) &directoryInfo;
 
@@ -105,7 +110,7 @@ namespace detail
 				directoryInfo.buffer,               // Formatted buffer into which read results are returned.  This is a
 				MAX_BUFFER,                         // Length of previous parameter, in bytes
 				this->includeSubdirectories_ ? 1 : 0,	//TRUE,  // Monitor sub trees?
-				notifyFilters_,						// FILE_NOTIFY_CHANGE_LAST_WRITE,      // What we are watching for
+				this->notifyFilters_,						// FILE_NOTIFY_CHANGE_LAST_WRITE,      // What we are watching for
 				&directoryInfo.bufferLength,        // Number of bytes returned into second parameter
 				&directoryInfo.overlapped,          // OVERLAPPED structure that supplies data to be used during an asynchronous operation.  If this is NULL, ReadDirectoryChangesW does not return immediately.
 				NULL								// Completion routine
@@ -116,20 +121,8 @@ namespace detail
 			//threadObject_->CompletionPortHandle = completionPortHandle_; //TODO: dato redundante
 
 
-			//boostThread_.reset( new boost::thread( boost::bind(&FileSystemMonitorImpl::testThreadOnMemberFunction, this) ) );
-			//boostThread_.reset( new boost::thread( boost::bind(&FileSystemMonitorImpl::testThreadOnMemberFunction, this) ) );
-			boostThread_.reset( new boost::thread( boost::bind(&FileSystemMonitorImpl::HandleDirectoryChange, this) ) );
-
-
-			//thread_ = ::CreateThread
-			//	( 
-			//	NULL,
-			//	0,
-			//	(LPTHREAD_START_ROUTINE) HandleDirectoryChange,
-			//	threadObject_,
-			//	0,
-			//	&tid
-			//	);
+			thread_.reset( new boost::thread( boost::bind(&FileSystemMonitorImpl::HandleDirectoryChange, this) ) );
+			//thread_ = ::CreateThread( NULL, 0, (LPTHREAD_START_ROUTINE) HandleDirectoryChange, threadObject_, 0, &tid );
 
 
 		}
@@ -140,12 +133,7 @@ namespace detail
 		FileSystemEventHandler Deleted;
 		RenamedEventHandler Renamed;
 
-	//private:
-		//void testThreadOnMemberFunction()
-		//{
-		//	std::cout << "testThreadOnMemberFunction()" << std::endl;
-		//}
-
+private:
 		//static void WINAPI HandleDirectoryChange( unsigned long completionPort )
 		//static void WINAPI HandleDirectoryChange( ThreadObjectParameter* threadObject )
 		//static void WINAPI HandleDirectoryChange( void* tempObject )
@@ -261,9 +249,6 @@ namespace detail
 					} while( cbOffset );
 
 
-					//threadObject->This->includeSubdirectories_ ? 1 : 0,		//TRUE,                                     
-					//threadObject->This->notifyFilters_,						//FILE_NOTIFY_CHANGE_LAST_WRITE,            
-
 					::ReadDirectoryChangesW
 						( 
 						directoryInfo->directoryHandle,						
@@ -282,18 +267,15 @@ namespace detail
 
 
 		}
-		//std::string path_;
+
 		int notifyFilters_;									//TODO: debería ser un enum
-		//std::string filter_;
-		//bool enableRaisingEvents_;
+		std::string filter_;
 		bool includeSubdirectories_;
-
 		void* completionPortHandle_;
-		HANDLE  thread_;									//TODO:
-		detail::ThreadObjectParameter* threadObject_;		//TODO: shared_ptr
 
-		//boost::thread boostThread_;
-		HeapThread boostThread_;
+		HeapThread thread_;
+		//HANDLE  thread_;									//TODO:
+		//detail::ThreadObjectParameter* threadObject_;		//TODO: shared_ptr
 	};
 
 }

@@ -39,27 +39,31 @@ static void OnRenamed(RenamedEventArgs e) // object source,
 
 int main(int argc, char** argv)
 {
-	std::string path = "D:\\temp1";
+	//std::string path = "D:\\temp1";
+	std::string path = "C:\\temp1";
     
 	//TODO: implementar multiples paths????? O conviene que cada objeto FileSystemMonitor administre un path????
 
+	FileSystemMonitor* watcher;
+
+
 	try
 	{
-		FileSystemMonitor watcher(path); // = new FileSystemMonitor;
+		//FileSystemMonitor watcher;
+		//FileSystemMonitor watcher(path);
+		watcher = new FileSystemMonitor(path);
 
-		//FileSystemMonitor watcher; // = new FileSystemMonitor;
 		//watcher.setPath( path );
-		watcher.setNotifyFilters( NotifyFilters::LastAccess | NotifyFilters::LastWrite | NotifyFilters::FileName | NotifyFilters::DirectoryName );
-		watcher.setFilter("*.txt"); //TODO: implementar este filtro
+		watcher->setNotifyFilters( NotifyFilters::LastAccess | NotifyFilters::LastWrite | NotifyFilters::FileName | NotifyFilters::DirectoryName );
+		watcher->setFilter("*.txt"); //TODO: implementar este filtro
+		watcher->setChangedEventHandler(OnChanged);
+		watcher->setCreatedEventHandler(OnCreated);
+		watcher->setDeletedEventHandler(OnDeleted);
+		watcher->setRenamedEventHandler(OnRenamed);
 
-		watcher.Changed = OnChanged;
-		watcher.Created = OnCreated;
-		watcher.Deleted = OnDeleted;
-		watcher.Renamed = OnRenamed;
-
-		//watcher.setEnableRaisingEvents(true); //TODO: cambiar, no está bueno este diseño. Crear un método Start.
-		watcher.startMonitoring();
-		//watcher.startMonitoring();	//TODO: esto crearia otro Thread... si lo implementamos como un Setter "EnableRaisingEvents" podemos manejarlo de otra manera...
+		//watcher->setEnableRaisingEvents(true); //TODO: cambiar, no está bueno este diseño. Crear un método Start.
+		watcher->startMonitoring();
+		watcher->startMonitoring();	//TODO: esto crearia otro Thread... si lo implementamos como un Setter "EnableRaisingEvents" podemos manejarlo de otra manera...
 
 	}
 	catch (std::runtime_error re)
@@ -68,6 +72,8 @@ int main(int argc, char** argv)
 	}
 
 	std::cin.get();
+
+	delete watcher;
 
 	return 0;
 }

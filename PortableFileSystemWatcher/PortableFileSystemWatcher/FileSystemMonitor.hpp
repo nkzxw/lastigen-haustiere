@@ -1,4 +1,6 @@
-//TODO: IMPORTANTE: LEER: Making Pimpl Easy http://www.ddj.com/cpp/205918714;jsessionid=ZHK0ZRNRQYCJHQE1GHOSKH4ATMY32JVN?pgno=2
+// TODO: IMPORTANTE: LEER: http://www2.hawaii.edu/~qzhang/FileSystemWatcher/index.html
+//Making Pimpl Easy http://www.ddj.com/cpp/205918714;jsessionid=ZHK0ZRNRQYCJHQE1GHOSKH4ATMY32JVN?pgno=2
+
 
 #ifndef FileSystemMonitor_h__ //TODO:cambiar
 #define FileSystemMonitor_h__
@@ -6,8 +8,8 @@
 #include <exception>
 #include <string>
 
-
 #include <boost/function.hpp>
+#include <boost/smart_ptr.hpp>
 //TODO: boost::any
 //TODO: boost::config
 
@@ -27,21 +29,29 @@ class FileSystemMonitor
 public:
 
 	FileSystemMonitor()
-		//: notifyFilters_(NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName)
-		//, directory_("")
-		//, filter_("*.*")
-		////, impl_(new detail::FileSystemMonitorImpl)
+		: notifyFilters_(NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName)
+		, directory_("")
+		, filter_("*.*")
+		, implementation_(new detail::FileSystemMonitorImpl)
 	{
-		//: completionPortHandle_(0)
-		//threadObject_ = new detail::ThreadObjectParameter;
-
-		initialize();
 	}
 
+
 	FileSystemMonitor(const std::string& path)
-		//: this(path, "*.*")
+		: notifyFilters_(NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName)
+		, filter_("*.*")
+		, implementation_(new detail::FileSystemMonitorImpl)
 	{
-		initialize(path, "*.*");
+		//this->implementation_ = new detail::FileSystemMonitorImpl;  //TODO: heap o stack????
+
+		if ( path.size() == 0 || !utils::directoryExists(path) )
+		{
+			throw std::runtime_error("InvalidDirName");
+			//throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { path }));
+		}
+
+		this->directory_ = path;
+
 	}
 
 
@@ -225,39 +235,62 @@ public:
 
 	void startMonitoring()
 	{
-		impl_->startMonitoring(directory_, notifyFilters_, includeSubdirectories_);
+		implementation_->filter_ = filter_;
+		implementation_->notifyFilters_ = notifyFilters_;
+		implementation_->includeSubdirectories_ = includeSubdirectories_;
+		implementation_->startMonitoring(directory_); //, notifyFilters_, includeSubdirectories_, filter_);
 	}
 
-	// Event Handlers
-	FileSystemEventHandler Changed;
-	FileSystemEventHandler Created;
-	FileSystemEventHandler Deleted;
-	RenamedEventHandler Renamed;
+	// Event Handlers Setters
+	void setChangedEventHandler(FileSystemEventHandler handler)
+	{
+		this->implementation_->Changed = handler;
+	}
+
+	void setCreatedEventHandler(FileSystemEventHandler handler)
+	{
+		this->implementation_->Created = handler;
+	}
+
+	void setDeletedEventHandler(FileSystemEventHandler handler)
+	{
+		this->implementation_->Deleted = handler;
+	}
+
+	void setRenamedEventHandler(RenamedEventHandler handler)
+	{
+		this->implementation_->Renamed = handler;
+	}
+
+	//FileSystemEventHandler Changed;
+	//FileSystemEventHandler Created;
+	//FileSystemEventHandler Deleted;
+	//RenamedEventHandler Renamed;
 
 
 private:
 
-	inline void initialize()
-	{
-		initialize("", "*.*");
-	}
+	//inline void initialize()
+	//{
+	//	initialize("", "*.*");
+	//}
 
-	inline void initialize(const std::string& path, const std::string& filter)
-	{
-		this->notifyFilters_ = NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName;
-		this->impl_ = new detail::FileSystemMonitorImpl;  //TODO: heap o stack????
-		this->filter_ = filter;
+	//inline void initialize(const std::string& path, const std::string& filter)
+	//{
+	//	this->notifyFilters_ = NotifyFilters::LastWrite | NotifyFilters::DirectoryName | NotifyFilters::FileName;
+	//	this->implementation_ = new detail::FileSystemMonitorImpl;  //TODO: heap o stack????
+	//	this->filter_ = filter;
 
-		//std::runtime_error
+	//	//std::runtime_error
 
-		if ( path.size() == 0 || !utils::directoryExists(path) )
-		{
-			throw std::runtime_error("InvalidDirName");
-			//throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { path }));
-		}
+	//	if ( path.size() == 0 || !utils::directoryExists(path) )
+	//	{
+	//		throw std::runtime_error("InvalidDirName");
+	//		//throw new ArgumentException(SR.GetString("InvalidDirName", new object[] { path }));
+	//	}
 
-		this->directory_ = path;
-	}
+	//	this->directory_ = path;
+	//}
 
 
 	std::string directory_;
@@ -270,7 +303,9 @@ private:
 	//HANDLE  thread_;									//TODO:
 	//detail::ThreadObjectParameter* threadObject_;		//TODO: shared_ptr
 
-	detail::FileSystemMonitorImpl* impl_;				//TODO:
+	//TODO: varias implementaciones distintas por tipo de Sistema Operativo...
+	//detail::FileSystemMonitorImpl* implementation_;				//TODO:
+	boost::shared_ptr<detail::FileSystemMonitorImpl> implementation_;
 
 };
 
