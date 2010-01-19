@@ -1,5 +1,31 @@
+// TODO: LEER: URGENTE
+// http://linux.die.net/man/7/inotify
+
+// TODO: UBUNTU:
+//			http://old-releases.ubuntu.com/releases/5.10/
+//			http://old-releases.ubuntu.com/releases/
+//			http://en.wikipedia.org/wiki/List_of_Ubuntu_releases
+
+// LINUX OLD VERSIONS: dnotify 
+//			http://en.wikipedia.org/wiki/Dnotify
+
+
+// WINDOWS 3.11: http://www.taringa.net/posts/downloads/1035822/Windows-3_11.html
+// WINDOWS 98 SE: http://wiki.taringa.net/posts/downloads/2174431/Windows-98--SE-Booteable.html
+//                http://wiki.taringa.net/posts/downloads/1955565/Windows-98-_Equot;Segunda-edicion_Equot;.html
+//				  http://www.taringa.net/posts/downloads/1491446/Windows-98-SE-Actualizado-hasta-2007.html
+//				  http://www.taringa.net/posts/downloads/995032/Pack-para-windows-98-(editado).html
+
+
+
+
 #ifndef FileSystemMonitorLinuxImpl_h__
 #define FileSystemMonitorLinuxImpl_h__
+
+
+//Inotify was merged into the 2.6.13 Linux kernel. The required library interfaces were added to glibc in version 2.4. 
+//Bugs
+//In kernels before 2.6.16, the IN_ONESHOT mask flag does not work. 
 
 
 #include <boost/bind.hpp>
