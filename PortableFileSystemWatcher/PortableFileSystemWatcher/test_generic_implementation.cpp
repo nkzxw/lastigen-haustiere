@@ -1,4 +1,27 @@
+// TODO: LEER: URGENTE
 // http://msdn.microsoft.com/en-us/library/aa383745(VS.85).aspx
+// http://blogs.msdn.com/oldnewthing/archive/2007/04/11/2079137.aspx
+// http://msdn.microsoft.com/en-us/library/6sehtctf.aspx
+// http://stackoverflow.com/questions/142508/how-do-i-check-os-with-a-preprocessor-directive
+
+
+// WINDOWS VERSION AT RUNTIME
+//		http://support.microsoft.com/kb/189249
+//		http://msdn.microsoft.com/en-us/library/ms724439(VS.85).aspx
+//		http://msdn.microsoft.com/en-us/library/ms724832(VS.85).aspx
+//		http://msdn.microsoft.com/en-us/library/ms724451(VS.85).aspx
+//      http://msdn.microsoft.com/en-us/library/ms725492(VS.85).aspx
+//		http://msdn.microsoft.com/en-us/library/ms724833(VS.85).aspx
+
+
+// LINUX VERSION AT RUNTIME
+//		http://linux.die.net/man/2/uname
+//		cat /proc/sys/kernel/osrelease
+
+// FREEBSD VERSION AT RUNTIME
+//		PROBABLEMENTE: http://linux.die.net/man/2/uname
+
+
 
 
 #include <iostream>
@@ -10,6 +33,7 @@
 
 
 //#include "windows.h"
+//#include "winuser.h"
 // c:\Program Files\Microsoft SDKs\Windows\v6.0A\Include\sdkddkver.h
 
 
