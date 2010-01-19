@@ -1,13 +1,13 @@
 #ifndef FileSystemMonitorGeneric_h__
 #define FileSystemMonitorGeneric_h__
 
-#include "FileSystemMonitorGenericImpl.hpp"
+#include "ImplementationSelector.hpp"
 
 class FileSystemMonitorGeneric
 {
 public:
 	FileSystemMonitorGeneric()
-		: implementation_( new FileSystemMonitorGenericImpl )
+		: implementation_( new ImplementationType )
 	{}
 
 	void start()
@@ -16,7 +16,7 @@ public:
 	}
 
 private:
-	FileSystemMonitorGenericImpl * implementation_;
+	ImplementationType* implementation_;
 };
 
 #endif // FileSystemMonitorGeneric_h__

@@ -289,6 +289,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\ImplementationSelector.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\LinuxImpl.hpp"
 					>
 				</File>

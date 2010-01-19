@@ -74,7 +74,7 @@ int main(int argc, char** argv)
 	//FileSystemMonitorGenericImpl<PlatformImpl> monitor;
 	//monitor.start();
 	FileSystemMonitorGeneric monitor;
-	monitor;
+	monitor.start();
 
 
 	//_WIN32_WINNT
