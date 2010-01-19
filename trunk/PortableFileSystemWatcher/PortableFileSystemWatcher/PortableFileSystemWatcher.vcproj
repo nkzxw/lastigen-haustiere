@@ -234,10 +234,6 @@
 				>
 			</File>
 			<File
-				RelativePath=".\FileSystemMonitorImplTestGeneric.hpp"
-				>
-			</File>
-			<File
 				RelativePath=".\FileSystemMonitorLinuxImpl.hpp"
 				>
 			</File>
@@ -247,6 +243,10 @@
 			</File>
 			<File
 				RelativePath=".\NotifyFilters.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\OSVersion.hpp"
 				>
 			</File>
 			<File
@@ -270,6 +270,38 @@
 				</File>
 				<File
 					RelativePath=".\simple_test_win32.cpp"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Generic"
+				>
+				<File
+					RelativePath=".\FileSystemMonitorGeneric.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FileSystemMonitorGenericImpl.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\FreeBSDImpl.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\LinuxImpl.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\MacOSXImpl.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\UnsupportedImpl.hpp"
+					>
+				</File>
+				<File
+					RelativePath=".\WinNT32Impl.hpp"
 					>
 				</File>
 			</Filter>
