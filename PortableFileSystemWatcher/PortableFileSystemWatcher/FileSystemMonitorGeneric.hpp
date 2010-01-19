@@ -7,16 +7,16 @@ class FileSystemMonitorGeneric
 {
 public:
 	FileSystemMonitorGeneric()
-		: implementation_( new ImplementationType )
+		: implementation_( new detail::ImplementationType )
 	{}
 
-	void start()
+	void startMonitoring()
 	{
-		implementation_->start();
+		implementation_->startMonitoring("");
 	}
 
 private:
-	ImplementationType* implementation_;
+	detail::ImplementationType* implementation_;
 };
 
 #endif // FileSystemMonitorGeneric_h__

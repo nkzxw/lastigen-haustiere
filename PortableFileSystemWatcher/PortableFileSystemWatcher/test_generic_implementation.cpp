@@ -27,11 +27,11 @@
 #include <iostream>
 #include <string>
 
-#include <boost/config.hpp>
+
 
 //#include "FileSystemMonitorImplTestGeneric.hpp"
 #include "FileSystemMonitorGeneric.hpp"
-
+#include "StaticOSSelector.hpp"
 
 //#include "windows.h"
 //#include "winuser.h"
@@ -57,29 +57,28 @@
 
 
 
-#ifdef BOOST_WINDOWS
-#define PLATFORM_IMPL_CLASS Win32Impl
-typedef Win32Impl PlatformImpl;
-#endif // BOOST_WINDOWS
 
-//#define PLATFORM LinuxImpl
-//#define PLATFORM FreeBSDImpl
-//#define PLATFORM MacOSXImpl
 
 
 
 int main(int argc, char** argv)
 {
+	//StaticOSSelector::type oss;
+	//oss.start();
+
 	//FileSystemMonitorGenericImpl<PLATFORM_IMPL_CLASS> monitor;
 	//FileSystemMonitorGenericImpl<PlatformImpl> monitor;
 	//monitor.start();
 	FileSystemMonitorGeneric monitor;
-	monitor.start();
+	//monitor.start();
+	monitor.startMonitoring();
+
+
 
 
 	//_WIN32_WINNT
-	std::cout << "BOOST_WINDOWS: '" << BOOST_WINDOWS << "'" << std::endl;
-	std::cout << "_WIN32: '" << _WIN32 << "'" << std::endl;
+	//std::cout << "BOOST_WINDOWS: '" << BOOST_WINDOWS << "'" << std::endl;
+	//std::cout << "_WIN32: '" << _WIN32 << "'" << std::endl;
 
 	//std::cout << "_WIN32_WINNT: '" << _WIN32_WINNT << "'" << std::endl;
 	//std::cout << "WINVER: '" << WINVER << "'" << std::endl;

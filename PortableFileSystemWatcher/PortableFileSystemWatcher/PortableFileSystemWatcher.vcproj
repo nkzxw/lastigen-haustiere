@@ -301,6 +301,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\StaticOSSelector.hpp"
+					>
+				</File>
+				<File
 					RelativePath=".\UnsupportedImpl.hpp"
 					>
 				</File>
