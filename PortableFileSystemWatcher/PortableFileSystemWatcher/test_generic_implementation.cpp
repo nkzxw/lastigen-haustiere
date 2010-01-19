@@ -29,7 +29,8 @@
 
 #include <boost/config.hpp>
 
-#include "FileSystemMonitorImplTestGeneric.hpp"
+//#include "FileSystemMonitorImplTestGeneric.hpp"
+#include "FileSystemMonitorGeneric.hpp"
 
 
 //#include "windows.h"
