@@ -8,6 +8,7 @@
 // boost::config 
 // BOOST_WINDOWS
 // BOOST_LINUX
+//#elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 //  && (!defined(_WIN32_WINNT) || _WIN32_WINNT < 0x0600) \
 //# if defined(_WIN32_WINNT) && (_WIN32_WINNT >= 0x0501) || defined(UNDER_CE)
 //// Building for Windows XP, Windows Server 2003, or later.

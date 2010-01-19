@@ -167,6 +167,10 @@
 				RelativePath=".\test_FileSystemMonitor.cpp"
 				>
 			</File>
+			<File
+				RelativePath=".\test_generic_implementation.cpp"
+				>
+			</File>
 			<Filter
 				Name="Olds"
 				>
@@ -227,6 +231,10 @@
 			</File>
 			<File
 				RelativePath=".\FileSystemMonitorImpl.hpp"
+				>
+			</File>
+			<File
+				RelativePath=".\FileSystemMonitorImplTestGeneric.hpp"
 				>
 			</File>
 			<File
