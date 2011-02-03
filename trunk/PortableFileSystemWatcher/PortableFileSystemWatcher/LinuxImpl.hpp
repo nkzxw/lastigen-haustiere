@@ -38,6 +38,8 @@ public:
 		printf("closing file descriptor...\n");
 		int retClose =  close( fileDescriptor_ );
 		printf("retClose: %d\n", retClose);
+
+		thread_->join();
 	
 	}
 
@@ -57,98 +59,117 @@ public:
 
 		thread_.reset( new boost::thread( boost::bind(&LinuxImpl::HandleDirectoryChange, this) ) );
 	}
+
+	// Event Handlers
+	FileSystemEventHandler Changed;
+	FileSystemEventHandler Created;
+	FileSystemEventHandler Deleted;
+	RenamedEventHandler Renamed;
+
 private:
 	void HandleDirectoryChange() //TODO: rename
 	{
 		int i = 0;
 		char buffer[BUF_LEN];
 
+
+		//TODO: while
+		//TODO: boost asio buffer
+
+
 		printf("reading in file descriptor\n");
 		int length = read( fileDescriptor_, buffer, BUF_LEN );
 		printf("end reading on file descriptor\n");
 
-		printf("length: %d\n", length);
-
-		if ( length < 0 ) 
+		if (! closing_)
 		{
-			perror( "read" );
-		}  
 
+			printf("length: %d\n", length);
 
-		//int j;
-		//for (j = 0; j<length; j++)
-		//{
-		//	printf("buffer[j]: %d\n", buffer[j]);
-		//}
-
-		printf("i: %d\n", i);
-		while ( i < length ) 
-		{
-			printf("inside the 'while'\n");
-
-			struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ]; //TODO:
-
-			printf("event: %d\n", (void*)event);
-			printf("event->len: %d\n", event->len);
-
-			if ( event->len ) 
+			if ( length < 0 ) 
 			{
-				if ( event->mask & IN_CREATE ) 
-				{
-					if ( event->mask & IN_ISDIR ) 
-					{
-						printf( "The directory '%s' was created.\n", event->name );       
-					}
-					else 
-					{
-						printf( "The file '%s' was created.\n", event->name );
-					}
-				}
-				else if ( event->mask & IN_DELETE ) 
-				{
-					if ( event->mask & IN_ISDIR ) 
-					{
-						printf( "The directory '%s' was deleted.\n", event->name );       
-					}
-					else 
-					{
-						printf( "The file '%s' was deleted.\n", event->name );
-					}
-				}
-				else if ( event->mask & IN_MODIFY ) 
-				{
-					if ( event->mask & IN_ISDIR ) 
-					{
-						printf( "The directory '%s' was modified.\n", event->name );
-					}
-					else 
-					{
-						printf( "The file '%s' was modified.\n", event->name );
-					}
-				}
-			}
+				perror( "read" );
+			}  
 
-			i += EVENT_SIZE + event->len;
+
+			//int j;
+			//for (j = 0; j<length; j++)
+			//{
+			//	printf("buffer[j]: %d\n", buffer[j]);
+			//}
 
 			printf("i: %d\n", i);
+			while ( i < length ) 
+			{
+				printf("inside the 'while'\n");
 
+				struct inotify_event *event = ( struct inotify_event * ) &buffer[ i ]; //TODO:
+
+				printf("event: %d\n", (void*)event);
+				printf("event->len: %d\n", event->len);
+
+				if ( event->len ) 
+				{
+					if ( event->mask & IN_CREATE ) 
+					{
+						if (this->Created)
+						{
+							//std::string fileName( event->name ); 
+							FileSystemEventArgs temp;
+							temp.Name = event->name; //fileName;
+
+							//threadObject->This->Created(temp);
+							this->Created(temp);
+						}
+
+						//if ( event->mask & IN_ISDIR ) 
+						//{
+						//	printf( "The directory '%s' was created.\n", event->name );       
+						//}
+						//else 
+						//{
+						//	printf( "The file '%s' was created.\n", event->name );
+						//}
+					}
+					else if ( event->mask & IN_DELETE ) 
+					{
+						if ( event->mask & IN_ISDIR ) 
+						{
+							printf( "The directory '%s' was deleted.\n", event->name );       
+						}
+						else 
+						{
+							printf( "The file '%s' was deleted.\n", event->name );
+						}
+					}
+					else if ( event->mask & IN_MODIFY ) 
+					{
+						if ( event->mask & IN_ISDIR ) 
+						{
+							printf( "The directory '%s' was modified.\n", event->name );
+						}
+						else 
+						{
+							printf( "The file '%s' was modified.\n", event->name );
+						}
+					}
+				}
+
+				i += EVENT_SIZE + event->len;
+
+				printf("i: %d\n", i);
+			}
 		}
 
-		//( void ) inotify_rm_watch( fileDescriptor_, wd );
-		//( void ) close( fileDescriptor_ );
-
-		int retRMWatch = inotify_rm_watch( fileDescriptor_, watchDescriptor_ );
-		printf("retRMWatch: %d\n", retRMWatch);
-		int retClose =  close( fileDescriptor_ );
-		printf("retClose: %d\n", retClose);
-
-
-
-		pthread_join( thread1, NULL);
-
-		//printf("Thread 1 returns: %d\n", iret1);
-
-		exit(0);
+		////( void ) inotify_rm_watch( fileDescriptor_, wd );
+		////( void ) close( fileDescriptor_ );
+		//int retRMWatch = inotify_rm_watch( fileDescriptor_, watchDescriptor_ );
+		//printf("retRMWatch: %d\n", retRMWatch);
+		//int retClose =  close( fileDescriptor_ );
+		//printf("retClose: %d\n", retClose);
+		//pthread_join( thread1, NULL);
+		////printf("Thread 1 returns: %d\n", iret1);
+		//exit(0);
 	}
 
 	HeapThread thread_;
